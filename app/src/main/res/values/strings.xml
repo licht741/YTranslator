@@ -6,6 +6,8 @@
 
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--todo remove-->
+    <string name="key">"trnsl.1.1.20170318T151457Z.233174f560c42e3d.b08e19f199a26a1d9e019c96cb0629f00a0f6224"</string>
 </resources>

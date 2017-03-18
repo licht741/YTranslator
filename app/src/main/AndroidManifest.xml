@@ -19,9 +19,9 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
-            android:name=".LoadingScreenActivity"
+            android:name=".ui.LoadingScreen.LoadingScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_loading_screen"
+            android:label="string/title_activity_loading_screen"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

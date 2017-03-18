@@ -1,8 +1,13 @@
 package com.licht.ytranslator.data;
 
+import com.google.gson.JsonObject;
+import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
+import com.licht.ytranslator.data.model.Localization;
+import com.licht.ytranslator.data.model.TranslateType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -13,21 +18,45 @@ public class DataManager {
     @Inject
     YandexTranslateAPI yandexTranslateAPI;
 
+    @Inject
+    CacheData cacheData;
+
+    @Inject
+    AppPreferences appPreferences;
+
     public DataManager() {
         super();
         YTransApp.getAppComponent().inject(this);
     }
 
+    public boolean isDataCached(String localization) {
+        return appPreferences.getDataCached(localization);
+    }
+
+    public Call<JsonObject> loadDataForLocalization(String localization) {
+        return yandexTranslateAPI.getData(YTransApp.get().getString(R.string.key), localization);
+    }
+
     public Call<Result> request(String key, String text, String lang) {
-//        final String key = "trnsl.1.1.20170318T151457Z.233174f560c42e3d.b08e19f199a26a1d9e019c96cb0629f00a0f6224";
-//        final String text = "Hello";
-//        final String lang = "en-ru";
-//        Request r = new Request(key, text, lang);
 
         Map<String, String> mapJSON = new HashMap<>();
         mapJSON.put("key", key);
         mapJSON.put("text", text);
         mapJSON.put("lang", lang);
         return yandexTranslateAPI.translate(mapJSON);
+    }
+
+    public Call<JsonObject> getData(String key, String ui) {
+        return yandexTranslateAPI.getData(key, ui);
+    }
+
+    public void cacheLanguageData(List<TranslateType> translateTypes,
+                                  List<Localization> localizations) {
+        cacheData.saveTranslateType(translateTypes);
+        cacheData.saveLocalization(localizations);
+    }
+
+    public void localDataIsLoaded(String localConst) {
+        appPreferences.putDataCached(localConst, true);
     }
 }

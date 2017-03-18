@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'realm-android'
+
 
 android {
     compileSdkVersion 25
@@ -28,9 +30,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-
-
-
     compile 'com.android.support:appcompat-v7:25.1.1'
     compile 'com.android.support:design:25.1.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -43,4 +42,14 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.8'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    compile 'com.facebook.stetho:stetho:1.4.1'
+    compile 'com.uphyca:stetho_realm:2.0.0'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
+    }
 }
