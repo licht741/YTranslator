@@ -26,6 +26,7 @@ public class CacheData {
     public void saveTranslateType(List<TranslateType> types) {
         final Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
+        realm.delete(TranslateType.class);
         realm.copyToRealm(types);
         realm.commitTransaction();
     }
@@ -33,6 +34,12 @@ public class CacheData {
     public void saveLocalization(List<Localization> localizations) {
         final Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
+
+        if (realm.where(Localization.class)
+                .equalTo("locale", localizations.get(0).getLangSymbol())
+                .count() > 0)
+            realm.delete(Localization.class);
+
         realm.copyToRealm(localizations);
         realm.commitTransaction();
     }
