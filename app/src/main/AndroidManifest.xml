@@ -14,9 +14,15 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
+        <activity
+            android:name=".LoadingScreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_loading_screen"
+            android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
