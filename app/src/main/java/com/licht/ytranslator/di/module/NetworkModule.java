@@ -1,6 +1,7 @@
 package com.licht.ytranslator.di.module;
 
-import com.licht.ytranslator.data.sources.YandexTranslateAPI;
+import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
+import com.licht.ytranslator.data.endpoint.YandexTranslateAPI;
 
 import javax.inject.Singleton;
 
@@ -24,5 +25,11 @@ public class NetworkModule {
     @Singleton
     YandexTranslateAPI provideYandexTranslateAPI() {
         return provideRetrofit().create(YandexTranslateAPI.class);
+    }
+
+    @Provides
+    @Singleton
+    YandexDictionaryAPI provideYandexDictionaryAPI() {
+        return provideRetrofit().create(YandexDictionaryAPI.class);
     }
 }

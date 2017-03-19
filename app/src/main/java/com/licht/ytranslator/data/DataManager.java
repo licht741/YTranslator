@@ -8,7 +8,7 @@ import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.sources.AppPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
-import com.licht.ytranslator.data.sources.YandexTranslateAPI;
+import com.licht.ytranslator.data.endpoint.YandexTranslateAPI;
 import com.licht.ytranslator.utils.LocalizationUtils;
 
 import java.util.ArrayList;

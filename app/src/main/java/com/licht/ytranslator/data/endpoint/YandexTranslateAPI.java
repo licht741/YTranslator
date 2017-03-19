@@ -1,4 +1,4 @@
-package com.licht.ytranslator.data.sources;
+package com.licht.ytranslator.data.endpoint;
 
 
 import com.google.gson.JsonObject;
