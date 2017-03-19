@@ -16,9 +16,7 @@ import retrofit2.http.Query;
 public interface YandexDictionaryAPI {
     @FormUrlEncoded
     @POST("/api/v1/dicservice.json/lookup")
-    Call<JsonObject> translate(@FieldMap Map<String, String> map);
+    Call<JsonObject> getMeaning(@FieldMap Map<String, String> map);
 
-    @GET("/api/v1/dicservice.json/getLangs")
-    Call<List<String>> getDictionary(@Query("key") String key);
 
 }

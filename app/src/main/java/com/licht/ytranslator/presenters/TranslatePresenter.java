@@ -2,13 +2,18 @@ package com.licht.ytranslator.presenters;
 
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
+import com.licht.ytranslator.data.model.Dictionary;
 import com.licht.ytranslator.data.model.Result;
+import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
+import com.licht.ytranslator.utils.DictionaryAnswerParser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -37,8 +42,9 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         view = null;
     }
 
+
     public void translate(String text) {
-        final String key = YTransApp.get().getString(R.string.key);
+        final String key = YTransApp.get().getString(R.string.key_translate);
         final String lang = String.format("%s-%s",
                 dataManager.getSourceLanguageSymbol(), dataManager.getDestinationLanguageSymbol());
 //        final String lang = "en-ru";
@@ -55,6 +61,25 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
                 // todo
             }
         });
+
+        final String keyDict = YTransApp.get().getString(R.string.key_dictionary);
+        dataManager.getDataFromDictionary(keyDict, text, lang).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                int x = 3;
+                List<Dictionary> dicts = DictionaryAnswerParser.parse(response.body());
+
+                Word w = new Word(text, lang, dicts);
+
+                Log.e("f", "onResponse: ");
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+
     }
 
     public String getSourceLanguage() {

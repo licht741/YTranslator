@@ -14,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkModule {
     @Provides
     @Singleton
-    Retrofit provideRetrofit() {
+    Retrofit provideTranslateRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl("https://translate.yandex.net")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -23,13 +23,22 @@ public class NetworkModule {
 
     @Provides
     @Singleton
+    Retrofit provideDictionaryRetrofit() {
+        return new Retrofit.Builder()
+                .baseUrl("https://dictionary.yandex.net")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
+    @Provides
+    @Singleton
     YandexTranslateAPI provideYandexTranslateAPI() {
-        return provideRetrofit().create(YandexTranslateAPI.class);
+        return provideTranslateRetrofit().create(YandexTranslateAPI.class);
     }
 
     @Provides
     @Singleton
     YandexDictionaryAPI provideYandexDictionaryAPI() {
-        return provideRetrofit().create(YandexDictionaryAPI.class);
+        return provideDictionaryRetrofit().create(YandexDictionaryAPI.class);
     }
 }

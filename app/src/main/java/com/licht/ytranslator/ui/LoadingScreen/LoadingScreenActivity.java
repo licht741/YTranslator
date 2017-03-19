@@ -25,9 +25,6 @@ import javax.inject.Inject;
 public class LoadingScreenActivity extends AppCompatActivity implements ILoadingView {
 
     @Inject
-    DataManager dataManager;
-
-    @Inject
     LoaderPresenter presenter;
 
     @Override

@@ -3,6 +3,7 @@ package com.licht.ytranslator.data;
 import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
+import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.SupportedTranslation;
@@ -26,6 +27,9 @@ import retrofit2.Call;
 public class DataManager {
     @Inject
     YandexTranslateAPI yandexTranslateAPI;
+
+    @Inject
+    YandexDictionaryAPI yandexDictionaryAPI;
 
     @Inject
     CacheData cacheData;
@@ -148,6 +152,14 @@ public class DataManager {
      * Обращения к API
      */
 
+    public Call<JsonObject> getDataFromDictionary(String key, String text, String lang) {
+        Map<String, String> mapJSON = new HashMap<>();
+        mapJSON.put("key", key);
+        mapJSON.put("lang", lang);
+        mapJSON.put("text", text);
+        return yandexDictionaryAPI.getMeaning(mapJSON);
+    }
+
     /**
      * Загружает данные для указанной локализации
      *
@@ -155,7 +167,7 @@ public class DataManager {
      * @return Объект, используемый для асинхронной загрузки данных
      */
     public Call<JsonObject> loadDataForLocalization(String localization) {
-        return yandexTranslateAPI.getData(YTransApp.get().getString(R.string.key), localization);
+        return yandexTranslateAPI.getData(YTransApp.get().getString(R.string.key_translate), localization);
     }
 
     /**
