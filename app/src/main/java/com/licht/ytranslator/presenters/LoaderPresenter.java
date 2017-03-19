@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.Localization;
-import com.licht.ytranslator.data.model.TranslateType;
+import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.ui.LoadingScreen.ILoadingView;
 import com.licht.ytranslator.utils.LocalizationUtils;
 
@@ -39,7 +39,7 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
 
     public void requestData() {
         final String localConst = LocalizationUtils.getCurrentLocalizationSymbol();
-        final boolean isDataCached = dataManager.isDataCached(localConst);
+        final boolean isDataCached = dataManager.isDataForLocalizationCached(localConst);
 
         if (isDataCached)
             view.finishLoading();
@@ -49,7 +49,7 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     JsonObject json = response.body();
                     cacheData(json, localConst);
-                    dataManager.localDataIsLoaded(localConst);
+                    dataManager.setDataForLocalizationIsCached(localConst);
                     view.finishLoading();
                 }
 
@@ -69,9 +69,9 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
     private void cacheData(JsonObject object, String localizationConst) {
         JsonArray dirs = object.getAsJsonArray("dirs");
 
-        final List<TranslateType> types = new ArrayList<>();
+        final List<SupportedTranslation> types = new ArrayList<>();
         for (int i = 0; i < dirs.size(); ++i)
-            types.add(new TranslateType(dirs.get(i).getAsString()));
+            types.add(new SupportedTranslation(dirs.get(i).getAsString()));
 
         final List<Localization> localizationList = new ArrayList<>();
 

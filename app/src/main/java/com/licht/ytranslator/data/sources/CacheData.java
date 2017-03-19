@@ -5,7 +5,7 @@ import android.util.Log;
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.model.Localization;
-import com.licht.ytranslator.data.model.TranslateType;
+import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.List;
@@ -26,21 +26,21 @@ public class CacheData {
                         .build());
     }
 
-    public void saveTranslateType(List<TranslateType> types) {
+    public void saveTranslateType(List<SupportedTranslation> types) {
         final Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.delete(TranslateType.class);
+        realm.delete(SupportedTranslation.class);
         realm.copyToRealm(types);
         realm.commitTransaction();
     }
 
     public String[] getTranslateTypes() {
         final Realm realm = Realm.getDefaultInstance();
-        RealmResults<TranslateType> results = realm.where(TranslateType.class).findAll();
+        RealmResults<SupportedTranslation> results = realm.where(SupportedTranslation.class).findAll();
 
         String[] translateTypes = new String[results.size()];
         for (int i = 0; i < results.size(); ++i)
-            translateTypes[i] = results.get(i).getType();
+            translateTypes[i] = results.get(i).getTranslation();
 
         return translateTypes;
     }
@@ -58,7 +58,7 @@ public class CacheData {
         realm.beginTransaction();
 
         if (realm.where(Localization.class)
-                .equalTo("locale", localizations.get(0).getLangSymbol())
+                .equalTo("locale", localizations.get(0).getLanguageSymbol())
                 .count() > 0)
             realm.delete(Localization.class);
 
@@ -76,7 +76,7 @@ public class CacheData {
             Log.e("CacheData", "getTransMeaning: localSymbol: " + localSymbol + " transSymbol: " + transSymbol);
         }
 
-        String r = l.getLangMeaning();
+        String r = l.getLanguageTitle();
         return r;
     }
 

@@ -46,13 +46,4 @@ public class AppPreferences {
         mSharedPreferences.edit().putString(PREF_DESTINATION_LANG, lang).apply();
     }
 
-//    public String getTranslatingType() {
-//        return mSharedPreferences.getString(PREF_TRANSLATING_TYPE, "");
-//    }
-//
-//    public void setTranslatingType(String transType) {
-//        mSharedPreferences.edit().putString(PREF_TRANSLATING_TYPE, transType).apply();
-//
-//    }
-
 }

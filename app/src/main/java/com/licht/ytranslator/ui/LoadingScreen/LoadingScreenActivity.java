@@ -13,7 +13,7 @@ import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.Localization;
-import com.licht.ytranslator.data.model.TranslateType;
+import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.presenters.LoaderPresenter;
 
 import java.util.ArrayList;
@@ -70,9 +70,9 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
     private void cacheData(JsonObject object) {
         JsonArray dirs = object.getAsJsonArray("dirs");
 
-        final List<TranslateType> types = new ArrayList<>();
+        final List<SupportedTranslation> types = new ArrayList<>();
         for (int i = 0; i < dirs.size(); ++i)
-            types.add(new TranslateType(dirs.get(i).getAsString()));
+            types.add(new SupportedTranslation(dirs.get(i).getAsString()));
 
         final List<Localization> localizationList = new ArrayList<>();
 

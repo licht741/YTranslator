@@ -2,6 +2,7 @@ package com.licht.ytranslator.data.model;
 
 import java.util.List;
 
+/** Обёртка над результатом перевода, возвращаемым с сервера */
 public class Result {
     public int code;
     public String lang;

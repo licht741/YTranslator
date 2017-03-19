@@ -7,10 +7,8 @@ import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
-import com.licht.ytranslator.utils.LocalizationUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -42,10 +40,10 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     public void translate(String text) {
         final String key = YTransApp.get().getString(R.string.key);
         final String lang = String.format("%s-%s",
-                dataManager.getSourceSymbolLanguage(), dataManager.getDestinationSymbolLanguage());
+                dataManager.getSourceLanguageSymbol(), dataManager.getDestinationLanguageSymbol());
 //        final String lang = "en-ru";
 
-        dataManager.request(key, text, lang).enqueue(new Callback<Result>() {
+        dataManager.requestTranslation(key, text, lang).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
                 Log.e("TranslatePresenter", "onResponse: " + response.body().text);
@@ -76,13 +74,13 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     public void updateSourceLanguage(String languageName) {
-        final String langSymbol = dataManager.getLangugeSymbolByName(languageName);
-        dataManager.setSourceLanguage(langSymbol);
+        final String langSymbol = dataManager.getLanguageSymbolByName(languageName);
+        dataManager.setSourceLanguageSymbol(langSymbol);
         view.setLanguagePair(languageName, getDestinationLanguage());
     }
 
     public void updateDestinationLanguage(String languageName) {
-        final String langSymbol = dataManager.getLangugeSymbolByName(languageName);
+        final String langSymbol = dataManager.getLanguageSymbolByName(languageName);
         dataManager.setDestinationLanguage(langSymbol);
         view.setLanguagePair(getSourceLanguage(), languageName);
     }

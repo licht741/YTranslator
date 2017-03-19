@@ -3,17 +3,22 @@ package com.licht.ytranslator.data.model;
 import io.realm.RealmObject;
 
 public class Localization extends RealmObject {
-    String locale;
-    String langSymbol;
-    String langMeaning;
+    /** Локализация UI, для которого используется данное название языка */
+    private String locale;
+
+    /** Принятый в API символьный код язык */
+    private String languageSymbol;
+
+    /** Строковое представление языка, которое должно использоваться в данной локализации */
+    private String languageTitle;
 
     public Localization() {
     }
 
-    public Localization(String locale, String langSymbol, String langMeaning) {
+    public Localization(String locale, String languageSymbol, String languageTitle) {
         this.locale = locale;
-        this.langSymbol = langSymbol;
-        this.langMeaning = langMeaning;
+        this.languageSymbol = languageSymbol;
+        this.languageTitle = languageTitle;
     }
 
     public String getLocale() {
@@ -24,19 +29,19 @@ public class Localization extends RealmObject {
         this.locale = locale;
     }
 
-    public String getLangSymbol() {
-        return langSymbol;
+    public String getLanguageSymbol() {
+        return languageSymbol;
     }
 
-    public void setLangSymbol(String langSymbol) {
-        this.langSymbol = langSymbol;
+    public void setLanguageSymbol(String languageSymbol) {
+        this.languageSymbol = languageSymbol;
     }
 
-    public String getLangMeaning() {
-        return langMeaning;
+    public String getLanguageTitle() {
+        return languageTitle;
     }
 
-    public void setLangMeaning(String langMeaning) {
-        this.langMeaning = langMeaning;
+    public void setLanguageTitle(String languageTitle) {
+        this.languageTitle = languageTitle;
     }
 }
