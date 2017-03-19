@@ -25,6 +25,8 @@ import com.licht.ytranslator.presenters.TranslatePresenter;
 import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -109,6 +111,7 @@ public class TranslateFragment extends Fragment implements ITranslateView {
     public void onSelectedSourceClick() {
         final String selectedLanguage = presenter.getSourceLanguage();
         final ArrayList<String> languages = presenter.getSourceLanguages();
+        Collections.sort(languages);
 
         Intent intent = new Intent(getContext(), SelectLanguageActivity.class);
         Bundle b = new Bundle();
@@ -139,11 +142,10 @@ public class TranslateFragment extends Fragment implements ITranslateView {
             return;
         final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
 
-        // TODO
         if (requestCode == 100) {
             presenter.updateSourceLanguage(resultLanguage);
         }
-        if (requestCode == 200) {
+        else if (requestCode == 200) {
             presenter.updateDestinationLanguage(resultLanguage);
         }
     }

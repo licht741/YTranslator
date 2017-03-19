@@ -42,8 +42,9 @@ public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapte
 
         holder.mLanguage.setText(lang);
         if (lang.equals(currentSelectedLanguage)) {
+            holder.mIsSelected.setVisibility(View.VISIBLE);
             holder.mIsSelected.setImageResource(R.drawable.ic_selected);
-            holder.itemView.setBackground(ContextCompat.getDrawable(context, R.color.black_overlay));
+            holder.itemView.setBackground(ContextCompat.getDrawable(context, R.color.colorPrimaryLight));
         } else {
             holder.mIsSelected.setVisibility(View.GONE);
             holder.itemView.setBackground(ContextCompat.getDrawable(context, android.R.color.background_light));

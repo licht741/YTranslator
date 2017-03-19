@@ -16,7 +16,7 @@
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".ui.LoadingScreen.LoadingScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
