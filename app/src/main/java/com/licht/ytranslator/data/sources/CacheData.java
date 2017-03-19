@@ -70,7 +70,7 @@ public class CacheData {
         final Realm realm = Realm.getDefaultInstance();
         Localization l = realm.where(Localization.class)
                 .equalTo("locale", localSymbol)
-                .equalTo("langSymbol", transSymbol)
+                .equalTo("languageSymbol", transSymbol)
                 .findFirst();
         if (l == null) {
             Log.e("CacheData", "getTransMeaning: localSymbol: " + localSymbol + " transSymbol: " + transSymbol);
