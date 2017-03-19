@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,6 +31,9 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     public TranslatePresenter() {
         super();
         YTransApp.getAppComponent().inject(this);
+
+        Word w = dataManager.getCachedWord("Value", "en-ru");
+
     }
 
     @Override
@@ -67,9 +71,11 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 int x = 3;
-                List<Dictionary> dicts = DictionaryAnswerParser.parse(response.body());
+                RealmList<Dictionary> dicts = DictionaryAnswerParser.parse(response.body());
 
                 Word w = new Word(text, lang, dicts);
+
+                dataManager.cacheDictionaryWord(w);
 
                 Log.e("f", "onResponse: ");
             }

@@ -2,28 +2,35 @@ package com.licht.ytranslator.data.model;
 
 import java.util.List;
 
-public class Translate {
-    private List<String> synonimes;
-    private List<String> meanings;
+import io.realm.RealmList;
+import io.realm.RealmObject;
 
-    public Translate(List<String> synonimes, List<String> meanings) {
+public class Translate extends RealmObject {
+    private RealmList<StringWrapper> synonimes;
+    private RealmList<StringWrapper> meanings;
+
+    public Translate() {
+        super();
+    }
+
+    public Translate(RealmList<StringWrapper> synonimes, RealmList<StringWrapper> meanings) {
         this.synonimes = synonimes;
         this.meanings = meanings;
     }
 
-    public List<String> getSynonimes() {
+    public RealmList<StringWrapper> getSynonimes() {
         return synonimes;
     }
 
-    public void setSynonimes(List<String> synonimes) {
+    public void setSynonimes(RealmList<StringWrapper> synonimes) {
         this.synonimes = synonimes;
     }
 
-    public List<String> getMeanings() {
+    public RealmList<StringWrapper> getMeanings() {
         return meanings;
     }
 
-    public void setMeanings(List<String> meanings) {
+    public void setMeanings(RealmList<StringWrapper> meanings) {
         this.meanings = meanings;
     }
 }

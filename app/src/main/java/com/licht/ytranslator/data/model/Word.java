@@ -2,16 +2,19 @@ package com.licht.ytranslator.data.model;
 
 import java.util.List;
 
-public class Word {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
+public class Word extends RealmObject {
     private String word;
     private String direction;
-    private List<Dictionary> dictionaries;
+    private RealmList<Dictionary> dictionaries;
 
     public Word() {
         super();
     }
 
-    public Word(String word, String direction, List<Dictionary> dictionaries) {
+    public Word(String word, String direction, RealmList<Dictionary> dictionaries) {
         this.word = word;
         this.direction = direction;
         this.dictionaries = dictionaries;
@@ -33,11 +36,11 @@ public class Word {
         this.direction = direction;
     }
 
-    public List<Dictionary> getDictionaries() {
+    public RealmList<Dictionary> getDictionaries() {
         return dictionaries;
     }
 
-    public void setDictionaries(List<Dictionary> dictionaries) {
+    public void setDictionaries(RealmList<Dictionary> dictionaries) {
         this.dictionaries = dictionaries;
     }
 }

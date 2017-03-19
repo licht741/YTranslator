@@ -2,16 +2,19 @@ package com.licht.ytranslator.data.model;
 
 import java.util.List;
 
-public class Dictionary {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
+public class Dictionary extends RealmObject {
     private String text;
     private String trans;
-    private List<Translate> translates;
+    private RealmList<Translate> translates;
 
     public Dictionary() {
         super();
     }
 
-    public Dictionary(String text, String trans, List<Translate> translates) {
+    public Dictionary(String text, String trans, RealmList<Translate> translates) {
         this.text = text;
         this.trans = trans;
         this.translates = translates;
@@ -37,7 +40,7 @@ public class Dictionary {
         return translates;
     }
 
-    public void setTranslates(List<Translate> translates) {
+    public void setTranslates(RealmList<Translate> translates) {
         this.translates = translates;
     }
 }

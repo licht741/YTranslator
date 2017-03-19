@@ -6,7 +6,9 @@ import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.Result;
+import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.SupportedTranslation;
+import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.data.sources.AppPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.data.endpoint.YandexTranslateAPI;
@@ -248,6 +250,14 @@ public class DataManager {
             }
 
         return result;
+    }
+
+    public Word getCachedWord(String word, String dir) {
+        return cacheData.getCachedDictionary(word, dir);
+    }
+
+    public void cacheDictionaryWord(Word word) {
+        cacheData.cacheDictionary(word);
     }
 
 }

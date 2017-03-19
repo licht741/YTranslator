@@ -4,8 +4,11 @@ import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
+import com.licht.ytranslator.data.model.Dictionary;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.SupportedTranslation;
+import com.licht.ytranslator.data.model.Translate;
+import com.licht.ytranslator.data.model.Word;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.List;
@@ -78,6 +81,31 @@ public class CacheData {
 
         String r = l.getLanguageTitle();
         return r;
+    }
+
+    public Word getCachedDictionary(String word, String dir) {
+        final Realm realm = Realm.getDefaultInstance();
+        Word w = realm.where(Word.class)
+                .equalTo("word", word)
+                .equalTo("direction", dir)
+                .findFirst();
+
+        return w;
+    }
+
+    public void cacheDictionary(Word word) {
+        final Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        for (Dictionary dictionary: word.getDictionaries()) {
+            for (Translate translate: dictionary.getTranslates()) {
+                realm.copyToRealm(translate.getMeanings());
+                realm.copyToRealm(translate.getSynonimes());
+                realm.copyToRealm(translate);
+            }
+            realm.copyToRealm(dictionary);
+        }
+        realm.copyToRealm(word);
+        realm.commitTransaction();
     }
 
 }
