@@ -1,4 +1,4 @@
-package com.licht.ytranslator.data;
+package com.licht.ytranslator.data.model;
 
 import java.util.List;
 

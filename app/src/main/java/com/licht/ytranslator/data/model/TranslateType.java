@@ -3,7 +3,7 @@ package com.licht.ytranslator.data.model;
 import io.realm.RealmObject;
 
 public class TranslateType extends RealmObject {
-    String type;
+    private String type;
     public TranslateType() {}
 
     public TranslateType(String type) {

@@ -1,6 +1,7 @@
 package com.licht.ytranslator.di.component;
 
 import com.licht.ytranslator.presenters.LoaderPresenter;
+import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
 import com.licht.ytranslator.ui.LoadingScreen.LoadingScreenActivity;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.di.module.ApplicationModule;
@@ -21,4 +22,5 @@ public interface AppComponent {
     void inject(DataManager manager);
     void inject(LoadingScreenActivity activity);
     void inject(LoaderPresenter presenter);
+    void inject(SelectLanguageActivity activity);
 }

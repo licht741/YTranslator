@@ -8,8 +8,7 @@ import android.view.View;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.licht.ytranslator.MainActivity;
+import com.licht.ytranslator.ui.MainActivity;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
@@ -20,13 +19,8 @@ import com.licht.ytranslator.presenters.LoaderPresenter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class LoadingScreenActivity extends AppCompatActivity implements ILoadingView {
 
@@ -59,21 +53,6 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
     protected void onResume() {
         super.onResume();
 
-        final String key = getString(R.string.key);
-        final String lang = "en-ru";
-
-//        dataManager.getData(key, "en").enqueue(new Callback<JsonObject>() {
-//            @Override
-//            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-//                JsonObject json = response.body();
-//                int x = 3;
-//                cacheData(json);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<JsonObject> call, Throwable t) {
-//            }
-//        });
     }
 
     @Override

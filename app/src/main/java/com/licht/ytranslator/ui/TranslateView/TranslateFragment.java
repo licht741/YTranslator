@@ -1,6 +1,7 @@
 package com.licht.ytranslator.ui.TranslateView;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,9 +21,11 @@ import android.widget.Toast;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.DataManager;
-import com.licht.ytranslator.data.Result;
 import com.licht.ytranslator.presenters.TranslatePresenter;
+import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -30,9 +33,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import rx.Subscription;
 
 public class TranslateFragment extends Fragment implements ITranslateView {
@@ -46,6 +46,12 @@ public class TranslateFragment extends Fragment implements ITranslateView {
 
     @BindView(R.id.tv_translated_text)
     TextView tvTranslatedText;
+
+    @BindView(R.id.tv_selected_source_lang)
+    TextView tvSelectedSourceLang;
+
+    @BindView(R.id.tv_selected_dest_lang)
+    TextView tvSelectedDestLang;
 
     Subscription editTextSub;
 
@@ -72,29 +78,21 @@ public class TranslateFragment extends Fragment implements ITranslateView {
         toggle.syncState();
 
         initUI(root);
-
         return root;
     }
 
     private void initUI(View root) {
-        String[] langs = {"Русский", "Английский", "Немецкий", "Французский"};
-
-        final Spinner spinnerFrom = (Spinner) root.findViewById(R.id.spn_translate_from);
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, langs);
-        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spinnerFrom.setAdapter(adapter1);
-
-        final Spinner spinnerTo = (Spinner) root.findViewById(R.id.spn_translate_to);
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, langs);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spinnerTo.setAdapter(adapter2);
-
+        presenter.requestData();
         editTextSub = RxTextView.textChanges(inputText)
                 .filter(seq -> seq != null && seq.length() > 0)
                 .subscribe(charSequence -> presenter.translate(charSequence.toString()));
 
+    }
+
+    @Override
+    public void setLanguagePair(String source, String destination) {
+        tvSelectedSourceLang.setText(source);
+        tvSelectedDestLang.setText(destination);
     }
 
     @Override
@@ -105,6 +103,49 @@ public class TranslateFragment extends Fragment implements ITranslateView {
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
         Toast.makeText(getContext(), "It works!", Toast.LENGTH_LONG).show();
+    }
+
+    @OnClick(R.id.tv_selected_source_lang)
+    public void onSelectedSourceClick() {
+        final String selectedLanguage = presenter.getSourceLanguage();
+        final ArrayList<String> languages = presenter.getSourceLanguages();
+
+        Intent intent = new Intent(getContext(), SelectLanguageActivity.class);
+        Bundle b = new Bundle();
+        b.putString(SelectLanguageActivity.SELECTED_LANGUAGE, selectedLanguage);
+        b.putStringArrayList(SelectLanguageActivity.AVAILABLE_LANGUAGE_LIST, languages);
+        intent.putExtras(b);
+        startActivityForResult(intent, 100);
+
+    }
+
+    @OnClick(R.id.tv_selected_dest_lang)
+    public void onSelectedDestinationClick() {
+        final String selectedLanguage = presenter.getDestinationLanguage();
+        final ArrayList<String> languages = presenter.getDestinationLanguages();
+
+        Intent intent = new Intent(getContext(), SelectLanguageActivity.class);
+        Bundle b = new Bundle();
+        b.putString(SelectLanguageActivity.SELECTED_LANGUAGE, selectedLanguage);
+        b.putStringArrayList(SelectLanguageActivity.AVAILABLE_LANGUAGE_LIST, languages);
+        intent.putExtras(b);
+        startActivityForResult(intent, 200);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null || data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE) == null)
+            return;
+        final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
+
+        // TODO
+        if (requestCode == 100) {
+            presenter.updateSourceLanguage(resultLanguage);
+        }
+        if (requestCode == 200) {
+            presenter.updateDestinationLanguage(resultLanguage);
+        }
     }
 
     @Override

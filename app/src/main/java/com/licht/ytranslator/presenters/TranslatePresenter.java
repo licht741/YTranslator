@@ -2,10 +2,15 @@ package com.licht.ytranslator.presenters;
 
 import android.util.Log;
 
+import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
-import com.licht.ytranslator.data.Result;
+import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
+import com.licht.ytranslator.utils.LocalizationUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -35,8 +40,10 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     public void translate(String text) {
-        final String key = "trnsl.1.1.20170318T151457Z.233174f560c42e3d.b08e19f199a26a1d9e019c96cb0629f00a0f6224";
-        final String lang = "en-ru";
+        final String key = YTransApp.get().getString(R.string.key);
+        final String lang = String.format("%s-%s",
+                dataManager.getSourceSymbolLanguage(), dataManager.getDestinationSymbolLanguage());
+//        final String lang = "en-ru";
 
         dataManager.request(key, text, lang).enqueue(new Callback<Result>() {
             @Override
@@ -51,4 +58,38 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
             }
         });
     }
+
+    public String getSourceLanguage() {
+        return dataManager.getSourceLanguage();
+    }
+
+    public ArrayList<String> getSourceLanguages() {
+        return dataManager.getSourceLanguageList();
+    }
+
+    public ArrayList<String> getDestinationLanguages() {
+        return dataManager.getDestinationLanguageList();
+    }
+
+    public void requestData() {
+        view.setLanguagePair(getSourceLanguage(), getDestinationLanguage());
+    }
+
+    public void updateSourceLanguage(String languageName) {
+        final String langSymbol = dataManager.getLangugeSymbolByName(languageName);
+        dataManager.setSourceLanguage(langSymbol);
+        view.setLanguagePair(languageName, getDestinationLanguage());
+    }
+
+    public void updateDestinationLanguage(String languageName) {
+        final String langSymbol = dataManager.getLangugeSymbolByName(languageName);
+        dataManager.setDestinationLanguage(langSymbol);
+        view.setLanguagePair(getSourceLanguage(), languageName);
+    }
+
+    public String getDestinationLanguage() {
+        return dataManager.getDestinationLanguage();
+    }
+
+
 }

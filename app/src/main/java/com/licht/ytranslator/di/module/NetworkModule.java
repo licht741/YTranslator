@@ -1,6 +1,6 @@
 package com.licht.ytranslator.di.module;
 
-import com.licht.ytranslator.data.YandexTranslateAPI;
+import com.licht.ytranslator.data.sources.YandexTranslateAPI;
 
 import javax.inject.Singleton;
 
