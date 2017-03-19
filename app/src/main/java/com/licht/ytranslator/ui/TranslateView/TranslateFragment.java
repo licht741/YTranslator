@@ -12,9 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,11 +21,11 @@ import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.presenters.TranslatePresenter;
 import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
+import com.licht.ytranslator.ui.MainActivity;
+import com.licht.ytranslator.ui.TranslateResultView.DictionaryFragment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -135,6 +133,12 @@ public class TranslateFragment extends Fragment implements ITranslateView {
         startActivityForResult(intent, 200);
     }
 
+    @OnClick(R.id.btn_open_dictionary)
+    public void onDictionaryOpen() {
+        Fragment dicFragment = DictionaryFragment.newInstance("привет", "ru-en");
+        ((MainActivity) getActivity()).setFragment(true, dicFragment);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -144,8 +148,7 @@ public class TranslateFragment extends Fragment implements ITranslateView {
 
         if (requestCode == 100) {
             presenter.updateSourceLanguage(resultLanguage);
-        }
-        else if (requestCode == 200) {
+        } else if (requestCode == 200) {
             presenter.updateDestinationLanguage(resultLanguage);
         }
     }

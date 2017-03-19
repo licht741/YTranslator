@@ -8,6 +8,7 @@ import com.licht.ytranslator.di.module.ApplicationModule;
 import com.licht.ytranslator.di.module.BusinessModule;
 import com.licht.ytranslator.di.module.NetworkModule;
 import com.licht.ytranslator.presenters.TranslatePresenter;
+import com.licht.ytranslator.ui.TranslateResultView.DictionaryFragment;
 import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
 
 import javax.inject.Singleton;
@@ -23,4 +24,5 @@ public interface AppComponent {
     void inject(LoadingScreenActivity activity);
     void inject(LoaderPresenter presenter);
     void inject(SelectLanguageActivity activity);
+    void inject(DictionaryFragment fragment);
 }
