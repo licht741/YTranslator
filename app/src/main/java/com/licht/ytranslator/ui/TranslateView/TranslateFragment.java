@@ -116,7 +116,7 @@ public class TranslateFragment extends Fragment implements ITranslateView {
 
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
-        Toast.makeText(getContext(), "It works!", Toast.LENGTH_LONG).show();
+        presenter.swapLanguages();
     }
 
     @OnClick(R.id.tv_selected_source_lang)

@@ -50,9 +50,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     public void translate(String text) {
         mCurrentWord = text;
         final String key = YTransApp.get().getString(R.string.key_translate);
-//        final String lang = String.format("%s-%s",
-//                dataManager.getSourceLanguageSymbol(), dataManager.getDestinationLanguageSymbol());
-//        final String lang = "en-ru";
 
         dataManager.requestTranslation(key, text, lang).enqueue(new Callback<Result>() {
             @Override
@@ -78,7 +75,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
                 dataManager.cacheDictionaryWord(w);
 
-                Log.e("f", "onResponse: ");
             }
 
             @Override
@@ -128,6 +124,14 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         return dataManager.getDestinationLanguage();
     }
 
+    public void swapLanguages() {
+        final String crntSourceLanguage = getSourceLanguage();
+        final String crntDestinationLanguage = getDestinationLanguage();
+
+        updateSourceLanguage(crntDestinationLanguage);
+        updateDestinationLanguage(crntSourceLanguage);
+        updateLanguagePair();
+    }
 
     private void updateLanguagePair() {
         lang = String.format("%s-%s",
