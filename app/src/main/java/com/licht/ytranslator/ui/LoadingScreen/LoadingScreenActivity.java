@@ -62,6 +62,7 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
     public void finishLoading() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     private void cacheData(JsonObject object) {

@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
+import com.licht.ytranslator.data.model.Dictionary;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.Result;
-import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.data.sources.AppPreferences;
@@ -253,10 +253,14 @@ public class DataManager {
     }
 
     public Word getCachedWord(String word, String dir) {
-        return cacheData.getCachedDictionary(word, dir);
+        return cacheData.getCachedWord(word, dir);
     }
 
-    public void cacheDictionaryWord(Word word) {
+    public Dictionary getCachedDictionary(long id) {
+        return cacheData.getCachedDictionary(id);
+    }
+
+    public synchronized void cacheDictionaryWord(Word word) {
         cacheData.cacheDictionary(word);
     }
 

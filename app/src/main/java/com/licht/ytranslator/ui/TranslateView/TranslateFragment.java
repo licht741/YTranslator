@@ -19,10 +19,10 @@ import android.widget.Toast;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
+import com.licht.ytranslator.data.model.Dictionary;
 import com.licht.ytranslator.presenters.TranslatePresenter;
+import com.licht.ytranslator.ui.DictionaryView.DictionaryActivity;
 import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
-import com.licht.ytranslator.ui.MainActivity;
-import com.licht.ytranslator.ui.TranslateResultView.DictionaryFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,12 +81,26 @@ public class TranslateFragment extends Fragment implements ITranslateView {
         return root;
     }
 
+    private String mCurrentWord;
+
     private void initUI(View root) {
         presenter.requestData();
         editTextSub = RxTextView.textChanges(inputText)
                 .filter(seq -> seq != null && seq.length() > 0)
-                .subscribe(charSequence -> presenter.translate(charSequence.toString()));
+                .subscribe(charSequence -> {
+                    mCurrentWord = charSequence.toString();
+                    presenter.translate(mCurrentWord);
+                });
 
+
+    }
+
+    @Override
+    public void openDictionary(String word, String direction) {
+        Intent intent = new Intent(getActivity(), DictionaryActivity.class);
+        intent.putExtra("WORD", word);
+        intent.putExtra("DIRECTION", direction);
+        getActivity().startActivity(intent);
     }
 
     @Override
@@ -135,13 +149,19 @@ public class TranslateFragment extends Fragment implements ITranslateView {
 
     @OnClick(R.id.btn_open_dictionary)
     public void onDictionaryOpen() {
-        Fragment dicFragment = DictionaryFragment.newInstance("привет", "ru-en");
-        ((MainActivity) getActivity()).setFragment(true, dicFragment);
+        presenter.dictionaryOper();
+//        Intent intent = new Intent(getActivity(), DictionaryActivity.class);
+//        intent.putExtra("Word", mCurrentWord);
+//
+//        getActivity().startActivityForResult(intent, 400);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 400)
+            return;
+
         if (data == null || data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE) == null)
             return;
         final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);

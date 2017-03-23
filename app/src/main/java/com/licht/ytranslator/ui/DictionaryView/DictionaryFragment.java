@@ -1,5 +1,4 @@
-package com.licht.ytranslator.ui.TranslateResultView;
-
+package com.licht.ytranslator.ui.DictionaryView;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
-import com.licht.ytranslator.data.model.Word;
+import com.licht.ytranslator.data.model.Dictionary;
 
 import javax.inject.Inject;
 
@@ -23,11 +22,10 @@ import butterknife.Unbinder;
 
 public class DictionaryFragment extends Fragment {
 
-    private static final String ARG_WORD = "WORD";
-    private static final String ARG_DIR = "DIRECTION";
+    private static final String DICTIONARY_ID = "DICTIONARY";
+    private long mDictionaryID;
 
-    private String mWord;
-    private String mDirection;
+    private Dictionary mDictionary;
 
     @Inject
     DataManager dataManager;
@@ -43,16 +41,20 @@ public class DictionaryFragment extends Fragment {
 
     private Unbinder unbinder;
 
+    @Inject
+    DataManager manager;
+
+
     public DictionaryFragment() {
         YTransApp.getAppComponent().inject(this);
     }
 
-    public static DictionaryFragment newInstance(String word, String dir) {
+    public static DictionaryFragment newInstance(long id) {
         DictionaryFragment fragment = new DictionaryFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_WORD, word);
-        args.putString(ARG_DIR, dir);
+        args.putLong(DICTIONARY_ID, id);
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -60,8 +62,7 @@ public class DictionaryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mWord = getArguments().getString(ARG_WORD);
-            mDirection = getArguments().getString(ARG_DIR);
+            mDictionaryID = getArguments().getLong(DICTIONARY_ID);
         }
     }
 
@@ -72,19 +73,14 @@ public class DictionaryFragment extends Fragment {
 
         unbinder = ButterKnife.bind(this, root);
 
-        Word w = dataManager.getCachedWord(mWord, mDirection);
-
-        dictionaryWord.setText(w.getWord());
-        dictionaryTranscription.setText(w.getDictionaries().get(0).getTrans());
-
-        int x = 0;
+        mDictionary = dataManager.getCachedDictionary(mDictionaryID);
 
         rvDictionary.setHasFixedSize(true);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         rvDictionary.setLayoutManager(mLayoutManager);
 
-        WordAdapter mAdapter = new WordAdapter(w);
+        WordAdapter mAdapter = new WordAdapter(dataManager.getCachedDictionary(mDictionaryID));
         rvDictionary.setAdapter(mAdapter);
 
         return root;

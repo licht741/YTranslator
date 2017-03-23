@@ -6,13 +6,14 @@ import com.google.gson.JsonObject;
 import com.licht.ytranslator.data.model.Dictionary;
 import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.Translate;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.licht.ytranslator.data.sources.UtilsPreferences;
 
 import io.realm.RealmList;
 
 public class DictionaryAnswerParser {
+
+    private static UtilsPreferences utilsPreferences = new UtilsPreferences();
+
     public static RealmList<Dictionary> parse(JsonObject obj) {
         JsonArray def = obj.getAsJsonArray("def");
 
@@ -21,13 +22,14 @@ public class DictionaryAnswerParser {
             JsonObject el = def.get(i).getAsJsonObject();
 
             final String text = el.get("text").getAsString();
-            final String transcription = el.get("ts") == null? "" : el.get("ts").getAsString(); //todo null
-
+            final String transcription = el.get("ts") == null ? "" : el.get("ts").getAsString(); //todo null
+            final String pos = el.get("pos").getAsString();
             //extract translates
             JsonArray tr = el.getAsJsonArray("tr");
             RealmList<Translate> translates = extractTranslating(tr);
 
-            dictionaries.add(new Dictionary(text, transcription, translates));
+            Dictionary d = new Dictionary(utilsPreferences.generateDictionaryNumber(), text, transcription, pos, translates);
+            dictionaries.add(d);
         }
 
         return dictionaries;
@@ -49,6 +51,9 @@ public class DictionaryAnswerParser {
 
             RealmList<StringWrapper> meanings = new RealmList<>();
 
+            final String text = el1.get("text").getAsString();
+            final String pos  = el1.get("pos").getAsString();
+
             JsonArray arr = el1.getAsJsonArray("mean");
             if (arr != null)
                 for (int k = 0; k < arr.size(); ++k) {
@@ -56,7 +61,7 @@ public class DictionaryAnswerParser {
                     meanings.add(new StringWrapper(s));
                 }
 
-            translates.add(new Translate(synList, meanings));
+            translates.add(new Translate(synList, meanings, text, pos));
         }
         return translates;
     }

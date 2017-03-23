@@ -3,6 +3,7 @@ package com.licht.ytranslator.di.module;
 import android.content.Context;
 
 import com.licht.ytranslator.YTransApp;
+import com.licht.ytranslator.data.sources.UtilsPreferences;
 
 import dagger.Module;
 import dagger.Provides;
@@ -24,5 +25,10 @@ public class ApplicationModule {
     @Provides
     Context provideContext() {
         return mApp;
+    }
+
+    @Provides
+    UtilsPreferences provideUtilsPreferences() {
+        return new UtilsPreferences();
     }
 }

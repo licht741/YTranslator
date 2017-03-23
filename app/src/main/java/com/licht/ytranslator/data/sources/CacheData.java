@@ -7,20 +7,26 @@ import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.model.Dictionary;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.SupportedTranslation;
-import com.licht.ytranslator.data.model.Translate;
 import com.licht.ytranslator.data.model.Word;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class CacheData {
 
+    @Inject
+    UtilsPreferences utilsPreferences;
+
     public CacheData() {
         super();
         Realm.init(YTransApp.get());
+
+        YTransApp.getAppComponent().inject(this);
 
         Stetho.initialize(
                 Stetho.newInitializerBuilder(YTransApp.get())
@@ -83,7 +89,7 @@ public class CacheData {
         return r;
     }
 
-    public Word getCachedDictionary(String word, String dir) {
+    public Word getCachedWord(String word, String dir) {
         final Realm realm = Realm.getDefaultInstance();
         Word w = realm.where(Word.class)
                 .equalTo("word", word)
@@ -93,17 +99,16 @@ public class CacheData {
         return w;
     }
 
-    public void cacheDictionary(Word word) {
+    public Dictionary getCachedDictionary(long id) {
+        final Realm realm = Realm.getDefaultInstance();
+        return realm.where(Dictionary.class)
+                .equalTo("id", id)
+                .findFirst();
+    }
+
+    public synchronized void cacheDictionary(Word word) {
         final Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        for (Dictionary dictionary: word.getDictionaries()) {
-            for (Translate translate: dictionary.getTranslates()) {
-                realm.copyToRealm(translate.getMeanings());
-                realm.copyToRealm(translate.getSynonimes());
-                realm.copyToRealm(translate);
-            }
-            realm.copyToRealm(dictionary);
-        }
         realm.copyToRealm(word);
         realm.commitTransaction();
     }

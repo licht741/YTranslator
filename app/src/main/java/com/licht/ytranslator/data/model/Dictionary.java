@@ -4,20 +4,34 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Dictionary extends RealmObject {
+    @PrimaryKey
+    private long id;
     private String text;
     private String trans;
+    private String type;
     private RealmList<Translate> translates;
 
     public Dictionary() {
         super();
     }
 
-    public Dictionary(String text, String trans, RealmList<Translate> translates) {
+    public Dictionary(long id, String text, String trans, String type, RealmList<Translate> translates) {
+        this.id = id;
         this.text = text;
         this.trans = trans;
+        this.type = type;
         this.translates = translates;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getText() {
@@ -36,7 +50,15 @@ public class Dictionary extends RealmObject {
         this.trans = trans;
     }
 
-    public List<Translate> getTranslates() {
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public RealmList<Translate> getTranslates() {
         return translates;
     }
 

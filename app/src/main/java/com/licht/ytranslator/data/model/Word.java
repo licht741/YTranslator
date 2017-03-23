@@ -1,7 +1,5 @@
 package com.licht.ytranslator.data.model;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -35,6 +33,7 @@ public class Word extends RealmObject {
     public void setDirection(String direction) {
         this.direction = direction;
     }
+
 
     public RealmList<Dictionary> getDictionaries() {
         return dictionaries;

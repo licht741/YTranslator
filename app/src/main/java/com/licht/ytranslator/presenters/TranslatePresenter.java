@@ -31,9 +31,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     public TranslatePresenter() {
         super();
         YTransApp.getAppComponent().inject(this);
-
-        Word w = dataManager.getCachedWord("Value", "en-ru");
-
     }
 
     @Override
@@ -47,10 +44,14 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
 
+    private String mCurrentWord;
+    private String lang;
+
     public void translate(String text) {
+        mCurrentWord = text;
         final String key = YTransApp.get().getString(R.string.key_translate);
-        final String lang = String.format("%s-%s",
-                dataManager.getSourceLanguageSymbol(), dataManager.getDestinationLanguageSymbol());
+//        final String lang = String.format("%s-%s",
+//                dataManager.getSourceLanguageSymbol(), dataManager.getDestinationLanguageSymbol());
 //        final String lang = "en-ru";
 
         dataManager.requestTranslation(key, text, lang).enqueue(new Callback<Result>() {
@@ -92,6 +93,10 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         return dataManager.getSourceLanguage();
     }
 
+    public void dictionaryOper() {
+        view.openDictionary(mCurrentWord, lang);
+    }
+
     public ArrayList<String> getSourceLanguages() {
         return dataManager.getSourceLanguageList();
     }
@@ -101,6 +106,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     public void requestData() {
+        updateLanguagePair();
         view.setLanguagePair(getSourceLanguage(), getDestinationLanguage());
     }
 
@@ -108,12 +114,14 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         final String langSymbol = dataManager.getLanguageSymbolByName(languageName);
         dataManager.setSourceLanguageSymbol(langSymbol);
         view.setLanguagePair(languageName, getDestinationLanguage());
+        updateLanguagePair();
     }
 
     public void updateDestinationLanguage(String languageName) {
         final String langSymbol = dataManager.getLanguageSymbolByName(languageName);
         dataManager.setDestinationLanguage(langSymbol);
         view.setLanguagePair(getSourceLanguage(), languageName);
+        updateLanguagePair();
     }
 
     public String getDestinationLanguage() {
@@ -121,4 +129,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
 
+    private void updateLanguagePair() {
+        lang = String.format("%s-%s",
+                dataManager.getSourceLanguageSymbol(), dataManager.getDestinationLanguageSymbol());
+    }
 }
