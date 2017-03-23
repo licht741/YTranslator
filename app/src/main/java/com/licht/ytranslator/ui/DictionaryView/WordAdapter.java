@@ -1,6 +1,5 @@
 package com.licht.ytranslator.ui.DictionaryView;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.Translate;
 
 public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
-    private Context context;
     private Dictionary dictionary;
 
     public WordAdapter(Dictionary dictionary) {
@@ -23,8 +21,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
     @Override
     public WordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context = parent.getContext();
-
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_word_in_dictionary, parent, false);
 
