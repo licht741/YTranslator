@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.data.model.Dictionary;
+import com.licht.ytranslator.data.model.Example;
 import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.Translate;
 
@@ -36,10 +37,22 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
         String meaning = getMeanings(position);
         String syn = getSynonimes(position);
+        String ex = getExamples(position);
 
-        holder.tvMeaning.setText(meaning);
-        holder.tvTranslating.setText(syn);
+        if (meaning.length() > 0)
+            holder.tvMeaning.setText(meaning);
+        else
+            holder.tvMeaning.setVisibility(View.GONE);
 
+        if (syn.length() > 0)
+            holder.tvTranslating.setText(syn);
+        else
+            holder.tvTranslating.setVisibility(View.GONE);
+
+        if (ex.length() > 0)
+            holder.tvExamples.setText(ex);
+        else
+            holder.tvExamples.setVisibility(View.GONE);
     }
 
     private String getMeanings(int position) {
@@ -58,14 +71,28 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         Translate translate = dictionary.getTranslates().get(position);
 
         final StringBuilder result = new StringBuilder();
-        result.append(translate.getText()).append(",");
+        result.append(translate.getText()).append(", ");
         for (StringWrapper stringWrapper : translate.getSynonimes())
-            result.append(stringWrapper.getContent() + ",");
+            result.append(stringWrapper.getContent() + ", ");
 
-        if (result.length() > 0)
-            result.deleteCharAt(result.length() - 1);
+        if (result.length() > 1)
+            result.delete(result.length() - 2, result.length());
 
         return result.toString();
+    }
+
+    private String getExamples(int position) {
+        final Translate translate = dictionary.getTranslates().get(position);
+
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (Example example : translate.getExamples()) {
+            stringBuilder.append(example.getPhrase().getContent()).append("\u2014");
+            for (StringWrapper s : example.getTranslates())
+                stringBuilder.append(s.getContent()).append(";");
+            stringBuilder.append("\n");
+        }
+
+        return stringBuilder.toString();
     }
 
     @Override
@@ -77,6 +104,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         TextView tvCardNumber;
         TextView tvTranslating;
         TextView tvMeaning;
+        TextView tvExamples;
 
         WordViewHolder(View itemView) {
             super(itemView);
@@ -84,6 +112,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
             tvCardNumber = (TextView) itemView.findViewById(R.id.item_word_num);
             tvTranslating = (TextView) itemView.findViewById(R.id.tv_dictionary_translating);
             tvMeaning = (TextView) itemView.findViewById(R.id.tv_dictionary_meaning);
+            tvExamples = (TextView) itemView.findViewById(R.id.tv_dictionary_examples);
         }
 
     }

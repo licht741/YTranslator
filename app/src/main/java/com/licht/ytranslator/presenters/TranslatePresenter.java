@@ -43,7 +43,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         view = null;
     }
 
-
     private String mCurrentWord;
     private String lang;
 
@@ -60,7 +59,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-                // todo
             }
         });
 

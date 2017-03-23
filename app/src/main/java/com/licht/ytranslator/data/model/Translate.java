@@ -8,6 +8,7 @@ import io.realm.RealmObject;
 public class Translate extends RealmObject {
     private RealmList<StringWrapper> synonimes;
     private RealmList<StringWrapper> meanings;
+    private RealmList<Example> examples;
     private String text;
     private String pos;
 
@@ -15,9 +16,14 @@ public class Translate extends RealmObject {
         super();
     }
 
-    public Translate(RealmList<StringWrapper> synonimes, RealmList<StringWrapper> meanings, String text, String pos) {
+    public Translate(RealmList<StringWrapper> synonimes,
+                     RealmList<StringWrapper> meanings,
+                     RealmList<Example> examples,
+                     String text,
+                     String pos) {
         this.synonimes = synonimes;
         this.meanings = meanings;
+        this.examples = examples;
         this.text = text;
         this.pos = pos;
     }
@@ -36,6 +42,14 @@ public class Translate extends RealmObject {
 
     public void setMeanings(RealmList<StringWrapper> meanings) {
         this.meanings = meanings;
+    }
+
+    public RealmList<Example> getExamples() {
+        return examples;
+    }
+
+    public void setExamples(RealmList<Example> examples) {
+        this.examples = examples;
     }
 
     public String getText() {

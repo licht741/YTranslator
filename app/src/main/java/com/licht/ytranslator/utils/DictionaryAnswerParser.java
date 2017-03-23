@@ -4,9 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.licht.ytranslator.data.model.Dictionary;
+import com.licht.ytranslator.data.model.Example;
 import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.Translate;
 import com.licht.ytranslator.data.sources.UtilsPreferences;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.RealmList;
 
@@ -52,7 +56,30 @@ public class DictionaryAnswerParser {
             RealmList<StringWrapper> meanings = new RealmList<>();
 
             final String text = el1.get("text").getAsString();
-            final String pos  = el1.get("pos").getAsString();
+            final String pos = el1.get("pos").getAsString();
+
+            JsonArray ex = el1.getAsJsonArray("ex");
+
+            final RealmList<Example> examples = new RealmList<>();
+
+            if (ex != null) {
+                for (int k = 0; k < ex.size(); ++k) {
+                    final JsonObject obj = ex.get(k).getAsJsonObject();
+                    final String t = obj.get("text").getAsString();
+                    final JsonArray tr1 = obj.getAsJsonArray("tr");
+
+                    final RealmList<StringWrapper> translates1 = new RealmList<>();
+                    for (int k1 = 0; k1 < tr1.size(); ++k1)
+                        translates1.add(new StringWrapper(tr1.get(k1).getAsJsonObject().get("text").getAsString()));
+                    examples.add(new Example(new StringWrapper(t), translates1));
+
+                }
+
+            }
+
+            if (ex != null) {
+                int x = 0;
+            }
 
             JsonArray arr = el1.getAsJsonArray("mean");
             if (arr != null)
@@ -61,7 +88,8 @@ public class DictionaryAnswerParser {
                     meanings.add(new StringWrapper(s));
                 }
 
-            translates.add(new Translate(synList, meanings, text, pos));
+
+            translates.add(new Translate(synList, meanings, examples, text, pos));
         }
         return translates;
     }

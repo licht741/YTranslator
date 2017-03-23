@@ -75,6 +75,9 @@ public class DictionaryFragment extends Fragment {
 
         mDictionary = dataManager.getCachedDictionary(mDictionaryID);
 
+        dictionaryWord.setText(mDictionary.getText());
+        dictionaryTranscription.setText(String.format("[%s]", mDictionary.getTrans()));
+
         rvDictionary.setHasFixedSize(true);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
