@@ -10,6 +10,8 @@ import com.licht.ytranslator.presenters.LoaderPresenter;
 import com.licht.ytranslator.presenters.TranslatePresenter;
 import com.licht.ytranslator.ui.DictionaryView.DictionaryActivity;
 import com.licht.ytranslator.ui.DictionaryView.DictionaryFragment;
+import com.licht.ytranslator.ui.HistoryView.HistoryListFragment;
+import com.licht.ytranslator.ui.HistoryView.StarredListFragment;
 import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
 import com.licht.ytranslator.ui.LoadingScreen.LoadingScreenActivity;
 import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
@@ -40,4 +42,8 @@ public interface AppComponent {
     void inject(DictionaryActivity activity);
 
     void inject(HistoryPresenter presenter);
+
+    void inject(HistoryListFragment fragment);
+
+    void inject(StarredListFragment fragment);
 }

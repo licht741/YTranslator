@@ -16,6 +16,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.licht.ytranslator.R;
+import com.licht.ytranslator.ui.HistoryView.HistoryFragment;
 import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
 
 public class MainActivity extends AppCompatActivity
@@ -26,17 +27,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-//        final View activityRootView = findViewById(R.id.drawer_layout);
-//        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-//            int heightDiff = activityRootView.getRootView().getHeight() - activityRootView.getHeight();
-//
-//            if (heightDiff > 100) {
-//                Toast.makeText(getApplicationContext(), "true", Toast.LENGTH_SHORT).show();
-//            } else {
-//                Toast.makeText(getApplicationContext(), "false", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -78,6 +68,9 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_translate)
             setFragment(false, new TranslateFragment());
+        else if (id == R.id.nav_history) {
+            setFragment(false, new HistoryFragment());
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

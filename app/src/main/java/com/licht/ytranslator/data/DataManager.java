@@ -151,6 +151,9 @@ public class DataManager {
     public List<HistoryItem> getHistoryWords() {
         return cacheData.getHistoryWords();
     }
+    public List<HistoryItem> getStarredWords() {
+        return cacheData.getFavoritesWords();
+    }
 
     /**
      * Возвращает символьный код языка, которому соответствует указанное имя языка
