@@ -12,17 +12,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.model.Dictionary;
 import com.licht.ytranslator.presenters.TranslatePresenter;
 import com.licht.ytranslator.ui.DictionaryView.DictionaryActivity;
 import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
+import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditText;
+import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditTextListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,14 +35,14 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Subscription;
 
-public class TranslateFragment extends Fragment implements ITranslateView {
+public class TranslateFragment extends Fragment implements ITranslateView, ExtendedEditTextListener {
     @Inject
     TranslatePresenter presenter;
 
     private Unbinder unbinder;
 
     @BindView(R.id.edit_input_text)
-    EditText inputText;
+    ExtendedEditText inputText;
 
     @BindView(R.id.tv_translated_text)
     TextView tvTranslatedText;
@@ -68,6 +68,7 @@ public class TranslateFragment extends Fragment implements ITranslateView {
         presenter.bindView(this);
         unbinder = ButterKnife.bind(this, root);
 
+
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -77,13 +78,13 @@ public class TranslateFragment extends Fragment implements ITranslateView {
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        initUI(root);
+        initUI();
         return root;
     }
 
     private String mCurrentWord;
 
-    private void initUI(View root) {
+    private void initUI() {
         presenter.requestData();
         editTextSub = RxTextView.textChanges(inputText)
                 .filter(seq -> seq != null && seq.length() > 0)
@@ -92,7 +93,13 @@ public class TranslateFragment extends Fragment implements ITranslateView {
                     presenter.translate(mCurrentWord);
                 });
 
+        inputText.setOnEditTextImeBackListener(this);
 
+    }
+
+    @Override
+    public void onImeBack(ExtendedEditText ctrl, String text) {
+        presenter.onKeyboardHide();
     }
 
     @Override
@@ -147,13 +154,14 @@ public class TranslateFragment extends Fragment implements ITranslateView {
         startActivityForResult(intent, 200);
     }
 
+    @OnClick(R.id.iv_star_phrase)
+    void onStarButtonClick() {
+        presenter.onWordStarred();
+    }
+
     @OnClick(R.id.btn_open_dictionary)
     public void onDictionaryOpen() {
         presenter.dictionaryOper();
-//        Intent intent = new Intent(getActivity(), DictionaryActivity.class);
-//        intent.putExtra("Word", mCurrentWord);
-//
-//        getActivity().startActivityForResult(intent, 400);
     }
 
     @Override

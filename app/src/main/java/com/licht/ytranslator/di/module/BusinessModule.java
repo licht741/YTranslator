@@ -3,6 +3,7 @@ package com.licht.ytranslator.di.module;
 import com.licht.ytranslator.data.sources.AppPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.data.DataManager;
+import com.licht.ytranslator.presenters.HistoryPresenter;
 import com.licht.ytranslator.presenters.LoaderPresenter;
 import com.licht.ytranslator.presenters.TranslatePresenter;
 
@@ -43,6 +44,12 @@ public class BusinessModule {
     @Singleton
     LoaderPresenter provideLoaderPresenter() {
         return new LoaderPresenter();
+    }
+
+    @Provides
+    @Singleton
+    HistoryPresenter provideHistoryPresenter() {
+        return new HistoryPresenter();
     }
 
 }

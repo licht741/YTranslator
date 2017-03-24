@@ -1,10 +1,13 @@
 package com.licht.ytranslator.data;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
 import com.licht.ytranslator.data.model.Dictionary;
+import com.licht.ytranslator.data.model.HistoryItem;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.SupportedTranslation;
@@ -134,6 +137,19 @@ public class DataManager {
      */
     private String getLanguageName(String languageSymbol) {
         return cacheData.getTransMeaning(mLocalSymbol, languageSymbol);
+    }
+
+    public void addWordToHistory(HistoryItem item) {
+        cacheData.addWordToHistory(item);
+    }
+
+    @Nullable
+    public HistoryItem getHistoryWord(String word, String direction) {
+        return cacheData.getWordFromHistory(word, direction);
+    }
+
+    public List<HistoryItem> getHistoryWords() {
+        return cacheData.getHistoryWords();
     }
 
     /**

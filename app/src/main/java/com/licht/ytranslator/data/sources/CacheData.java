@@ -5,6 +5,7 @@ import android.util.Log;
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.model.Dictionary;
+import com.licht.ytranslator.data.model.HistoryItem;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
@@ -85,18 +86,15 @@ public class CacheData {
             Log.e("CacheData", "getTransMeaning: localSymbol: " + localSymbol + " transSymbol: " + transSymbol);
         }
 
-        String r = l.getLanguageTitle();
-        return r;
+        return l.getLanguageTitle();
     }
 
     public Word getCachedWord(String word, String dir) {
         final Realm realm = Realm.getDefaultInstance();
-        Word w = realm.where(Word.class)
+        return realm.where(Word.class)
                 .equalTo("word", word)
                 .equalTo("direction", dir)
                 .findFirst();
-
-        return w;
     }
 
     public Dictionary getCachedDictionary(long id) {
@@ -106,11 +104,47 @@ public class CacheData {
                 .findFirst();
     }
 
-    public synchronized void cacheDictionary(Word word) {
+    public void cacheDictionary(Word word) {
         final Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.copyToRealm(word);
         realm.commitTransaction();
     }
+
+    public void addWordToHistory(HistoryItem item) {
+        final Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(r -> {
+            RealmResults<HistoryItem> it = r.where(HistoryItem.class)
+                    .equalTo("word", item.getWord()).equalTo("direction", item.getDirection()).findAll();
+            if (it.size() > 0) {
+                HistoryItem historyItem = it.first();
+                historyItem.setFavorites(item.isFavorites());
+            }
+            else
+                r.copyToRealm(item);
+        });
+    }
+
+    public HistoryItem getWordFromHistory(String word, String direction) {
+        final Realm realm = Realm.getDefaultInstance();
+        return realm.where(HistoryItem.class)
+                .equalTo("word", word)
+                .equalTo("direction", direction)
+                .findFirst();
+    }
+
+    public List<HistoryItem> getHistoryWords() {
+        final Realm realm = Realm.getDefaultInstance();
+        return realm.where(HistoryItem.class)
+                .findAll();
+    }
+
+    public List<HistoryItem> getFavoritesWords() {
+        final Realm realm = Realm.getDefaultInstance();
+        return realm.where(HistoryItem.class)
+                .equalTo("isFavorites", true)
+                .findAll();
+    }
+
 
 }

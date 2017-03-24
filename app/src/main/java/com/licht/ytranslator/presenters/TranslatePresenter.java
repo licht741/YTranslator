@@ -7,6 +7,7 @@ import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.Dictionary;
+import com.licht.ytranslator.data.model.HistoryItem;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
@@ -45,16 +46,19 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
     private String mCurrentWord;
     private String lang;
+    private String translate;
 
     public void translate(String text) {
         mCurrentWord = text;
+        translate = "";
         final String key = YTransApp.get().getString(R.string.key_translate);
 
         dataManager.requestTranslation(key, text, lang).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
-                Log.e("TranslatePresenter", "onResponse: " + response.body().text);
-                view.setTranslatedText(response.body().text.get(0));
+                translate = response.body().text.get(0);
+                view.setTranslatedText(translate);
+
             }
 
             @Override
@@ -80,6 +84,15 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
             }
         });
+
+    }
+
+    private void addWordToHistory(){
+        dataManager.addWordToHistory(new HistoryItem(mCurrentWord, translate, lang, false));
+    }
+
+    public void onWordStarred() {
+        dataManager.addWordToHistory(new HistoryItem(mCurrentWord, translate, lang, true));
 
     }
 
@@ -129,6 +142,10 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         updateSourceLanguage(crntDestinationLanguage);
         updateDestinationLanguage(crntSourceLanguage);
         updateLanguagePair();
+    }
+
+    public void onKeyboardHide() {
+        addWordToHistory();
     }
 
     private void updateLanguagePair() {
