@@ -44,6 +44,7 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
 
         presenter.bindView(this);
         presenter.requestData();
+        presenter.checkCache();
     }
 
     @Override

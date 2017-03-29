@@ -307,4 +307,11 @@ public class DataManager {
             mTranslateTypes = cacheData.getTranslateTypes();
     }
 
+    public int getCacheSize() {
+        return cacheData.getCacheSize();
+    }
+
+    public void clearCache() {
+        cacheData.clearCache();
+    }
 }

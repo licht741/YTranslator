@@ -2,11 +2,11 @@ package com.licht.ytranslator.data.sources;
 
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.model.WordObject;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
+import com.licht.ytranslator.data.model.WordObject;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 public class CacheData {
@@ -110,12 +111,14 @@ public class CacheData {
         final Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(r -> {
             RealmResults<HistoryObject> it = r.where(HistoryObject.class)
-                    .equalTo("word", item.getWord()).equalTo("direction", item.getDirection()).findAll();
+                    .equalTo("word", item.getWord())
+                    .equalTo("direction", item.getDirection())
+                    .findAll();
+
             if (it.size() > 0) {
                 HistoryObject historyObject = it.first();
                 historyObject.setFavorites(item.isFavorites());
-            }
-            else
+            } else
                 r.copyToRealm(item);
         });
     }
@@ -150,5 +153,12 @@ public class CacheData {
                 .findAll();
     }
 
+    public int getCacheSize() {
+        final Realm realm = Realm.getDefaultInstance();
+        return realm.where(Word.class).findAll().size();
+    }
 
+    public void clearCache() {
+        // todo realize cache clearing
+    }
 }

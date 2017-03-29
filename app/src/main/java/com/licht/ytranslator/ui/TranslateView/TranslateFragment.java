@@ -1,8 +1,10 @@
 package com.licht.ytranslator.ui.TranslateView;
 
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -18,14 +20,17 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
+import com.licht.ytranslator.data.sources.UtilsPreferences;
 import com.licht.ytranslator.presenters.TranslatePresenter;
 import com.licht.ytranslator.ui.DictionaryView.DictionaryActivity;
 import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
 import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditText;
 import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditTextListener;
+import com.licht.ytranslator.utils.LocalizationUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -34,6 +39,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Subscription;
+
+import static com.licht.ytranslator.utils.LocalizationUtils.ENG_LOCALIZATION;
 
 public class TranslateFragment extends Fragment implements ITranslateView, ExtendedEditTextListener {
     @Inject
@@ -59,6 +66,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     ImageView ivIsStarred;
 
     Subscription editTextSub;
+
+    private String mCurrentWord;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,13 +96,31 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         return root;
     }
 
-    private String mCurrentWord;
+    private static final int REQ_CODE_SPEECH_INPUT = 100;
+
+    private void startAudio() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+
+        presenter.getSourceLanguage()
+        final Locale locale = new Locale(LocalizationUtils.getCurrentLocalizationSymbol());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+
+        }
+    }
 
     private void initUI(View root) {
         presenter.requestData();
 
         ivIsStarred = (ImageView)root.findViewById(R.id.iv_is_starred);
         ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
+
+        ImageView microphone = (ImageView)root.findViewById(R.id.iv_microphone);
+        microphone.setOnClickListener(v -> startAudio());
 
         editTextSub = RxTextView.textChanges(inputText)
                 .filter(seq -> seq != null)
@@ -147,11 +174,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
             ivIsStarred.setImageResource(R.drawable.ic_bookmark);
     }
 
-//    @OnClick(R.id.iv_is_starred)
-//    public void onStarredClick() {
-//        presenter.onStarredClick();
-//    }
-
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
         presenter.onSwapLanguages();
@@ -202,16 +224,18 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         }
     }
 
-//    @OnClick(R.id.tv_translated_text)
-//    public void onTranslatedTextClick() {
-//        presenter.onOpenDictionaryClick();
-//    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 400)
             return;
+
+        if (requestCode == REQ_CODE_SPEECH_INPUT) {
+            ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            setInputText(result.get(0));
+            presenter.onTextInput(result.get(0));
+            return;
+        }
 
         if (data == null || data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE) == null)
             return;
@@ -222,6 +246,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         } else if (requestCode == 200) {
             presenter.updateDestinationLanguage(resultLanguage);
         }
+
     }
 
     @Override
