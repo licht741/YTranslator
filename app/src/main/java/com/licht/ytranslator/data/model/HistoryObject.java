@@ -2,17 +2,20 @@ package com.licht.ytranslator.data.model;
 
 import io.realm.RealmObject;
 
-public class HistoryItem extends RealmObject {
+public class HistoryObject extends RealmObject {
     private String word;
     private String translate;
     private String direction;
     private boolean isFavorites;
 
-    public HistoryItem() {
+    public HistoryObject() {
         super();
     }
 
-    public HistoryItem(String word, String translate, String direction, boolean isFavorites) {
+    public HistoryObject(String word,
+                         String translate,
+                         String direction,
+                         boolean isFavorites) {
         this.word = word;
         this.translate = translate;
         this.direction = direction;

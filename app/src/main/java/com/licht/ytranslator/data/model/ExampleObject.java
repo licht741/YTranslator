@@ -5,15 +5,15 @@ import java.util.List;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
-public class Example extends RealmObject {
+public class ExampleObject extends RealmObject {
     private StringWrapper phrase;
     private RealmList<StringWrapper> translates;
 
-    public Example() {
+    public ExampleObject() {
         super();
     }
 
-    public Example(StringWrapper phrase, RealmList<StringWrapper> translates) {
+    public ExampleObject(StringWrapper phrase, RealmList<StringWrapper> translates) {
         this.phrase = phrase;
         this.translates = translates;
     }

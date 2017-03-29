@@ -1,13 +1,11 @@
 package com.licht.ytranslator.data;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
-import com.licht.ytranslator.data.model.Dictionary;
-import com.licht.ytranslator.data.model.HistoryItem;
+import com.licht.ytranslator.data.model.WordObject;
+import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.SupportedTranslation;
@@ -52,8 +50,9 @@ public class DataManager {
         YTransApp.getAppComponent().inject(this);
 
         mLocalSymbol = LocalizationUtils.getCurrentLocalizationSymbol();
-        mLocalizations = cacheData.getLanguageList(mLocalSymbol);
-        mTranslateTypes = cacheData.getTranslateTypes();
+
+        checkCachedLocalizations();
+        checkTranslateTypes();
     }
 
     /*
@@ -139,21 +138,9 @@ public class DataManager {
         return cacheData.getTransMeaning(mLocalSymbol, languageSymbol);
     }
 
-    public void addWordToHistory(HistoryItem item) {
-        cacheData.addWordToHistory(item);
-    }
-
-    @Nullable
-    public HistoryItem getHistoryWord(String word, String direction) {
-        return cacheData.getWordFromHistory(word, direction);
-    }
-
-    public List<HistoryItem> getHistoryWords() {
-        return cacheData.getHistoryWords();
-    }
-    public List<HistoryItem> getStarredWords() {
-        return cacheData.getFavoritesWords();
-    }
+    /*
+     * Обращения к БД
+     */
 
     /**
      * Возвращает символьный код языка, которому соответствует указанное имя языка
@@ -162,11 +149,24 @@ public class DataManager {
      * @return Символьный код языка
      */
     public String getLanguageSymbolByName(String languageName) {
+        checkCachedLocalizations();
         for (Localization localization : mLocalizations)
             if (localization.getLanguageTitle().equals(languageName))
                 return localization.getLanguageSymbol();
 
         return "";
+    }
+
+    public void addWordToHistory(HistoryObject item) {
+        cacheData.addWordToHistory(item);
+    }
+
+    public List<HistoryObject> getHistoryWords() {
+        return cacheData.getHistoryWords();
+    }
+
+    public List<HistoryObject> getStarredWords() {
+        return cacheData.getFavoritesWords();
     }
 
     /*
@@ -216,7 +216,29 @@ public class DataManager {
     public void cacheLanguageData(List<SupportedTranslation> supportedTranslations,
                                   List<Localization> localizations) {
         cacheData.saveTranslateType(supportedTranslations);
+        mTranslateTypes = null;
+
         cacheData.saveLocalization(localizations);
+        mLocalizations = null;
+    }
+
+    /**
+     * Возвращает закэшированную информацию о слове, полученную из Яндекс Словаря
+     *
+     * @param word Запрашиваемое слово
+     * @param dir Направление перевод
+     * @return Объект, содержащий информацию о слове
+     */
+    public Word getCachedWord(String word, String dir) {
+        return cacheData.getCachedWord(word, dir);
+    }
+
+    public WordObject getCachedDictionary(long id) {
+        return cacheData.getCachedDictionary(id);
+    }
+
+    public synchronized void cacheDictionaryWord(Word word) {
+        cacheData.cacheDictionary(word);
     }
 
     /*
@@ -243,7 +265,7 @@ public class DataManager {
      * @return Список языков, с которых можно осуществлять перевод
      */
     public ArrayList<String> getSourceLanguageList() {
-
+        checkCachedLocalizations();
         final ArrayList<String> list = new ArrayList<>();
         for (Localization localization : mLocalizations)
             list.add(localization.getLanguageTitle());
@@ -271,16 +293,14 @@ public class DataManager {
         return result;
     }
 
-    public Word getCachedWord(String word, String dir) {
-        return cacheData.getCachedWord(word, dir);
+    private void checkCachedLocalizations() {
+        if (mLocalizations == null)
+            mLocalizations = cacheData.getLanguageList(mLocalSymbol);
     }
 
-    public Dictionary getCachedDictionary(long id) {
-        return cacheData.getCachedDictionary(id);
-    }
-
-    public synchronized void cacheDictionaryWord(Word word) {
-        cacheData.cacheDictionary(word);
+    private void checkTranslateTypes() {
+        if (mTranslateTypes == null)
+            mTranslateTypes = cacheData.getTranslateTypes();
     }
 
 }

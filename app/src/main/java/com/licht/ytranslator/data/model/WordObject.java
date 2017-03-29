@@ -1,29 +1,31 @@
 package com.licht.ytranslator.data.model;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Dictionary extends RealmObject {
+public class WordObject extends RealmObject {
     @PrimaryKey
     private long id;
     private String text;
     private String trans;
     private String type;
-    private RealmList<Translate> translates;
+    private RealmList<WordMeaningObject> wordMeaningObjects;
 
-    public Dictionary() {
+    public WordObject() {
         super();
     }
 
-    public Dictionary(long id, String text, String trans, String type, RealmList<Translate> translates) {
+    public WordObject(long id,
+                      String text,
+                      String trans,
+                      String type,
+                      RealmList<WordMeaningObject> wordMeaningObjects) {
         this.id = id;
         this.text = text;
         this.trans = trans;
         this.type = type;
-        this.translates = translates;
+        this.wordMeaningObjects = wordMeaningObjects;
     }
 
     public long getId() {
@@ -58,11 +60,11 @@ public class Dictionary extends RealmObject {
         this.type = type;
     }
 
-    public RealmList<Translate> getTranslates() {
-        return translates;
+    public RealmList<WordMeaningObject> getWordMeaningObjects() {
+        return wordMeaningObjects;
     }
 
-    public void setTranslates(RealmList<Translate> translates) {
-        this.translates = translates;
+    public void setWordMeaningObjects(RealmList<WordMeaningObject> wordMeaningObjects) {
+        this.wordMeaningObjects = wordMeaningObjects;
     }
 }

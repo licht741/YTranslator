@@ -8,20 +8,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.licht.ytranslator.R;
-import com.licht.ytranslator.data.model.HistoryItem;
+import com.licht.ytranslator.data.model.HistoryObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder> {
 
-    private final List<HistoryItem> items = new ArrayList<>();
+    private final List<HistoryObject> items = new ArrayList<>();
 
     public HistoryAdapter() {
         super();
     }
 
-    public void setData(List<HistoryItem> items) {
+    public void setData(List<HistoryObject> items) {
         this.items.clear();
         this.items.addAll(items);
         notifyDataSetChanged();
@@ -35,7 +35,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordView
 
     @Override
     public void onBindViewHolder(WordViewHolder holder, int position) {
-        final HistoryItem item = items.get(position);
+        final HistoryObject item = items.get(position);
 
         holder.tvPhrase.setText(item.getWord());
         holder.tvTrans.setText(item.getTranslate());

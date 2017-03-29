@@ -1,5 +1,7 @@
 package com.licht.ytranslator.presenters;
 
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -40,7 +42,7 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
     public void requestData() {
         final String localConst = LocalizationUtils.getCurrentLocalizationSymbol();
         final boolean isDataCached = dataManager.isDataForLocalizationCached(localConst);
-
+        Log.e(TAG, "requestData: ", );
         if (isDataCached)
             view.finishLoading();
         else {
@@ -55,7 +57,7 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                    t.printStackTrace();
                 }
             });
         }

@@ -1,9 +1,9 @@
 package com.licht.ytranslator.ui.HistoryView;
 
-import com.licht.ytranslator.data.model.HistoryItem;
+import com.licht.ytranslator.data.model.HistoryObject;
 
 import java.util.List;
 
 public interface IHistoryView {
-    void setData(List<HistoryItem> items);
+    void setData(List<HistoryObject> items);
 }

@@ -1,11 +1,9 @@
 package com.licht.ytranslator.data.sources;
 
-import android.util.Log;
-
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.model.Dictionary;
-import com.licht.ytranslator.data.model.HistoryItem;
+import com.licht.ytranslator.data.model.WordObject;
+import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
@@ -82,9 +80,6 @@ public class CacheData {
                 .equalTo("locale", localSymbol)
                 .equalTo("languageSymbol", transSymbol)
                 .findFirst();
-        if (l == null) {
-            Log.e("CacheData", "getTransMeaning: localSymbol: " + localSymbol + " transSymbol: " + transSymbol);
-        }
 
         return l.getLanguageTitle();
     }
@@ -97,9 +92,9 @@ public class CacheData {
                 .findFirst();
     }
 
-    public Dictionary getCachedDictionary(long id) {
+    public WordObject getCachedDictionary(long id) {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(Dictionary.class)
+        return realm.where(WordObject.class)
                 .equalTo("id", id)
                 .findFirst();
     }
@@ -111,37 +106,37 @@ public class CacheData {
         realm.commitTransaction();
     }
 
-    public void addWordToHistory(HistoryItem item) {
+    public void addWordToHistory(HistoryObject item) {
         final Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(r -> {
-            RealmResults<HistoryItem> it = r.where(HistoryItem.class)
+            RealmResults<HistoryObject> it = r.where(HistoryObject.class)
                     .equalTo("word", item.getWord()).equalTo("direction", item.getDirection()).findAll();
             if (it.size() > 0) {
-                HistoryItem historyItem = it.first();
-                historyItem.setFavorites(item.isFavorites());
+                HistoryObject historyObject = it.first();
+                historyObject.setFavorites(item.isFavorites());
             }
             else
                 r.copyToRealm(item);
         });
     }
 
-    public HistoryItem getWordFromHistory(String word, String direction) {
+    public HistoryObject getWordFromHistory(String word, String direction) {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(HistoryItem.class)
+        return realm.where(HistoryObject.class)
                 .equalTo("word", word)
                 .equalTo("direction", direction)
                 .findFirst();
     }
 
-    public List<HistoryItem> getHistoryWords() {
+    public List<HistoryObject> getHistoryWords() {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(HistoryItem.class)
+        return realm.where(HistoryObject.class)
                 .findAll();
     }
 
-    public List<HistoryItem> getFavoritesWords() {
+    public List<HistoryObject> getFavoritesWords() {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(HistoryItem.class)
+        return realm.where(HistoryObject.class)
                 .equalTo("isFavorites", true)
                 .findAll();
     }

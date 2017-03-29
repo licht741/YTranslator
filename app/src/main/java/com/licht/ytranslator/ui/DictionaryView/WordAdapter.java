@@ -7,16 +7,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.licht.ytranslator.R;
-import com.licht.ytranslator.data.model.Dictionary;
-import com.licht.ytranslator.data.model.Example;
+import com.licht.ytranslator.data.model.WordObject;
+import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.StringWrapper;
-import com.licht.ytranslator.data.model.Translate;
+import com.licht.ytranslator.data.model.WordMeaningObject;
 
 public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
-    private Dictionary dictionary;
+    private WordObject wordObject;
 
-    public WordAdapter(Dictionary dictionary) {
-        this.dictionary = dictionary;
+    public WordAdapter(WordObject wordObject) {
+        this.wordObject = wordObject;
     }
 
     @Override
@@ -52,10 +52,10 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     }
 
     private String getMeanings(int position) {
-        Translate translate = dictionary.getTranslates().get(position);
+        WordMeaningObject wordMeaningObject = wordObject.getWordMeaningObjects().get(position);
 
         StringBuilder result = new StringBuilder();
-        for (StringWrapper stringWrapper : translate.getMeanings())
+        for (StringWrapper stringWrapper : wordMeaningObject.getMeanings())
             result.append(stringWrapper.getContent() + ",");
         if (result.length() > 0)
             result.deleteCharAt(result.length() - 1);
@@ -64,11 +64,11 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     }
 
     private String getSynonimes(int position) {
-        Translate translate = dictionary.getTranslates().get(position);
+        WordMeaningObject wordMeaningObject = wordObject.getWordMeaningObjects().get(position);
 
         final StringBuilder result = new StringBuilder();
-        result.append(translate.getText()).append(", ");
-        for (StringWrapper stringWrapper : translate.getSynonimes())
+        result.append(wordMeaningObject.getText()).append(", ");
+        for (StringWrapper stringWrapper : wordMeaningObject.getSynonimes())
             result.append(stringWrapper.getContent() + ", ");
 
         if (result.length() > 1)
@@ -78,12 +78,12 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     }
 
     private String getExamples(int position) {
-        final Translate translate = dictionary.getTranslates().get(position);
+        final WordMeaningObject wordMeaningObject = wordObject.getWordMeaningObjects().get(position);
 
         final StringBuilder stringBuilder = new StringBuilder();
-        for (Example example : translate.getExamples()) {
-            stringBuilder.append(example.getPhrase().getContent()).append("\u2014");
-            for (StringWrapper s : example.getTranslates())
+        for (ExampleObject exampleObject : wordMeaningObject.getExampleObjects()) {
+            stringBuilder.append(exampleObject.getPhrase().getContent()).append("\u2014");
+            for (StringWrapper s : exampleObject.getTranslates())
                 stringBuilder.append(s.getContent()).append(";");
             stringBuilder.append("\n");
         }
@@ -93,7 +93,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
     @Override
     public int getItemCount() {
-        return dictionary.getTranslates().size();
+        return wordObject.getWordMeaningObjects().size();
     }
 
     class WordViewHolder extends RecyclerView.ViewHolder {

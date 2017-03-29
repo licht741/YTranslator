@@ -5,6 +5,11 @@ import android.content.SharedPreferences;
 
 import com.licht.ytranslator.YTransApp;
 
+import javax.inject.Inject;
+
+/**
+ *
+ */
 public class AppPreferences {
     private static final String PREF_NAME = "pref_name";
 
@@ -16,7 +21,7 @@ public class AppPreferences {
 
     public AppPreferences() {
         super();
-        mSharedPreferences = YTransApp.get().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        mSharedPreferences = (YTransApp.get()).getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
     public Boolean getDataCached(String lang) {
@@ -36,7 +41,6 @@ public class AppPreferences {
     public void putSourceLanguage(String lang) {
         mSharedPreferences.edit().putString(PREF_SOURCE_LANG, lang).apply();
     }
-
 
     public String getDestinationLanguage() {
         return mSharedPreferences.getString(PREF_DESTINATION_LANG, "");

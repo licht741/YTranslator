@@ -3,16 +3,19 @@ package com.licht.ytranslator.data.model;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
+/**
+ * Обёртка над информацией о переводе слова
+ */
 public class Word extends RealmObject {
     private String word;
     private String direction;
-    private RealmList<Dictionary> dictionaries;
+    private RealmList<WordObject> dictionaries;
 
     public Word() {
         super();
     }
 
-    public Word(String word, String direction, RealmList<Dictionary> dictionaries) {
+    public Word(String word, String direction, RealmList<WordObject> dictionaries) {
         this.word = word;
         this.direction = direction;
         this.dictionaries = dictionaries;
@@ -35,11 +38,11 @@ public class Word extends RealmObject {
     }
 
 
-    public RealmList<Dictionary> getDictionaries() {
+    public RealmList<WordObject> getDictionaries() {
         return dictionaries;
     }
 
-    public void setDictionaries(RealmList<Dictionary> dictionaries) {
+    public void setDictionaries(RealmList<WordObject> dictionaries) {
         this.dictionaries = dictionaries;
     }
 }

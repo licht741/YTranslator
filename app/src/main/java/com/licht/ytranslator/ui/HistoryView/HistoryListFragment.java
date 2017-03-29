@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.model.HistoryItem;
+import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.presenters.HistoryPresenter;
 
 import java.util.List;
@@ -63,7 +63,7 @@ public class HistoryListFragment extends Fragment implements IHistoryView {
     }
 
     @Override
-    public void setData(List<HistoryItem> items) {
+    public void setData(List<HistoryObject> items) {
         adapter.setData(items);
     }
 

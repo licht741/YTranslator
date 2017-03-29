@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
-import com.licht.ytranslator.data.model.Dictionary;
+import com.licht.ytranslator.data.model.WordObject;
 import com.licht.ytranslator.data.model.Word;
 
 import javax.inject.Inject;
@@ -60,9 +60,9 @@ public class DictionaryActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        for (Dictionary dictionary : mWord.getDictionaries()) {
-            final String title = dictionary.getType();
-            adapter.addFragment(DictionaryFragment.newInstance(dictionary.getId()), title);
+        for (WordObject wordObject : mWord.getDictionaries()) {
+            final String title = wordObject.getType();
+            adapter.addFragment(DictionaryFragment.newInstance(wordObject.getId()), title);
         }
         viewPager.setAdapter(adapter);
     }

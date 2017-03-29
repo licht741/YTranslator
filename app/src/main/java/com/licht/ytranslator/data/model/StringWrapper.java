@@ -2,8 +2,13 @@ package com.licht.ytranslator.data.model;
 
 import io.realm.RealmObject;
 
+/**
+ * Обёртка над строками String.
+ * Realm не поддерживает строки как объект БД,
+ * поэтому приходится использовать обёртку для хранения строки.
+ */
 public class StringWrapper extends RealmObject {
-    String content;
+    private String content;
 
     public StringWrapper() {
         super();

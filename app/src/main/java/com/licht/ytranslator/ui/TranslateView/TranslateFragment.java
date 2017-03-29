@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.licht.ytranslator.R;
@@ -87,10 +86,10 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     private void initUI() {
         presenter.requestData();
         editTextSub = RxTextView.textChanges(inputText)
-                .filter(seq -> seq != null && seq.length() > 0)
+                .filter(seq -> seq != null)
                 .subscribe(charSequence -> {
                     mCurrentWord = charSequence.toString();
-                    presenter.translate(mCurrentWord);
+                    presenter.onTextInput(mCurrentWord);
                 });
 
         inputText.setOnEditTextImeBackListener(this);
@@ -117,13 +116,18 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     }
 
     @Override
+    public void setInputText(String text) {
+        inputText.setText(text);
+    }
+
+    @Override
     public void setTranslatedText(String text) {
         tvTranslatedText.setText(text);
     }
 
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
-        presenter.swapLanguages();
+        presenter.onSwapLanguages();
     }
 
     @OnClick(R.id.tv_selected_source_lang)

@@ -3,14 +3,11 @@ package com.licht.ytranslator.utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.licht.ytranslator.data.model.Dictionary;
-import com.licht.ytranslator.data.model.Example;
+import com.licht.ytranslator.data.model.WordObject;
+import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.StringWrapper;
-import com.licht.ytranslator.data.model.Translate;
+import com.licht.ytranslator.data.model.WordMeaningObject;
 import com.licht.ytranslator.data.sources.UtilsPreferences;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.realm.RealmList;
 
@@ -18,10 +15,10 @@ public class DictionaryAnswerParser {
 
     private static UtilsPreferences utilsPreferences = new UtilsPreferences();
 
-    public static RealmList<Dictionary> parse(JsonObject obj) {
+    public static RealmList<WordObject> parse(JsonObject obj) {
         JsonArray def = obj.getAsJsonArray("def");
 
-        final RealmList<Dictionary> dictionaries = new RealmList<>();
+        final RealmList<WordObject> dictionaries = new RealmList<>();
         for (int i = 0; i < def.size(); ++i) {
             JsonObject el = def.get(i).getAsJsonObject();
 
@@ -30,17 +27,17 @@ public class DictionaryAnswerParser {
             final String pos = el.get("pos").getAsString();
             //extract translates
             JsonArray tr = el.getAsJsonArray("tr");
-            RealmList<Translate> translates = extractTranslating(tr);
+            RealmList<WordMeaningObject> wordMeaningObjects = extractTranslating(tr);
 
-            Dictionary d = new Dictionary(utilsPreferences.generateDictionaryNumber(), text, transcription, pos, translates);
+            WordObject d = new WordObject(utilsPreferences.generateDictionaryNumber(), text, transcription, pos, wordMeaningObjects);
             dictionaries.add(d);
         }
 
         return dictionaries;
     }
 
-    private static RealmList<Translate> extractTranslating(JsonArray tr) {
-        final RealmList<Translate> translates = new RealmList<>();
+    private static RealmList<WordMeaningObject> extractTranslating(JsonArray tr) {
+        final RealmList<WordMeaningObject> wordMeaningObjects = new RealmList<>();
         for (int j = 0; j < tr.size(); ++j) {
             JsonObject el1 = tr.get(j).getAsJsonObject();
 
@@ -60,7 +57,7 @@ public class DictionaryAnswerParser {
 
             JsonArray ex = el1.getAsJsonArray("ex");
 
-            final RealmList<Example> examples = new RealmList<>();
+            final RealmList<ExampleObject> exampleObjects = new RealmList<>();
 
             if (ex != null) {
                 for (int k = 0; k < ex.size(); ++k) {
@@ -71,7 +68,7 @@ public class DictionaryAnswerParser {
                     final RealmList<StringWrapper> translates1 = new RealmList<>();
                     for (int k1 = 0; k1 < tr1.size(); ++k1)
                         translates1.add(new StringWrapper(tr1.get(k1).getAsJsonObject().get("text").getAsString()));
-                    examples.add(new Example(new StringWrapper(t), translates1));
+                    exampleObjects.add(new ExampleObject(new StringWrapper(t), translates1));
 
                 }
 
@@ -89,8 +86,8 @@ public class DictionaryAnswerParser {
                 }
 
 
-            translates.add(new Translate(synList, meanings, examples, text, pos));
+            wordMeaningObjects.add(new WordMeaningObject(synList, meanings, exampleObjects, text, pos));
         }
-        return translates;
+        return wordMeaningObjects;
     }
 }

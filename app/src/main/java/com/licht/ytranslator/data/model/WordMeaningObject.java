@@ -1,29 +1,33 @@
 package com.licht.ytranslator.data.model;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
-public class Translate extends RealmObject {
+/**
+ * Объект, хранящий информация об одном из использований слова, вместе с дополнительной информацией
+ * (значение слова, синонимы, примеры использования)
+ */
+public class WordMeaningObject extends RealmObject {
+
     private RealmList<StringWrapper> synonimes;
     private RealmList<StringWrapper> meanings;
-    private RealmList<Example> examples;
+    private RealmList<ExampleObject> exampleObjects;
     private String text;
     private String pos;
 
-    public Translate() {
+    public WordMeaningObject() {
         super();
     }
 
-    public Translate(RealmList<StringWrapper> synonimes,
-                     RealmList<StringWrapper> meanings,
-                     RealmList<Example> examples,
-                     String text,
-                     String pos) {
+    public WordMeaningObject(RealmList<StringWrapper> synonimes,
+                             RealmList<StringWrapper> meanings,
+                             RealmList<ExampleObject> exampleObjects,
+                             String text,
+                             String pos)
+    {
         this.synonimes = synonimes;
         this.meanings = meanings;
-        this.examples = examples;
+        this.exampleObjects = exampleObjects;
         this.text = text;
         this.pos = pos;
     }
@@ -44,12 +48,12 @@ public class Translate extends RealmObject {
         this.meanings = meanings;
     }
 
-    public RealmList<Example> getExamples() {
-        return examples;
+    public RealmList<ExampleObject> getExampleObjects() {
+        return exampleObjects;
     }
 
-    public void setExamples(RealmList<Example> examples) {
-        this.examples = examples;
+    public void setExampleObjects(RealmList<ExampleObject> exampleObjects) {
+        this.exampleObjects = exampleObjects;
     }
 
     public String getText() {

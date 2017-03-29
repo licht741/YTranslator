@@ -65,21 +65,4 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
         finish();
     }
 
-    private void cacheData(JsonObject object) {
-        JsonArray dirs = object.getAsJsonArray("dirs");
-
-        final List<SupportedTranslation> types = new ArrayList<>();
-        for (int i = 0; i < dirs.size(); ++i)
-            types.add(new SupportedTranslation(dirs.get(i).getAsString()));
-
-        final List<Localization> localizationList = new ArrayList<>();
-
-        JsonObject langs = object.getAsJsonObject("langs");
-        for (Map.Entry<String, JsonElement> entry: langs.entrySet()) {
-            Localization localization = new Localization("en", entry.getKey(), entry.getValue().getAsString());
-            localizationList.add(localization);
-        }
-
-
-    }
 }

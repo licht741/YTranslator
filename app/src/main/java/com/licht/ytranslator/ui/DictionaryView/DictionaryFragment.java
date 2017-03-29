@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
-import com.licht.ytranslator.data.model.Dictionary;
+import com.licht.ytranslator.data.model.WordObject;
 
 import javax.inject.Inject;
 
@@ -25,7 +25,7 @@ public class DictionaryFragment extends Fragment {
     private static final String DICTIONARY_ID = "DICTIONARY";
     private long mDictionaryID;
 
-    private Dictionary mDictionary;
+    private WordObject mWordObject;
 
     @Inject
     DataManager dataManager;
@@ -73,10 +73,10 @@ public class DictionaryFragment extends Fragment {
 
         unbinder = ButterKnife.bind(this, root);
 
-        mDictionary = dataManager.getCachedDictionary(mDictionaryID);
+        mWordObject = dataManager.getCachedDictionary(mDictionaryID);
 
-        dictionaryWord.setText(mDictionary.getText());
-        dictionaryTranscription.setText(String.format("[%s]", mDictionary.getTrans()));
+        dictionaryWord.setText(mWordObject.getText());
+        dictionaryTranscription.setText(String.format("[%s]", mWordObject.getTrans()));
 
         rvDictionary.setHasFixedSize(true);
 

@@ -15,7 +15,7 @@ import retrofit2.http.Query;
 
 public interface YandexTranslateAPI {
     @FormUrlEncoded
-    @POST("/api/v1.5/tr.json/translate")
+    @POST("/api/v1.5/tr.json/translateText")
     Call<Result> translate(@FieldMap Map<String, String> map);
 
     @GET("/api/v1.5/tr.json/getLangs")
