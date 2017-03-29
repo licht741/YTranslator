@@ -6,4 +6,9 @@ public interface ITranslateView {
 
     void setLanguagePair(String source, String destination);
     void openDictionary(String word, String direction);
+
+    void detailsAreAvailable(boolean isVisible);
+
+    void setIsStarredView(boolean isStarred);
+    void isStarVisible(boolean isVisible);
 }

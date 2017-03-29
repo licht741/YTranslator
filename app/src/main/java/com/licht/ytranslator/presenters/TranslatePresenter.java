@@ -1,5 +1,7 @@
 package com.licht.ytranslator.presenters;
 
+import android.widget.Toast;
+
 import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
@@ -29,6 +31,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     private String currentText;
     private String language;
     private String translatedText;
+    private boolean isStarredWord = false;
 
     public TranslatePresenter() {
         super();
@@ -48,28 +51,56 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     public void onTextInput(String text) {
         if ("".equals(text)) {
             setTextToResultView("");
+            setStarVisible(false);
             return;
         }
+        setStarVisible(true);
         currentText = text;
         translatedText = "";
+
         translateText(text);
+        translatedText = "";
+
+        isStarredWord = false;
+        view.setIsStarredView(false);
+        view.detailsAreAvailable(false);
     }
 
+    public void onClearInput() {
+        view.detailsAreAvailable(false);
+        setTextToInputView("");
+        currentText = "";
+        setTextToResultView("");
+    }
+
+    private void setTranslatingToView(String text) {
+        setTextToResultView(text);
+        if (dataManager.isStarredWord(text, language))
+            star();
+        else
+            unstar();
+    }
 
     private void translateText(String text) {
         if (text == null || "".equals(text))
             return;
 
+        final Word cachedWord = dataManager.getCachedWord(text, language);
+        if (cachedWord != null) {
+            setTranslatingToView(cachedWord.getWord());
+            return;
+        }
+
         final String key = YTransApp.get().getString(R.string.key_translate);
         dataManager.requestTranslation(key, text, language).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
-                setTextToResultView(response.body().text.get(0));
+                setTranslatingToView(response.body().text.get(0));
             }
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-                // todo
+                doOnFailure();
             }
         });
 
@@ -80,14 +111,43 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
                 RealmList<WordObject> dicts = DictionaryAnswerParser.parse(response.body());
                 Word w = new Word(text, language, dicts);
                 dataManager.cacheDictionaryWord(w);
+                view.detailsAreAvailable(dicts.size() > 0);
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                // todo
+                // TODO ?
             }
         });
+    }
 
+    private void doOnFailure() {
+        Toast.makeText(YTransApp.get(), "Не удалось получить результаты", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onStarredClick() {
+        if (isStarredWord) {
+            addWordToHistory(false);
+            unstar();
+        }
+        else {
+            addWordToHistory(true);
+            star();
+        }
+    }
+
+    private void setStarVisible(boolean isVisible) {
+        view.isStarVisible(isVisible);
+    }
+
+    private void star() {
+        isStarredWord = true;
+        view.setIsStarredView(isStarredWord);
+    }
+
+    private void unstar() {
+        isStarredWord = false;
+        view.setIsStarredView(isStarredWord);
     }
 
     private void setTextToResultView(String text) {
@@ -99,19 +159,16 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         view.setInputText(text);
     }
 
-    private void addWordToHistory() {
-        dataManager.addWordToHistory(new HistoryObject(currentText, translatedText, language, false));
-    }
-
-    public void onWordStarred() {
-        dataManager.addWordToHistory(new HistoryObject(currentText, translatedText, language, true));
+    private void addWordToHistory(boolean isStarredWord) {
+        dataManager.addWordToHistory(
+                new HistoryObject(currentText, translatedText, language, isStarredWord));
     }
 
     public String getSourceLanguage() {
         return dataManager.getSourceLanguage();
     }
 
-    public void dictionaryOper() {
+    public void onOpenDictionaryClick() {
         view.openDictionary(currentText, language);
     }
 
@@ -161,7 +218,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     public void onKeyboardHide() {
-        addWordToHistory();
+        addWordToHistory(false);
     }
 
     private void updateViewLanguagePair() {

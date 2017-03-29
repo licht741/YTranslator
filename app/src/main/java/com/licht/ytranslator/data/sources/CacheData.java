@@ -120,6 +120,15 @@ public class CacheData {
         });
     }
 
+    public boolean isStarredWord(String word, String direction) {
+        final Realm realm = Realm.getDefaultInstance();
+        final HistoryObject obj = realm.where(HistoryObject.class)
+                .equalTo("word", word)
+                .equalTo("direction", direction)
+                .findFirst();
+        return obj != null && obj.isFavorites();
+    }
+
     public HistoryObject getWordFromHistory(String word, String direction) {
         final Realm realm = Realm.getDefaultInstance();
         return realm.where(HistoryObject.class)

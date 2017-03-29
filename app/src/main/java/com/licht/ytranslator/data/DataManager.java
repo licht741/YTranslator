@@ -157,6 +157,10 @@ public class DataManager {
         return "";
     }
 
+    public boolean isStarredWord(String word, String direction) {
+        return cacheData.isStarredWord(word, direction);
+    }
+
     public void addWordToHistory(HistoryObject item) {
         cacheData.addWordToHistory(item);
     }

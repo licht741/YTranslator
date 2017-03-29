@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -52,6 +53,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @BindView(R.id.tv_selected_dest_lang)
     TextView tvSelectedDestLang;
 
+    @BindView(R.id.tv_show_details_label)
+    TextView tvShowDetailsLabel;
+
+    ImageView ivIsStarred;
+
     Subscription editTextSub;
 
     @Override
@@ -77,14 +83,18 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        initUI();
+        initUI(root);
         return root;
     }
 
     private String mCurrentWord;
 
-    private void initUI() {
+    private void initUI(View root) {
         presenter.requestData();
+
+        ivIsStarred = (ImageView)root.findViewById(R.id.iv_is_starred);
+        ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
+
         editTextSub = RxTextView.textChanges(inputText)
                 .filter(seq -> seq != null)
                 .subscribe(charSequence -> {
@@ -93,7 +103,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
                 });
 
         inputText.setOnEditTextImeBackListener(this);
+    }
 
+    @Override
+    public void isStarVisible(boolean isVisible) {
+        ivIsStarred.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -125,9 +139,27 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         tvTranslatedText.setText(text);
     }
 
+    @Override
+    public void setIsStarredView(boolean isStarred) {
+        if (isStarred)
+            ivIsStarred.setImageResource(R.drawable.ic_star);
+        else
+            ivIsStarred.setImageResource(R.drawable.ic_bookmark);
+    }
+
+//    @OnClick(R.id.iv_is_starred)
+//    public void onStarredClick() {
+//        presenter.onStarredClick();
+//    }
+
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
         presenter.onSwapLanguages();
+    }
+
+    @OnClick(R.id.iv_clear_input)
+    public void onClearInput() {
+        presenter.onClearInput();
     }
 
     @OnClick(R.id.tv_selected_source_lang)
@@ -158,15 +190,22 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         startActivityForResult(intent, 200);
     }
 
-    @OnClick(R.id.iv_star_phrase)
-    void onStarButtonClick() {
-        presenter.onWordStarred();
+    @Override
+    public void detailsAreAvailable(boolean isVisible) {
+        if (isVisible) {
+            tvShowDetailsLabel.setVisibility(View.VISIBLE);
+            tvTranslatedText.setOnClickListener(v -> presenter.onOpenDictionaryClick());
+        }
+        else {
+            tvShowDetailsLabel.setVisibility(View.INVISIBLE);
+            tvTranslatedText.setOnClickListener(null);
+        }
     }
 
-    @OnClick(R.id.btn_open_dictionary)
-    public void onDictionaryOpen() {
-        presenter.dictionaryOper();
-    }
+//    @OnClick(R.id.tv_translated_text)
+//    public void onTranslatedTextClick() {
+//        presenter.onOpenDictionaryClick();
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
