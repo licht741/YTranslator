@@ -42,7 +42,6 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
     public void requestData() {
         final String localConst = LocalizationUtils.getCurrentLocalizationSymbol();
         final boolean isDataCached = dataManager.isDataForLocalizationCached(localConst);
-        Log.e(TAG, "requestData: ", );
         if (isDataCached)
             view.finishLoading();
         else {

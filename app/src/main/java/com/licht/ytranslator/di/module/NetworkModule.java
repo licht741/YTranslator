@@ -16,7 +16,7 @@ public class NetworkModule {
     @Singleton
     Retrofit provideTranslateRetrofit() {
         return new Retrofit.Builder()
-                .baseUrl("https://translateText.yandex.net")
+                .baseUrl("https://translate.yandex.net")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }

@@ -57,6 +57,9 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
 
     private void translateText(String text) {
+        if (text == null || "".equals(text))
+            return;
+
         final String key = YTransApp.get().getString(R.string.key_translate);
         dataManager.requestTranslation(key, text, language).enqueue(new Callback<Result>() {
             @Override
@@ -88,6 +91,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     private void setTextToResultView(String text) {
+        translatedText = text;
         view.setTranslatedText(text);
     }
 
@@ -101,7 +105,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
     public void onWordStarred() {
         dataManager.addWordToHistory(new HistoryObject(currentText, translatedText, language, true));
-
     }
 
     public String getSourceLanguage() {
@@ -150,8 +153,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         updateSourceLanguage(currentDestinationLanguage);
         updateDestinationLanguage(currentSourceLanguage);
 
-        setTextToResultView("");
         setTextToInputView(translatedText);
+        setTextToResultView("");
         translateText(translatedText);
 
         updateViewLanguagePair();
@@ -163,6 +166,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
     private void updateViewLanguagePair() {
         language = String.format("%s-%s",
-                dataManager.getSourceLanguageSymbol(), dataManager.getDestinationLanguageSymbol());
+                dataManager.getSourceLanguageSymbol(),
+                dataManager.getDestinationLanguageSymbol());
     }
 }
