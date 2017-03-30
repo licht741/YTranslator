@@ -63,7 +63,7 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
     }
 
     public void checkCache() {
-        final int LIMIT = 10;
+        final int LIMIT = 1000;
         final int size = dataManager.getCacheSize();
         if (size > LIMIT) {
             dataManager.clearCache();

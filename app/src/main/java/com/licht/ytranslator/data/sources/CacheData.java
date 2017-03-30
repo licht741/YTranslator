@@ -2,10 +2,13 @@ package com.licht.ytranslator.data.sources;
 
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
+import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
+import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
+import com.licht.ytranslator.data.model.WordMeaningObject;
 import com.licht.ytranslator.data.model.WordObject;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
@@ -14,6 +17,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
@@ -159,6 +163,32 @@ public class CacheData {
     }
 
     public void clearCache() {
-        // todo realize cache clearing
+        final Realm realm = Realm.getDefaultInstance();
+        final RealmQuery query = realm.where(Word.class);
+        for (HistoryObject hist: getHistoryWords())
+            query.notEqualTo("word", hist.getWord());
+        final List<Word> wordsToRemove = query.findAll();
+
+        // Realm не поддерживает каскадное удаление объектов,
+        // поэтому очистка осуществляется таким образом
+        realm.beginTransaction();
+        for (Word word: wordsToRemove) {
+            for (WordObject wordObject: word.getDictionaries()) {
+                for (WordMeaningObject m: wordObject.getWordMeaningObjects()) {
+                    m.getSynonimes().deleteAllFromRealm();
+                    m.getMeanings().deleteAllFromRealm();
+
+                    for (ExampleObject ex : m.getExampleObjects())
+                        ex.getTranslates().deleteAllFromRealm();
+                    m.getExampleObjects().deleteAllFromRealm();
+                }
+                wordObject.getWordMeaningObjects().deleteAllFromRealm();
+            }
+            word.getDictionaries().deleteAllFromRealm();
+        }
+        query.findAll().deleteAllFromRealm();
+
+        realm.commitTransaction();
+
     }
 }

@@ -11,6 +11,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +22,6 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.sources.UtilsPreferences;
 import com.licht.ytranslator.presenters.TranslatePresenter;
 import com.licht.ytranslator.ui.DictionaryView.DictionaryActivity;
 import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
@@ -40,34 +41,26 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import rx.Subscription;
 
-import static com.licht.ytranslator.utils.LocalizationUtils.ENG_LOCALIZATION;
-
 public class TranslateFragment extends Fragment implements ITranslateView, ExtendedEditTextListener {
     @Inject
     TranslatePresenter presenter;
 
     private Unbinder unbinder;
 
-    @BindView(R.id.edit_input_text)
-    ExtendedEditText inputText;
-
-    @BindView(R.id.tv_translated_text)
-    TextView tvTranslatedText;
-
-    @BindView(R.id.tv_selected_source_lang)
-    TextView tvSelectedSourceLang;
-
-    @BindView(R.id.tv_selected_dest_lang)
-    TextView tvSelectedDestLang;
-
-    @BindView(R.id.tv_show_details_label)
-    TextView tvShowDetailsLabel;
-
-    ImageView ivIsStarred;
+    @BindView(R.id.edit_input_text) ExtendedEditText inputText;
+    @BindView(R.id.tv_translated_text) TextView tvTranslatedText;
+    @BindView(R.id.tv_selected_source_lang) TextView tvSelectedSourceLang;
+    @BindView(R.id.tv_selected_dest_lang) TextView tvSelectedDestLang;
+    @BindView(R.id.tv_show_details_label) TextView tvShowDetailsLabel;
+    @BindView(R.id.iv_is_starred) ImageView ivIsStarred;
 
     Subscription editTextSub;
 
     private String mCurrentWord;
+
+    private static final int REQ_CODE_SOURCE_LANGUAGE = 100;
+    private static final int REQ_CODE_DESTINATION_LANGUAGE = 200;
+    private static final int REQ_CODE_SPEECH_INPUT = 300;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,54 +75,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         presenter.bindView(this);
         unbinder = ButterKnife.bind(this, root);
 
-
-        Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
         initUI(root);
         return root;
-    }
-
-    private static final int REQ_CODE_SPEECH_INPUT = 100;
-
-    private void startAudio() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-
-        presenter.getSourceLanguage()
-        final Locale locale = new Locale(LocalizationUtils.getCurrentLocalizationSymbol());
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale);
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch (ActivityNotFoundException a) {
-
-        }
-    }
-
-    private void initUI(View root) {
-        presenter.requestData();
-
-        ivIsStarred = (ImageView)root.findViewById(R.id.iv_is_starred);
-        ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
-
-        ImageView microphone = (ImageView)root.findViewById(R.id.iv_microphone);
-        microphone.setOnClickListener(v -> startAudio());
-
-        editTextSub = RxTextView.textChanges(inputText)
-                .filter(seq -> seq != null)
-                .subscribe(charSequence -> {
-                    mCurrentWord = charSequence.toString();
-                    presenter.onTextInput(mCurrentWord);
-                });
-
-        inputText.setOnEditTextImeBackListener(this);
     }
 
     @Override
@@ -174,6 +121,60 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
             ivIsStarred.setImageResource(R.drawable.ic_bookmark);
     }
 
+    @Override
+    public void detailsAreAvailable(boolean isVisible) {
+        if (isVisible) {
+            tvShowDetailsLabel.setVisibility(View.VISIBLE);
+            tvTranslatedText.setOnClickListener(v -> presenter.onOpenDictionaryClick());
+        } else {
+            tvShowDetailsLabel.setVisibility(View.INVISIBLE);
+            tvTranslatedText.setOnClickListener(null);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data == null)
+            return;
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT:
+                final String input = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
+                setInputText(input);
+                presenter.onTextInput(input);
+                break;
+
+            case REQ_CODE_SOURCE_LANGUAGE:
+                final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
+                presenter.updateSourceLanguage(resultLanguage);
+                break;
+
+            case REQ_CODE_DESTINATION_LANGUAGE:
+                final String destLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
+                presenter.updateDestinationLanguage(destLanguage);
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+        presenter.unbindView();
+        editTextSub.unsubscribe();
+    }
+
+
+    @OnClick(R.id.iv_microphone)
+    public void onMicrophoneClick() {
+        startAudio();
+    }
+
+    @OnClick(R.id.iv_is_starred)
+    public void onStarClick() {
+        presenter.onStarredClick();
+    }
+
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
         presenter.onSwapLanguages();
@@ -195,7 +196,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         b.putString(SelectLanguageActivity.SELECTED_LANGUAGE, selectedLanguage);
         b.putStringArrayList(SelectLanguageActivity.AVAILABLE_LANGUAGE_LIST, languages);
         intent.putExtras(b);
-        startActivityForResult(intent, 100);
+        startActivityForResult(intent, REQ_CODE_SOURCE_LANGUAGE);
 
     }
 
@@ -209,51 +210,45 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         b.putString(SelectLanguageActivity.SELECTED_LANGUAGE, selectedLanguage);
         b.putStringArrayList(SelectLanguageActivity.AVAILABLE_LANGUAGE_LIST, languages);
         intent.putExtras(b);
-        startActivityForResult(intent, 200);
+        startActivityForResult(intent, REQ_CODE_DESTINATION_LANGUAGE);
     }
 
-    @Override
-    public void detailsAreAvailable(boolean isVisible) {
-        if (isVisible) {
-            tvShowDetailsLabel.setVisibility(View.VISIBLE);
-            tvTranslatedText.setOnClickListener(v -> presenter.onOpenDictionaryClick());
-        }
-        else {
-            tvShowDetailsLabel.setVisibility(View.INVISIBLE);
-            tvTranslatedText.setOnClickListener(null);
+
+    private void startAudio() { // // TODO: 30.03.2017
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+
+        final Locale locale = new Locale(LocalizationUtils.getCurrentLocalizationSymbol());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 400)
-            return;
+    private void initUI(View root) {
+        presenter.requestData();
 
-        if (requestCode == REQ_CODE_SPEECH_INPUT) {
-            ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            setInputText(result.get(0));
-            presenter.onTextInput(result.get(0));
-            return;
-        }
+        Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
-        if (data == null || data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE) == null)
-            return;
-        final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
+        DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
-        if (requestCode == 100) {
-            presenter.updateSourceLanguage(resultLanguage);
-        } else if (requestCode == 200) {
-            presenter.updateDestinationLanguage(resultLanguage);
-        }
+        ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
 
-    }
+        editTextSub = RxTextView.textChanges(inputText)
+                .filter(seq -> seq != null)
+                .subscribe(charSequence -> {
+                    mCurrentWord = charSequence.toString();
+                    presenter.onTextInput(mCurrentWord);
+                });
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-        presenter.unbindView();
-        editTextSub.unsubscribe();
+        inputText.setOnEditTextImeBackListener(this);
     }
 }

@@ -178,11 +178,7 @@ public class DataManager {
      */
 
     public Call<JsonObject> getDataFromDictionary(String key, String text, String lang) {
-        Map<String, String> mapJSON = new HashMap<>();
-        mapJSON.put("key", key);
-        mapJSON.put("lang", lang);
-        mapJSON.put("text", text);
-        return yandexDictionaryAPI.getMeaning(mapJSON);
+        return yandexDictionaryAPI.getMeaning(buildMapToRequest(key, lang, text));
     }
 
     /**
@@ -204,11 +200,8 @@ public class DataManager {
      * @return Объект, используемый для асинхронной загрузки данных
      */
     public Call<Result> requestTranslation(String key, String text, String lang) {
-        Map<String, String> mapJSON = new HashMap<>();
-        mapJSON.put("key", key);
-        mapJSON.put("text", text);
-        mapJSON.put("lang", lang);
-        return yandexTranslateAPI.translate(mapJSON);
+
+        return yandexTranslateAPI.translate(buildMapToRequest(key, lang, text));
     }
 
     /**
@@ -297,6 +290,14 @@ public class DataManager {
         return result;
     }
 
+    public int getCacheSize() {
+        return cacheData.getCacheSize();
+    }
+
+    public void clearCache() {
+        cacheData.clearCache();
+    }
+
     private void checkCachedLocalizations() {
         if (mLocalizations == null)
             mLocalizations = cacheData.getLanguageList(mLocalSymbol);
@@ -307,11 +308,11 @@ public class DataManager {
             mTranslateTypes = cacheData.getTranslateTypes();
     }
 
-    public int getCacheSize() {
-        return cacheData.getCacheSize();
-    }
-
-    public void clearCache() {
-        cacheData.clearCache();
+    private Map<String, String> buildMapToRequest(String key, String lang, String text) {
+        Map<String, String> mapJSON = new HashMap<>();
+        mapJSON.put("key", key);
+        mapJSON.put("text", text);
+        mapJSON.put("lang", lang);
+        return mapJSON;
     }
 }
