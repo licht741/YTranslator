@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface IHistoryView {
     void setData(List<HistoryObject> items);
+    void updateData();
+    void onItemSelected(String word, String direction, int position);
+    void onStarredChanged(String word, String direction, boolean newStarredState);
 }

@@ -161,6 +161,10 @@ public class DataManager {
         return cacheData.isStarredWord(word, direction);
     }
 
+    public void setWordStarred(String word, String direction, boolean iStarred) {
+        cacheData.setWordStarred(word, direction, iStarred);
+    }
+
     public void addWordToHistory(HistoryObject item) {
         cacheData.addWordToHistory(item);
     }

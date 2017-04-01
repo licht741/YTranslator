@@ -15,15 +15,17 @@ import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder> {
 
-    private final List<HistoryObject> items = new ArrayList<>();
+    private List<HistoryObject> items = new ArrayList<>();
 
-    public HistoryAdapter() {
+    private IHistoryView view;
+
+    public HistoryAdapter(IHistoryView view) {
         super();
+        this.view = view;
     }
 
     public void setData(List<HistoryObject> items) {
-        this.items.clear();
-        this.items.addAll(items);
+        this.items = items;
         notifyDataSetChanged();
     }
 
@@ -41,10 +43,22 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordView
         holder.tvTrans.setText(item.getTranslate());
         holder.tvDirection.setText(item.getDirection());
 
-        if (item.isFavorites())
-            holder.ivIcon.setImageResource(R.drawable.ic_star);
-        else
-            holder.ivIcon.setImageResource(R.drawable.ic_bookmark);
+        holder.ivIcon.setImageDrawable(null);
+
+        holder.setIcon(item.isFavorites());
+
+        holder.itemView.setOnClickListener(v ->
+            view.onItemSelected(item.getWord(), item.getDirection(), holder.getAdapterPosition()));
+
+        holder.ivIcon.setOnClickListener(v -> {
+            final boolean newStarredState = !items.get(position).isFavorites();
+
+            holder.setIcon(newStarredState);
+            view.onStarredChanged(item.getWord(),
+                    item.getDirection(),
+                    newStarredState);
+            items.get(position).setFavorites(newStarredState);
+        });
     }
 
     @Override
@@ -65,6 +79,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordView
             tvPhrase = (TextView) itemView.findViewById(R.id.tv_history_word_phrase);
             tvTrans = (TextView) itemView.findViewById(R.id.tv_history_word_translate);
             tvDirection = (TextView) itemView.findViewById(R.id.tv_history_word_dir);
+        }
+
+        public void setIcon(boolean isStarred) {
+            if (isStarred)
+                ivIcon.setImageResource(R.drawable.ic_star);
+            else
+                ivIcon.setImageResource(R.drawable.ic_bookmark);
         }
     }
 }

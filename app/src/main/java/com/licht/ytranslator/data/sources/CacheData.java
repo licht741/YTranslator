@@ -12,6 +12,7 @@ import com.licht.ytranslator.data.model.WordMeaningObject;
 import com.licht.ytranslator.data.model.WordObject;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -146,8 +147,14 @@ public class CacheData {
 
     public List<HistoryObject> getHistoryWords() {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(HistoryObject.class)
-                .findAll();
+        List<HistoryObject> res =  realm.where(HistoryObject.class).findAll();
+
+        // Открепляем объекты от realm, для того, чтоб модифицировать их не в транзакциях
+        List<HistoryObject> historyObjects = new ArrayList<>();
+        for (HistoryObject obj : res)
+            historyObjects.add(realm.copyFromRealm(obj));
+
+        return historyObjects;
     }
 
     public List<HistoryObject> getFavoritesWords() {
@@ -155,6 +162,16 @@ public class CacheData {
         return realm.where(HistoryObject.class)
                 .equalTo("isFavorites", true)
                 .findAll();
+    }
+
+    public void setWordStarred(String word, String direction, boolean iStarred) {
+        final Realm realm = Realm.getDefaultInstance();
+        final HistoryObject w = realm.where(HistoryObject.class)
+                .equalTo("word", word)
+                .equalTo("direction", direction).findFirst();
+        realm.beginTransaction();
+        w.setFavorites(iStarred);
+        realm.commitTransaction();
     }
 
     public int getCacheSize() {

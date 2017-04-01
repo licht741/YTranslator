@@ -16,6 +16,9 @@ public class DictionaryAnswerParser {
     private static UtilsPreferences utilsPreferences = new UtilsPreferences();
 
     public static RealmList<WordObject> parse(JsonObject obj) {
+        if (obj == null)
+            return  new RealmList<>();
+
         JsonArray def = obj.getAsJsonArray("def");
 
         final RealmList<WordObject> dictionaries = new RealmList<>();

@@ -1,6 +1,5 @@
 package com.licht.ytranslator.ui;
 
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -8,15 +7,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.Toast;
 
 import com.licht.ytranslator.R;
-import com.licht.ytranslator.ui.HistoryView.HistoryFragment;
+import com.licht.ytranslator.ui.HistoryView.HistoryListFragment;
+import com.licht.ytranslator.ui.HistoryView.StarredListFragment;
 import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
 
 public class MainActivity extends AppCompatActivity
@@ -26,7 +21,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -68,9 +62,10 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_translate)
             setFragment(false, new TranslateFragment());
-        else if (id == R.id.nav_history) {
-            setFragment(false, new HistoryFragment());
-        }
+        else if (id == R.id.nav_history)
+            setFragment(false, new HistoryListFragment());
+        else if (id == R.id.nav_starred)
+            setFragment(false, new StarredListFragment());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

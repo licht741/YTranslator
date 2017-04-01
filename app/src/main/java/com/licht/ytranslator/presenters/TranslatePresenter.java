@@ -62,12 +62,15 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         translatedText = "";
 
         isStarredWord = false;
-        view.setIsStarredView(false);
-        view.detailsAreAvailable(false);
+        if (view != null) {
+            view.setIsStarredView(false);
+            view.detailsAreAvailable(false);
+        }
     }
 
     public void onClearInput() {
-        view.detailsAreAvailable(false);
+        if (view != null)
+            view.detailsAreAvailable(false);
         setTextToInputView("");
         currentText = "";
         setTextToResultView("");
@@ -111,7 +114,9 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
                 RealmList<WordObject> dicts = DictionaryAnswerParser.parse(response.body());
                 Word w = new Word(text, language, dicts);
                 dataManager.cacheDictionaryWord(w);
-                view.detailsAreAvailable(dicts.size() > 0);
+
+                if (view != null)
+                    view.detailsAreAvailable(dicts.size() > 0);
             }
 
             @Override
@@ -129,8 +134,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         if (isStarredWord) {
             addWordToHistory(false);
             unstar();
-        }
-        else {
+        } else {
             addWordToHistory(true);
             star();
         }
@@ -141,16 +145,23 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     private void star() {
+        if (view == null)
+            return;
         isStarredWord = true;
         view.setIsStarredView(isStarredWord);
     }
 
     private void unstar() {
+        if (view == null)
+            return;
+
         isStarredWord = false;
         view.setIsStarredView(isStarredWord);
     }
 
     private void setTextToResultView(String text) {
+        if (view == null)
+            return;
         translatedText = text;
         view.setTranslatedText(text);
     }
@@ -169,6 +180,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     public void onOpenDictionaryClick() {
+        if (view == null)
+            return;
         view.openDictionary(currentText, language);
     }
 
@@ -181,18 +194,28 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     public void requestData() {
+        if (view == null)
+            return;
+
         updateViewLanguagePair();
         view.setLanguagePair(getSourceLanguage(), getDestinationLanguage());
     }
 
     public void updateSourceLanguage(String languageName) {
+        if (view == null)
+            return;
+
         final String langSymbol = dataManager.getLanguageSymbolByName(languageName);
         dataManager.setSourceLanguageSymbol(langSymbol);
+
         view.setLanguagePair(languageName, getDestinationLanguage());
         updateViewLanguagePair();
     }
 
     public void updateDestinationLanguage(String languageName) {
+        if (view == null)
+            return;
+
         final String langSymbol = dataManager.getLanguageSymbolByName(languageName);
         dataManager.setDestinationLanguage(langSymbol);
         view.setLanguagePair(getSourceLanguage(), languageName);

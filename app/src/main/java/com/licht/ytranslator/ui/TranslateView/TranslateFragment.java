@@ -28,6 +28,7 @@ import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
 import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditText;
 import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditTextListener;
 import com.licht.ytranslator.utils.LocalizationUtils;
+import com.licht.ytranslator.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,6 +78,12 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         initUI(root);
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Переводчик");
     }
 
     @Override
@@ -141,7 +148,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
             case REQ_CODE_SPEECH_INPUT:
                 final String input = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
                 setInputText(input);
-                presenter.onTextInput(input);
+                onTextInput(input);
                 break;
 
             case REQ_CODE_SOURCE_LANGUAGE:
@@ -154,6 +161,14 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
                 presenter.updateDestinationLanguage(destLanguage);
                 break;
         }
+    }
+
+    private void onTextInput(String text) {
+        if (text == null || "".equals(text))
+            return;
+
+        presenter.onTextInput(text);
+
     }
 
     @Override
@@ -246,9 +261,15 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
                 .filter(seq -> seq != null)
                 .subscribe(charSequence -> {
                     mCurrentWord = charSequence.toString();
-                    presenter.onTextInput(mCurrentWord);
+                    onTextInput(mCurrentWord);
                 });
 
         inputText.setOnEditTextImeBackListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Utils.hideKeyboard(getActivity());
     }
 }
