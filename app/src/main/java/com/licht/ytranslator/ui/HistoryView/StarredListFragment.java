@@ -18,6 +18,8 @@ import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.presenters.HistoryPresenter;
+import com.licht.ytranslator.ui.MainActivity;
+import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
 
 import java.util.List;
 
@@ -63,8 +65,8 @@ public class StarredListFragment extends Fragment implements IHistoryView {
     }
 
     @Override
-    public void onItemSelected(String word, String direction, int position) {
-//        presenter.selectItem(word, direction);
+    public void onItemSelected(String word, String direction) {
+        ((MainActivity)getActivity()).setFragment(false, TranslateFragment.newInstance(word, direction));
     }
 
     @Override

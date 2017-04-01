@@ -19,8 +19,6 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
     public HistoryPresenter() {
         super();
         YTransApp.getAppComponent().inject(this);
-//        allItems = dataManager.getHistoryWords();
-//        starredItems = extractStarredWords(allItems);
     }
 
     @Override
@@ -47,56 +45,6 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
     }
 
 
-//    private List<HistoryObject> allItems = null;
-//    private List<HistoryObject> starredItems = null;
-
-    //    public void requestData(boolean starredOnly) {
-////        if (allItems == null) {
-//            allItems = dataManager.getHistoryWords();
-//            starredItems = extractStarredWords(allItems);
-////        }
-//
-//        if (starredOnly)
-//            view.setData(starredItems);
-//        else
-//            view.setData(allItems);
-//    }
-//
-//    public void selectItem(String word, String direction) {
-////        allItems.get(0).setFavorites(true);
-//    }
-//
-////    public void setWordStar(String word, String direction, boolean newStarredState) {
-////        dataManager.setWordStarred(word, direction, newStarredState);
-////
-////        // если мы добавляем в избранное
-////        if (newStarredState) {
-////            for (HistoryObject item : allItems)
-////                if (item.getWord().equals(word) && item.getDirection().equals(direction)) {
-////                    item.setFavorites(newStarredState);
-////                    starredItems.add(item);
-////                    break;
-////                }
-////        }
-////        // удаляем из избранного
-////        else {
-////            for (HistoryObject item : allItems) {
-////                if (item.getWord().equals(word) &&
-////                        item.getDirection().equals(direction)) {
-////                    item.setFavorites(newStarredState);
-////                    break;
-////                }
-////            }
-////            int index = -1;
-////            for (int i = 0; i < starredItems.size(); ++i)
-////                if (starredItems.get(i).getWord().equals(word) && starredItems.get(i).getDirection().equals(direction)) {
-////                    index = i;
-////                    break;
-////                }
-////            starredItems.remove(index);
-////        }
-////    }
-//
     private List<HistoryObject> extractStarredWords(List<HistoryObject> items) {
         final List<HistoryObject> starred = new ArrayList<>();
         for (HistoryObject item : items)

@@ -7,12 +7,12 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,12 +48,18 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     private Unbinder unbinder;
 
-    @BindView(R.id.edit_input_text) ExtendedEditText inputText;
-    @BindView(R.id.tv_translated_text) TextView tvTranslatedText;
-    @BindView(R.id.tv_selected_source_lang) TextView tvSelectedSourceLang;
-    @BindView(R.id.tv_selected_dest_lang) TextView tvSelectedDestLang;
-    @BindView(R.id.tv_show_details_label) TextView tvShowDetailsLabel;
-    @BindView(R.id.iv_is_starred) ImageView ivIsStarred;
+    @BindView(R.id.edit_input_text)
+    ExtendedEditText inputText;
+    @BindView(R.id.tv_translated_text)
+    TextView tvTranslatedText;
+    @BindView(R.id.tv_selected_source_lang)
+    TextView tvSelectedSourceLang;
+    @BindView(R.id.tv_selected_dest_lang)
+    TextView tvSelectedDestLang;
+    @BindView(R.id.tv_show_details_label)
+    TextView tvShowDetailsLabel;
+    @BindView(R.id.iv_is_starred)
+    ImageView ivIsStarred;
 
     Subscription editTextSub;
 
@@ -62,6 +68,20 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     private static final int REQ_CODE_SOURCE_LANGUAGE = 100;
     private static final int REQ_CODE_DESTINATION_LANGUAGE = 200;
     private static final int REQ_CODE_SPEECH_INPUT = 300;
+
+    private static final String ARG_WORD = "arg_word";
+    private static final String ARG_DIRECTION = "arg_direction";
+
+    public static TranslateFragment newInstance(String word, String direction) {
+        TranslateFragment fragment = new TranslateFragment();
+
+        Bundle args = new Bundle();
+        args.putString(ARG_WORD, word);
+        args.putString(ARG_DIRECTION, direction);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,9 +101,25 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final Bundle args = getArguments();
+        if (args == null)
+            return;
+
+        final String word = args.getString(ARG_WORD);
+        final String direction = args.getString(ARG_DIRECTION);
+
+        if (word != null && direction != null)
+            presenter.initializeData(word, direction);
+
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Переводчик");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Переводчик");
     }
 
     @Override
@@ -122,10 +158,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @Override
     public void setIsStarredView(boolean isStarred) {
+        Log.e("TranslateFragment()", "setIsStarredView: " + String.valueOf(isStarred));
         if (isStarred)
-            ivIsStarred.setImageResource(R.drawable.ic_star);
+            ivIsStarred.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.ic_star));
         else
-            ivIsStarred.setImageResource(R.drawable.ic_bookmark);
+            ivIsStarred.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.ic_bookmark));
     }
 
     @Override
@@ -164,8 +201,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     }
 
     private void onTextInput(String text) {
-        if (text == null || "".equals(text))
-            return;
+        if (text == null || "".equals(text)) {
+            ivIsStarred.setVisibility(View.INVISIBLE);
+        }
+        else
+            ivIsStarred.setVisibility(View.VISIBLE);
 
         presenter.onTextInput(text);
 

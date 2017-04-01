@@ -1,5 +1,6 @@
 package com.licht.ytranslator.presenters;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
@@ -58,14 +59,27 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         currentText = text;
         translatedText = "";
 
-        translateText(text);
-        translatedText = "";
-
         isStarredWord = false;
         if (view != null) {
             view.setIsStarredView(false);
             view.detailsAreAvailable(false);
         }
+
+        translateText(text);
+    }
+
+    public void initializeData(String text, String direction) {
+        this.language = direction;
+        dataManager.setSourceLanguageSymbol(language.split("-")[0]);
+        dataManager.setDestinationLanguage(language.split("-")[1]);
+
+        final HistoryObject object = dataManager.getHistoryWord(text, language);
+        if (view != null) {
+            view.setInputText(object.getWord());
+           // view.setTranslatedText(object.getTranslate());
+        }
+
+//        onTextInput(word);
     }
 
     public void onClearInput() {
@@ -88,9 +102,11 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         if (text == null || "".equals(text))
             return;
 
-        final Word cachedWord = dataManager.getCachedWord(text, language);
-        if (cachedWord != null) {
-            setTranslatingToView(cachedWord.getWord());
+        final HistoryObject object = dataManager.getHistoryWord(text, language);
+        if (object != null) {
+
+            final String trans = object.getTranslate();
+            setTranslatingToView(trans);
             return;
         }
 
@@ -145,6 +161,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     private void star() {
+        Log.e("TranslatePreseneter", "star: ");
         if (view == null)
             return;
         isStarredWord = true;
@@ -152,6 +169,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     private void unstar() {
+        Log.e("TranslatePreseneter", "unstar: ");
         if (view == null)
             return;
 

@@ -173,6 +173,10 @@ public class DataManager {
         return cacheData.getHistoryWords();
     }
 
+    public HistoryObject getHistoryWord(String word, String direction) {
+        return cacheData.getWordFromHistory(word, direction);
+    }
+
     public List<HistoryObject> getStarredWords() {
         return cacheData.getFavoritesWords();
     }

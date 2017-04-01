@@ -5,7 +5,6 @@ import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
-import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.data.model.WordMeaningObject;
@@ -18,7 +17,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
@@ -92,10 +90,11 @@ public class CacheData {
 
     public Word getCachedWord(String word, String dir) {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(Word.class)
-                .equalTo("word", word)
-                .equalTo("direction", dir)
-                .findFirst();
+        final Word w = realm.where(Word.class)
+                            .equalTo("word", word)
+                            .equalTo("direction", dir)
+                            .findFirst();
+        return realm.copyFromRealm(w);
     }
 
     public WordObject getCachedDictionary(long id) {
@@ -130,24 +129,31 @@ public class CacheData {
 
     public boolean isStarredWord(String word, String direction) {
         final Realm realm = Realm.getDefaultInstance();
-        final HistoryObject obj = realm.where(HistoryObject.class)
-                .equalTo("word", word)
+        HistoryObject obj = realm.where(HistoryObject.class)
+                .equalTo("translate", word)
                 .equalTo("direction", direction)
                 .findFirst();
+        if (obj != null)
+            obj = realm.copyFromRealm(obj);
         return obj != null && obj.isFavorites();
     }
 
     public HistoryObject getWordFromHistory(String word, String direction) {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(HistoryObject.class)
+        HistoryObject historyObject = realm.where(HistoryObject.class)
                 .equalTo("word", word)
                 .equalTo("direction", direction)
                 .findFirst();
+        realm.beginTransaction();
+        if (historyObject != null)
+            historyObject = realm.copyFromRealm(historyObject);
+        realm.commitTransaction();
+        return historyObject;
     }
 
     public List<HistoryObject> getHistoryWords() {
         final Realm realm = Realm.getDefaultInstance();
-        List<HistoryObject> res =  realm.where(HistoryObject.class).findAll();
+        List<HistoryObject> res = realm.where(HistoryObject.class).findAll();
 
         // Открепляем объекты от realm, для того, чтоб модифицировать их не в транзакциях
         List<HistoryObject> historyObjects = new ArrayList<>();
@@ -156,6 +162,7 @@ public class CacheData {
 
         return historyObjects;
     }
+
 
     public List<HistoryObject> getFavoritesWords() {
         final Realm realm = Realm.getDefaultInstance();
@@ -182,16 +189,16 @@ public class CacheData {
     public void clearCache() {
         final Realm realm = Realm.getDefaultInstance();
         final RealmQuery query = realm.where(Word.class);
-        for (HistoryObject hist: getHistoryWords())
+        for (HistoryObject hist : getHistoryWords())
             query.notEqualTo("word", hist.getWord());
         final List<Word> wordsToRemove = query.findAll();
 
         // Realm не поддерживает каскадное удаление объектов,
         // поэтому очистка осуществляется таким образом
         realm.beginTransaction();
-        for (Word word: wordsToRemove) {
-            for (WordObject wordObject: word.getDictionaries()) {
-                for (WordMeaningObject m: wordObject.getWordMeaningObjects()) {
+        for (Word word : wordsToRemove) {
+            for (WordObject wordObject : word.getDictionaries()) {
+                for (WordMeaningObject m : wordObject.getWordMeaningObjects()) {
                     m.getSynonimes().deleteAllFromRealm();
                     m.getMeanings().deleteAllFromRealm();
 

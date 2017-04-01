@@ -48,7 +48,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordView
         holder.setIcon(item.isFavorites());
 
         holder.itemView.setOnClickListener(v ->
-            view.onItemSelected(item.getWord(), item.getDirection(), holder.getAdapterPosition()));
+            view.onItemSelected(item.getWord(), item.getDirection()));
 
         holder.ivIcon.setOnClickListener(v -> {
             final boolean newStarredState = !items.get(position).isFavorites();
