@@ -1,9 +1,11 @@
 package com.licht.ytranslator.ui.DictionaryView;
 
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.licht.ytranslator.R;
@@ -12,11 +14,14 @@ import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.WordMeaningObject;
 
-public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
+class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
+    private IDictionaryView view;
     private WordObject wordObject;
 
-    public WordAdapter(WordObject wordObject) {
+    WordAdapter(IDictionaryView view,
+                       WordObject wordObject) {
         this.wordObject = wordObject;
+        this.view = view;
     }
 
     @Override
@@ -29,7 +34,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
     @Override
     public void onBindViewHolder(WordViewHolder holder, int position) {
-        holder.tvCardNumber.setText(String.valueOf(position));
+        holder.tvCardNumber.setText(String.valueOf(position + 1));
 
         String meaning = getMeanings(position);
         String syn = getSynonimes(position);
@@ -49,6 +54,9 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
             holder.tvExamples.setText(ex);
         else
             holder.tvExamples.setVisibility(View.GONE);
+
+        holder.ivShare.setOnClickListener(v ->
+                view.shareWord(wordObject.getWordMeaningObjects().get(position)));
     }
 
     private String getMeanings(int position) {
@@ -56,7 +64,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
         StringBuilder result = new StringBuilder();
         for (StringWrapper stringWrapper : wordMeaningObject.getMeanings())
-            result.append(stringWrapper.getContent() + ",");
+            result.append(stringWrapper.getContent()).append(",");
         if (result.length() > 0)
             result.deleteCharAt(result.length() - 1);
 
@@ -101,6 +109,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         TextView tvTranslating;
         TextView tvMeaning;
         TextView tvExamples;
+        ImageView ivShare;
 
         WordViewHolder(View itemView) {
             super(itemView);
@@ -109,6 +118,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
             tvTranslating = (TextView) itemView.findViewById(R.id.tv_dictionary_translating);
             tvMeaning = (TextView) itemView.findViewById(R.id.tv_dictionary_meaning);
             tvExamples = (TextView) itemView.findViewById(R.id.tv_dictionary_examples);
+            ivShare = (ImageView) itemView.findViewById(R.id.iv_share);
         }
 
     }

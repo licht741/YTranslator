@@ -1,5 +1,6 @@
 package com.licht.ytranslator.ui.DictionaryView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,7 +13,9 @@ import android.widget.TextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
+import com.licht.ytranslator.data.model.WordMeaningObject;
 import com.licht.ytranslator.data.model.WordObject;
+import com.licht.ytranslator.utils.Utils;
 
 import javax.inject.Inject;
 
@@ -20,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class DictionaryFragment extends Fragment {
+public class DictionaryFragment extends Fragment implements IDictionaryView {
 
     private static final String DICTIONARY_ID = "DICTIONARY";
     private long mDictionaryID;
@@ -67,6 +70,15 @@ public class DictionaryFragment extends Fragment {
     }
 
     @Override
+    public void shareWord(WordMeaningObject wordMeaning) {
+        String formattedText = Utils.getFormattedTextToShare(wordMeaning);
+        final Intent sendIntent = Utils.createIntentToSharing(formattedText);
+
+        if (sendIntent.resolveActivity(getActivity().getPackageManager()) != null)
+            getActivity().startActivity(sendIntent);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_dictionary, container, false);
@@ -83,7 +95,7 @@ public class DictionaryFragment extends Fragment {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         rvDictionary.setLayoutManager(mLayoutManager);
 
-        WordAdapter mAdapter = new WordAdapter(dataManager.getCachedDictionary(mDictionaryID));
+        WordAdapter mAdapter = new WordAdapter(this, dataManager.getCachedDictionary(mDictionaryID));
         rvDictionary.setAdapter(mAdapter);
 
         return root;
