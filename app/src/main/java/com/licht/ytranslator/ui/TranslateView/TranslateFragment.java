@@ -158,7 +158,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @Override
     public void setIsStarredView(boolean isStarred) {
-        Log.e("TranslateFragment()", "setIsStarredView: " + String.valueOf(isStarred));
         if (isStarred)
             ivIsStarred.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.ic_star));
         else

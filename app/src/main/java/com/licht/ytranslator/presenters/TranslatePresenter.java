@@ -74,12 +74,11 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         dataManager.setDestinationLanguage(language.split("-")[1]);
 
         final HistoryObject object = dataManager.getHistoryWord(text, language);
-        if (view != null) {
+        if (view != null)
             view.setInputText(object.getWord());
-           // view.setTranslatedText(object.getTranslate());
-        }
 
-//        onTextInput(word);
+        final Word word = dataManager.getCachedWord(text, language);
+        view.detailsAreAvailable(word.getDictionaries().size() > 0);
     }
 
     public void onClearInput() {
