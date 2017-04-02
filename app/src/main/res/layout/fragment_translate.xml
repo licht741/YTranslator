@@ -119,6 +119,7 @@
                         android:id="@+id/iv_is_starred"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
+                        android:visibility="visible"
                         android:layout_margin="2dp" />
 
                 </LinearLayout>

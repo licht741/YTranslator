@@ -12,7 +12,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,7 +94,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         final View root = inflater.inflate(R.layout.fragment_translate, container, false);
         presenter.bindView(this);
         unbinder = ButterKnife.bind(this, root);
-
         initUI(root);
         return root;
     }
@@ -105,15 +103,15 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         super.onViewCreated(view, savedInstanceState);
 
         final Bundle args = getArguments();
-        if (args == null)
-            return;
+        if (args == null) {
+            presenter.requestData();
+        } else {
+            final String word = args.getString(ARG_WORD);
+            final String direction = args.getString(ARG_DIRECTION);
 
-        final String word = args.getString(ARG_WORD);
-        final String direction = args.getString(ARG_DIRECTION);
-
-        if (word != null && direction != null)
-            presenter.initializeData(word, direction);
-
+            if (word != null && direction != null)
+                presenter.initializeData(word, direction);
+        }
     }
 
     @Override
@@ -159,9 +157,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @Override
     public void setIsStarredView(boolean isStarred) {
         if (isStarred)
-            ivIsStarred.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.ic_star));
+            ivIsStarred.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star));
         else
-            ivIsStarred.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.ic_bookmark));
+            ivIsStarred.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_bookmark));
     }
 
     @Override
@@ -189,23 +187,19 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
             case REQ_CODE_SOURCE_LANGUAGE:
                 final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
-                presenter.updateSourceLanguage(resultLanguage);
+                presenter.onUpdateSourceLanguage(resultLanguage);
                 break;
 
             case REQ_CODE_DESTINATION_LANGUAGE:
                 final String destLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
-                presenter.updateDestinationLanguage(destLanguage);
+                presenter.onUpdateDestinationLanguage(destLanguage);
                 break;
         }
     }
 
     private void onTextInput(String text) {
-        if (text == null || "".equals(text)) {
-            ivIsStarred.setVisibility(View.INVISIBLE);
-        }
-        else
-            ivIsStarred.setVisibility(View.VISIBLE);
-
+        if (text == null || "".equals(text))
+            setIsStarredView(false);
         presenter.onTextInput(text);
 
     }
@@ -224,10 +218,10 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         startAudio();
     }
 
-    @OnClick(R.id.iv_is_starred)
-    public void onStarClick() {
-        presenter.onStarredClick();
-    }
+//    @OnClick(R.id.iv_is_starred)
+//    public void onStarClick() {
+//        presenter.onStarredClick();
+//    }
 
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
@@ -283,8 +277,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     }
 
     private void initUI(View root) {
-        presenter.requestData();
-
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 

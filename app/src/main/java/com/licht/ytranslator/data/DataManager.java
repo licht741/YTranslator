@@ -79,56 +79,6 @@ public class DataManager {
     }
 
     /**
-     * Возвращает символьный код исходного языка.
-     * Если никакой язык не был выбран, то устанавливает и возвращает значение по-умолчанию
-     *
-     * @return Символьный код языка, с которого будет осуществляться перевод
-     */
-    public String getSourceLanguageSymbol() {
-        String sourceLang = appPreferences.getSourceLanguage();
-        if ("".equals(sourceLang)) {
-            sourceLang = "en"; //todo remove to resources
-            setSourceLanguageSymbol(sourceLang);
-        }
-
-        return sourceLang;
-    }
-
-    /**
-     * Устанавливает символьный код исходного языка
-     *
-     * @param sourceLanguageSymbol Символьный код языка, с которого будет осуществляться перевод
-     */
-    public void setSourceLanguageSymbol(String sourceLanguageSymbol) {
-        appPreferences.putSourceLanguage(sourceLanguageSymbol);
-    }
-
-    /**
-     * Возвращает символьный код языка, на который будет осуществляться перевод.
-     * Если никакой язык не был выбран, то устанавливает и возвращает значение по-умолчанию
-     *
-     * @return Символьный код языка, на который будет осуществляться перевод
-     */
-    public String getDestinationLanguageSymbol() {
-        String destLang = appPreferences.getDestinationLanguage();
-        if ("".equals(destLang)) {
-            destLang = "ru"; //todo remove to resources
-            setDestinationLanguage(destLang);
-        }
-
-        return destLang;
-    }
-
-    /**
-     * Устанавливает символьный код языка, на который будет осуществляться перевод
-     *
-     * @param languageSymbol Символьный код языка, на который будет осуществляться перевод
-     */
-    public void setDestinationLanguage(String languageSymbol) {
-        appPreferences.putDestinationLanguage(languageSymbol);
-    }
-
-    /**
      * Возвращает название языка по символьному коду, используемое в текущей локализации UI
      *
      * @param languageSymbol Символьный код языка
@@ -250,21 +200,6 @@ public class DataManager {
      * Остальные функции
      */
 
-    /**
-     * @return Название исходного языка в текущей локализации UI
-     */
-    public String getSourceLanguage() {
-        String sourceLang = getSourceLanguageSymbol();
-        return getLanguageName(sourceLang);
-    }
-
-    /**
-     * @return Название языка, в который будет осуществляться перевод, в текущей локализации UI
-     */
-    public String getDestinationLanguage() {
-        String destLang = getDestinationLanguageSymbol();
-        return getLanguageName(destLang);
-    }
 
     /**
      * @return Список языков, с которых можно осуществлять перевод
@@ -278,13 +213,6 @@ public class DataManager {
         return list;
     }
 
-    /**
-     *
-     * @return Список языков, в которые можно осуществить перевод из исходнего
-     */
-    public ArrayList<String> getDestinationLanguageList() {
-        return getDestinationLanguageList(getSourceLanguageSymbol());
-    }
 
     public ArrayList<String> getDestinationLanguageList(String sourceLanguageSymbol) {
         final ArrayList<String> result = new ArrayList<>();
@@ -323,4 +251,21 @@ public class DataManager {
         mapJSON.put("lang", lang);
         return mapJSON;
     }
+
+    public void updateHistoryWord(String word, String direction, boolean isHistoryWord) {
+        cacheData.updateHistoryWord(word, direction, isHistoryWord);
+    }
+
+    public void updateStarredWord(String word, String direction, boolean isStarredNow) {
+        cacheData.setWordStarred(word, direction, isStarredNow);
+    }
+
+    public String getLanguageByCode(String code) {
+        checkCachedLocalizations();
+        for (Localization localization : mLocalizations)
+            if (localization.getLanguageSymbol().equals(code))
+                return localization.getLanguageTitle();
+        return "";
+    }
+
 }

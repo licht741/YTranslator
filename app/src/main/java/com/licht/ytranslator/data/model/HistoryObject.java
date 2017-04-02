@@ -6,6 +6,7 @@ public class HistoryObject extends RealmObject {
     private String word;
     private String translate;
     private String direction;
+    private boolean inHistory;
     private boolean isFavorites;
 
     public HistoryObject() {
@@ -15,11 +16,21 @@ public class HistoryObject extends RealmObject {
     public HistoryObject(String word,
                          String translate,
                          String direction,
+                         boolean inHistory,
                          boolean isFavorites) {
         this.word = word;
         this.translate = translate;
         this.direction = direction;
         this.isFavorites = isFavorites;
+        this.inHistory = inHistory;
+    }
+
+    public boolean isInHistory() {
+        return inHistory;
+    }
+
+    public void setInHistory(boolean inHistory) {
+        this.inHistory = inHistory;
     }
 
     public String getWord() {

@@ -75,11 +75,10 @@ public class HistoryListFragment extends Fragment implements IHistoryView {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        updateData();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        presenter.requestData(false);
     }
-
 
     @Override
     public void onItemSelected(String word, String direction) {
@@ -103,8 +102,4 @@ public class HistoryListFragment extends Fragment implements IHistoryView {
         presenter.unbindView();
     }
 
-    @Override
-    public void updateData() {
-        presenter.requestData(false);
-    }
 }

@@ -1,8 +1,5 @@
 package com.licht.ytranslator.presenters;
 
-import android.util.Log;
-import android.widget.Toast;
-
 import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
@@ -11,6 +8,7 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.data.model.WordObject;
+import com.licht.ytranslator.data.sources.UserPreferences;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
 import com.licht.ytranslator.utils.DictionaryAnswerParser;
 
@@ -27,179 +25,196 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     @Inject
     DataManager dataManager;
 
-    private ITranslateView view;
+    private UserPreferences userPreferences;
 
-    private String currentText;
-    private String language;
-    private String translatedText;
-    private boolean isStarredWord = false;
+    private ITranslateView view;
 
     public TranslatePresenter() {
         super();
         YTransApp.getAppComponent().inject(this);
+        userPreferences = new UserPreferences();
     }
 
     @Override
     public void bindView(ITranslateView iTranslateView) {
-        view = iTranslateView;
+        this.view = iTranslateView;
     }
 
     @Override
     public void unbindView() {
-        view = null;
+        this.view = null;
     }
 
-    public void onTextInput(String text) {
-        if ("".equals(text)) {
-            setTextToResultView("");
-            setStarVisible(false);
+    /**
+     * Инициализирует окно перевода значениями, которые были при закрытии
+     */
+    public void requestData() {
+        String input = userPreferences.getInputText();
+        if (input == null) {
+            input = "";
+            userPreferences.setInputText(input);
+        }
+
+        String translateDirection = userPreferences.getTranslateDirection();
+        if (translateDirection == null || "".equals(translateDirection)) {
+            translateDirection = "en-ru";
+            userPreferences.setDirectionText(translateDirection);
+        }
+
+        initializeData(input, translateDirection);
+
+    }
+
+    /**
+     * Инициализирует окно перевода переданными значениями
+     *
+     * @param inputText          Переводимый текст
+     * @param translateDirection Направление перевода
+     */
+    public void initializeData(String inputText, String translateDirection) {
+        final String[] languages = translateDirection.split("-");
+
+        view.setInputText(inputText);
+        view.setLanguagePair(dataManager.getLanguageByCode(languages[0]),
+                dataManager.getLanguageByCode(languages[1]));
+    }
+
+    /**
+     * Вызывается при изменении содержимого поля ввода текста на экране перевода
+     *
+     * @param content Новый текст
+     */
+    public void onTextInput(String content) {
+        if (content == null)
+            return;
+
+        if ("".equals(content)) {
+            view.setTranslatedText("");
             return;
         }
-        setStarVisible(true);
-        currentText = text;
-        translatedText = "";
 
-        isStarredWord = false;
+        userPreferences.setInputText(content);
+
         if (view != null) {
-            view.setIsStarredView(false);
             view.detailsAreAvailable(false);
+            view.isStarVisible(false);
         }
 
-        translateText(text);
+        translateText();
     }
 
-    public void initializeData(String text, String direction) {
-        this.language = direction;
-        dataManager.setSourceLanguageSymbol(language.split("-")[0]);
-        dataManager.setDestinationLanguage(language.split("-")[1]);
 
-        final HistoryObject object = dataManager.getHistoryWord(text, language);
-        if (view != null)
-            view.setInputText(object.getWord());
+    public void translateText() {
+        final String text = userPreferences.getInputText();
+        final String direction = userPreferences.getTranslateDirection();
 
-        final Word word = dataManager.getCachedWord(text, language);
-        view.detailsAreAvailable(word.getDictionaries().size() > 0);
-    }
-
-    public void onClearInput() {
-        if (view != null)
-            view.detailsAreAvailable(false);
-        setTextToInputView("");
-        currentText = "";
-        setTextToResultView("");
-    }
-
-    private void setTranslatingToView(String text) {
-        setTextToResultView(text);
-        if (dataManager.isStarredWord(text, language))
-            star();
-        else
-            unstar();
-    }
-
-    private void translateText(String text) {
-        if (text == null || "".equals(text))
-            return;
-
-        final HistoryObject object = dataManager.getHistoryWord(text, language);
-        if (object != null) {
-
-            final String trans = object.getTranslate();
-            setTranslatingToView(trans);
-            return;
+        final HistoryObject historyObject = dataManager.getHistoryWord(text, direction);
+        if (historyObject != null)
+            initializeTranslate(historyObject);
+        else {
+            final String key = YTransApp.get().getString(R.string.key_translate);
+            requestTranslation(key, text, direction);
         }
 
-        final String key = YTransApp.get().getString(R.string.key_translate);
-        dataManager.requestTranslation(key, text, language).enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, Response<Result> response) {
-                setTranslatingToView(response.body().text.get(0));
-            }
-
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                doOnFailure();
-            }
-        });
-
-        final String keyDict = YTransApp.get().getString(R.string.key_dictionary);
-        dataManager.getDataFromDictionary(keyDict, text, language).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                RealmList<WordObject> dicts = DictionaryAnswerParser.parse(response.body());
-                Word w = new Word(text, language, dicts);
-                dataManager.cacheDictionaryWord(w);
-
-                if (view != null)
-                    view.detailsAreAvailable(dicts.size() > 0);
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                // TODO ?
-            }
-        });
+        final Word word = dataManager.getCachedWord(text, direction);
+        if (word != null)
+            initializeDictionary(word);
+        else {
+            final String keyDict = YTransApp.get().getString(R.string.key_dictionary);
+            requestMeaningFromDictionary(keyDict, text, direction);
+        }
     }
 
-    private void doOnFailure() {
-        Toast.makeText(YTransApp.get(), "Не удалось получить результаты", Toast.LENGTH_SHORT).show();
+    public void onKeyboardHide() {
+        // Если пользователь закрыл клавиатуру, то он просматривает перевод слова
+        // В этой ситуации мы сохраняем слово в историю
+
+        // Помечаем, что слово, которое мы ранее закэшировали, теперь входит в историю
+        addWordToHistory();
+
+    }
+
+    /**
+     * Вызывается при изменении пользователем исходного языка
+     *
+     * @param newSourceLanguage Название нового исходного языка, написанное в используемой локализации
+     */
+    public void onUpdateSourceLanguage(String newSourceLanguage) {
+        // Переводим название языка в его кодовое обозначение
+        final String langSymbol = dataManager.getLanguageSymbolByName(newSourceLanguage);
+
+        final String currentDirection = userPreferences.getTranslateDirection();
+        final String[] tokens = currentDirection.split("-");
+        final String newDirection = String.format("%s-%s", langSymbol, tokens[1]);
+
+        userPreferences.setDirectionText(newDirection);
+
+        updateLanguagePairInView(newDirection);
+    }
+
+    /**
+     * Вызывается при изменении пользователем языка, на который осуществляется перевод
+     *
+     * @param newDestinationLanguage Название языка, написанное в используемой локализации
+     */
+    public void onUpdateDestinationLanguage(String newDestinationLanguage) {
+        // Переводим название языка в его кодовое обозначение
+        final String langSymbol = dataManager.getLanguageSymbolByName(newDestinationLanguage);
+
+        final String currentDirection = userPreferences.getTranslateDirection();
+        final String[] tokens = currentDirection.split("-");
+        final String newDirection = String.format("%s-%s", tokens[0], langSymbol);
+
+        userPreferences.setDirectionText(newDirection);
+
+        updateLanguagePairInView(newDirection);
+    }
+
+    public void onSwapLanguages() {
+        final String currentDirection = userPreferences.getTranslateDirection();
+        final String[] tokens = currentDirection.split("-");
+        final String newDirection = String.format("%s-%s", tokens[1], tokens[0]);
+        userPreferences.setDirectionText(newDirection);
+
+        HistoryObject obj = dataManager.getHistoryWord(userPreferences.getInputText(), currentDirection);
+        view.setInputText(obj.getTranslate());
+        view.setLanguagePair(dataManager.getLanguageByCode(tokens[1]),
+                dataManager.getLanguageByCode(tokens[0]));
+
+    }
+
+
+    public void onOpenDictionaryClick() {
+        if (view != null)
+            view.openDictionary(userPreferences.getInputText(), userPreferences.getTranslateDirection());
     }
 
     public void onStarredClick() {
-        if (isStarredWord) {
-            addWordToHistory(false);
-            unstar();
-        } else {
-            addWordToHistory(true);
-            star();
-        }
-    }
-
-    private void setStarVisible(boolean isVisible) {
-        view.isStarVisible(isVisible);
-    }
-
-    private void star() {
-        Log.e("TranslatePreseneter", "star: ");
-        if (view == null)
-            return;
-        isStarredWord = true;
-        view.setIsStarredView(isStarredWord);
-    }
-
-    private void unstar() {
-        Log.e("TranslatePreseneter", "unstar: ");
-        if (view == null)
+        HistoryObject obj = dataManager.getHistoryWord(userPreferences.getInputText(),
+                userPreferences.getTranslateDirection());
+        if (obj == null)
             return;
 
-        isStarredWord = false;
-        view.setIsStarredView(isStarredWord);
+        final boolean isFavorites = obj.isFavorites();
+
+        updateStarredWord(!isFavorites);
+        view.setIsStarredView(!isFavorites);
     }
 
-    private void setTextToResultView(String text) {
-        if (view == null)
-            return;
-        translatedText = text;
-        view.setTranslatedText(text);
-    }
-
-    private void setTextToInputView(String text) {
-        view.setInputText(text);
-    }
-
-    private void addWordToHistory(boolean isStarredWord) {
-        dataManager.addWordToHistory(
-                new HistoryObject(currentText, translatedText, language, isStarredWord));
+    public void onClearInput() {
+        view.isStarVisible(false);
+        view.detailsAreAvailable(false);
+        view.setInputText("");
     }
 
     public String getSourceLanguage() {
-        return dataManager.getSourceLanguage();
+        final String sym = userPreferences.getTranslateDirection().split("-")[0];
+        return dataManager.getLanguageByCode(sym);
     }
 
-    public void onOpenDictionaryClick() {
-        if (view == null)
-            return;
-        view.openDictionary(currentText, language);
+    public String getDestinationLanguage() {
+        final String sym = userPreferences.getTranslateDirection().split("-")[1];
+        return dataManager.getLanguageByCode(sym);
     }
 
     public ArrayList<String> getSourceLanguages() {
@@ -207,63 +222,88 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     public ArrayList<String> getDestinationLanguages() {
-        return dataManager.getDestinationLanguageList();
+        return dataManager.getDestinationLanguageList(userPreferences.getTranslateDirection().split("-")[0]);
     }
 
-    public void requestData() {
+
+    private void requestTranslation(String key, String text, String direction) {
+        dataManager.requestTranslation(key, text, direction).enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                final int code = response.body().code; // todo check code
+
+                final String result = response.body().text.get(0);
+                HistoryObject historyObject = new HistoryObject(text, result, direction, false, false);
+                dataManager.addWordToHistory(historyObject);
+
+                initializeTranslate(historyObject);
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                // todo
+            }
+        });
+    }
+
+    private void requestMeaningFromDictionary(String key, String text, String direction) {
+        dataManager.getDataFromDictionary(key, text, direction).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                // todo check result
+
+                RealmList<WordObject> dicts = DictionaryAnswerParser.parse(response.body());
+                Word w = new Word(text, direction, dicts);
+                dataManager.cacheDictionaryWord(w);
+                initializeDictionary(w);
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                // todo
+            }
+        });
+    }
+
+    private void initializeTranslate(HistoryObject result) {
         if (view == null)
             return;
-
-        updateViewLanguagePair();
-        view.setLanguagePair(getSourceLanguage(), getDestinationLanguage());
+        view.setTranslatedText(result.getTranslate());
+        view.isStarVisible(true);
+        view.setIsStarredView(result.isFavorites());
     }
 
-    public void updateSourceLanguage(String languageName) {
-        if (view == null)
-            return;
-
-        final String langSymbol = dataManager.getLanguageSymbolByName(languageName);
-        dataManager.setSourceLanguageSymbol(langSymbol);
-
-        view.setLanguagePair(languageName, getDestinationLanguage());
-        updateViewLanguagePair();
+    private void initializeDictionary(Word w) {
+        final boolean detailsAreAvailable = w.getDictionaries().size() > 0;
+        if (view != null)
+            view.detailsAreAvailable(detailsAreAvailable);
     }
 
-    public void updateDestinationLanguage(String languageName) {
-        if (view == null)
-            return;
-
-        final String langSymbol = dataManager.getLanguageSymbolByName(languageName);
-        dataManager.setDestinationLanguage(langSymbol);
-        view.setLanguagePair(getSourceLanguage(), languageName);
-        updateViewLanguagePair();
+    private void doInTranslateFailure() {
+        // todo
     }
 
-    public String getDestinationLanguage() {
-        return dataManager.getDestinationLanguage();
+    private void addWordToHistory() {
+        final String text = userPreferences.getInputText();
+        final String direction = userPreferences.getTranslateDirection();
+
+
+        dataManager.updateHistoryWord(text, direction, true);
     }
 
-    public void onSwapLanguages() {
-        final String currentSourceLanguage = getSourceLanguage();
-        final String currentDestinationLanguage = getDestinationLanguage();
+    private void updateStarredWord(boolean isStarredNow) {
+        final String text = userPreferences.getInputText();
+        final String direction = userPreferences.getTranslateDirection();
 
-        updateSourceLanguage(currentDestinationLanguage);
-        updateDestinationLanguage(currentSourceLanguage);
-
-        setTextToInputView(translatedText);
-        setTextToResultView("");
-        translateText(translatedText);
-
-        updateViewLanguagePair();
+        dataManager.updateStarredWord(text, direction, isStarredNow);
     }
 
-    public void onKeyboardHide() {
-        addWordToHistory(false);
-    }
+    private void updateLanguagePairInView(String direction) {
+        final String[] tokens = direction.split("-");
 
-    private void updateViewLanguagePair() {
-        language = String.format("%s-%s",
-                dataManager.getSourceLanguageSymbol(),
-                dataManager.getDestinationLanguageSymbol());
+        final String sourceLanguage = dataManager.getLanguageByCode(tokens[0]);
+        final String destinationLanguage = dataManager.getLanguageByCode(tokens[1]);
+
+        view.setLanguagePair(sourceLanguage, destinationLanguage);
     }
 }

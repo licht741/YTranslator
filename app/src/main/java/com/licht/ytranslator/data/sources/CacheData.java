@@ -90,18 +90,24 @@ public class CacheData {
 
     public Word getCachedWord(String word, String dir) {
         final Realm realm = Realm.getDefaultInstance();
-        final Word w = realm.where(Word.class)
+        Word w = realm.where(Word.class)
                             .equalTo("word", word)
                             .equalTo("direction", dir)
                             .findFirst();
-        return realm.copyFromRealm(w);
+        if (w != null)
+            w = realm.copyFromRealm(w);
+        return w;
     }
 
     public WordObject getCachedDictionary(long id) {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(WordObject.class)
+        WordObject wordObject = realm.where(WordObject.class)
                 .equalTo("id", id)
                 .findFirst();
+        if (wordObject != null)
+            wordObject = realm.copyFromRealm(wordObject);
+
+        return wordObject;
     }
 
     public void cacheDictionary(Word word) {
@@ -144,16 +150,15 @@ public class CacheData {
                 .equalTo("word", word)
                 .equalTo("direction", direction)
                 .findFirst();
-        realm.beginTransaction();
+
         if (historyObject != null)
             historyObject = realm.copyFromRealm(historyObject);
-        realm.commitTransaction();
         return historyObject;
     }
 
     public List<HistoryObject> getHistoryWords() {
         final Realm realm = Realm.getDefaultInstance();
-        List<HistoryObject> res = realm.where(HistoryObject.class).findAll();
+        List<HistoryObject> res = realm.where(HistoryObject.class).equalTo("inHistory", true).findAll();
 
         // Открепляем объекты от realm, для того, чтоб модифицировать их не в транзакциях
         List<HistoryObject> historyObjects = new ArrayList<>();
@@ -163,6 +168,19 @@ public class CacheData {
         return historyObjects;
     }
 
+
+    public void updateHistoryWord(String word, String direction, boolean isHistoryWord) {
+        final Realm realm = Realm.getDefaultInstance();
+        final HistoryObject w = realm.where(HistoryObject.class)
+                .equalTo("word", word)
+                .equalTo("direction", direction).findFirst();
+        if (w == null)
+            return;
+
+        realm.beginTransaction();
+        w.setInHistory(isHistoryWord);
+        realm.commitTransaction();
+    }
 
     public List<HistoryObject> getFavoritesWords() {
         final Realm realm = Realm.getDefaultInstance();
@@ -194,7 +212,7 @@ public class CacheData {
         final List<Word> wordsToRemove = query.findAll();
 
         // Realm не поддерживает каскадное удаление объектов,
-        // поэтому очистка осуществляется таким образом
+        // поэтому очистка осуществляется вручную
         realm.beginTransaction();
         for (Word word : wordsToRemove) {
             for (WordObject wordObject : word.getDictionaries()) {

@@ -59,9 +59,9 @@ public class StarredListFragment extends Fragment implements IHistoryView {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        updateData();
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        presenter.requestData(true);
     }
 
     @Override
@@ -71,9 +71,7 @@ public class StarredListFragment extends Fragment implements IHistoryView {
 
     @Override
     public void onStarredChanged(String word, String direction, boolean newStarredCurrent) {
-//        adapter.onItemRemoved(position);
         presenter.setWordStarredState(word, direction, newStarredCurrent);
-//        adapter.onItemChanged(position);
     }
 
     @Override
@@ -104,8 +102,4 @@ public class StarredListFragment extends Fragment implements IHistoryView {
         toggle.syncState();
     }
 
-    @Override
-    public void updateData() {
-        presenter.requestData(true);
-    }
 }
