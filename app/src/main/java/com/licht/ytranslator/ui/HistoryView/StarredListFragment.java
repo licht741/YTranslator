@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
@@ -38,6 +39,9 @@ public class StarredListFragment extends Fragment implements IHistoryView {
 
     @BindView(R.id.rv_history_list)
     RecyclerView recyclerView;
+
+    @BindView(R.id.view_no_content)
+    RelativeLayout noContentView;
 
     private final HistoryAdapter adapter = new HistoryAdapter(this);
 
@@ -76,6 +80,15 @@ public class StarredListFragment extends Fragment implements IHistoryView {
 
     @Override
     public void setData(List<HistoryObject> items) {
+        if (items.size() == 0) {
+            noContentView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        }
+        else {
+            noContentView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
         adapter.setData(items);
     }
 
