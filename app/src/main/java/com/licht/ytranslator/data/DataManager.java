@@ -4,15 +4,15 @@ import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
-import com.licht.ytranslator.data.model.WordObject;
+import com.licht.ytranslator.data.endpoint.YandexTranslateAPI;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
+import com.licht.ytranslator.data.model.WordObject;
 import com.licht.ytranslator.data.sources.AppPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
-import com.licht.ytranslator.data.endpoint.YandexTranslateAPI;
 import com.licht.ytranslator.utils.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -42,7 +42,9 @@ public class DataManager {
 
     private Localization[] mLocalizations = null;
     private String[] mTranslateTypes = null;
-    /** Используемая локализация UI */
+    /**
+     * Используемая локализация UI
+     */
     private String mLocalSymbol = null;
 
     public DataManager() {
@@ -107,10 +109,6 @@ public class DataManager {
         return "";
     }
 
-    public boolean isStarredWord(String word, String direction) {
-        return cacheData.isStarredWord(word, direction);
-    }
-
     public void setWordStarred(String word, String direction, boolean iStarred) {
         cacheData.setWordStarred(word, direction, iStarred);
     }
@@ -152,7 +150,7 @@ public class DataManager {
     /**
      * Загружает перевод для указанного текста с указанными параметрами
      *
-     * @param key Ключ API
+     * @param key  Ключ API
      * @param text Исходный текст
      * @param lang Направление перевода
      * @return Объект, используемый для асинхронной загрузки данных
@@ -166,7 +164,7 @@ public class DataManager {
      * Кэширует переданные данные приложения
      *
      * @param supportedTranslations Список доступных направлений перевода
-     * @param localizations Список обёрток над локализациями
+     * @param localizations         Список обёрток над локализациями
      */
     public void cacheLanguageData(List<SupportedTranslation> supportedTranslations,
                                   List<Localization> localizations) {
@@ -181,7 +179,7 @@ public class DataManager {
      * Возвращает закэшированную информацию о слове, полученную из Яндекс Словаря
      *
      * @param word Запрашиваемое слово
-     * @param dir Направление перевод
+     * @param dir  Направление перевод
      * @return Объект, содержащий информацию о слове
      */
     public Word getCachedWord(String word, String dir) {
@@ -200,30 +198,13 @@ public class DataManager {
      * Остальные функции
      */
 
-
-    /**
-     * @return Список языков, с которых можно осуществлять перевод
-     */
-    public ArrayList<String> getSourceLanguageList() {
+    public ArrayList<String> getLanguagesList() {
         checkCachedLocalizations();
         final ArrayList<String> list = new ArrayList<>();
         for (Localization localization : mLocalizations)
             list.add(localization.getLanguageTitle());
 
         return list;
-    }
-
-
-    public ArrayList<String> getDestinationLanguageList(String sourceLanguageSymbol) {
-        final ArrayList<String> result = new ArrayList<>();
-
-        for (String translateType : mTranslateTypes)
-            if (translateType.startsWith(sourceLanguageSymbol)) {
-                final String destLangSym = translateType.split("-")[1];
-                result.add(getLanguageName(destLangSym));
-            }
-
-        return result;
     }
 
     public int getCacheSize() {
@@ -267,5 +248,4 @@ public class DataManager {
                 return localization.getLanguageTitle();
         return "";
     }
-
 }

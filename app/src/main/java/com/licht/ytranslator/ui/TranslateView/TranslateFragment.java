@@ -142,6 +142,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     public void setLanguagePair(String source, String destination) {
         tvSelectedSourceLang.setText(source);
         tvSelectedDestLang.setText(destination);
+
+        notifyLanguageChanges();
     }
 
     @Override
@@ -218,10 +220,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         startAudio();
     }
 
-//    @OnClick(R.id.iv_is_starred)
-//    public void onStarClick() {
-//        presenter.onStarredClick();
-//    }
 
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
@@ -236,7 +234,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @OnClick(R.id.tv_selected_source_lang)
     public void onSelectedSourceClick() {
         final String selectedLanguage = presenter.getSourceLanguage();
-        final ArrayList<String> languages = presenter.getSourceLanguages();
+        final ArrayList<String> languages = presenter.getLanguagesList();
         Collections.sort(languages);
 
         Intent intent = new Intent(getContext(), SelectLanguageActivity.class);
@@ -251,7 +249,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @OnClick(R.id.tv_selected_dest_lang)
     public void onSelectedDestinationClick() {
         final String selectedLanguage = presenter.getDestinationLanguage();
-        final ArrayList<String> languages = presenter.getDestinationLanguages();
+        final ArrayList<String> languages = presenter.getLanguagesList();
 
         Intent intent = new Intent(getContext(), SelectLanguageActivity.class);
         Bundle b = new Bundle();
@@ -279,11 +277,14 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     private void initUI(View root) {
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(ContextCompat.getColor(getContext(),
+                                  android.R.color.white));
 
         DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
+
         toggle.syncState();
 
         ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
@@ -302,5 +303,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     public void onStop() {
         super.onStop();
         Utils.hideKeyboard(getActivity());
+    }
+
+    private void notifyLanguageChanges() {
+        onTextInput(mCurrentWord);
     }
 }

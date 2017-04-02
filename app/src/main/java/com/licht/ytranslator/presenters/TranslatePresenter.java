@@ -146,7 +146,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         final String currentDirection = userPreferences.getTranslateDirection();
         final String[] tokens = currentDirection.split("-");
         final String newDirection = String.format("%s-%s", langSymbol, tokens[1]);
-
         userPreferences.setDirectionText(newDirection);
 
         updateLanguagePairInView(newDirection);
@@ -176,10 +175,14 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         final String newDirection = String.format("%s-%s", tokens[1], tokens[0]);
         userPreferences.setDirectionText(newDirection);
 
+        if (view == null)
+            return;
+
+        view.setLanguagePair(dataManager.getLanguageByCode(tokens[1]), dataManager.getLanguageByCode(tokens[0]));
+
         HistoryObject obj = dataManager.getHistoryWord(userPreferences.getInputText(), currentDirection);
-        view.setInputText(obj.getTranslate());
-        view.setLanguagePair(dataManager.getLanguageByCode(tokens[1]),
-                dataManager.getLanguageByCode(tokens[0]));
+        if (obj != null)
+            view.setInputText(obj.getTranslate());
 
     }
 
@@ -217,12 +220,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         return dataManager.getLanguageByCode(sym);
     }
 
-    public ArrayList<String> getSourceLanguages() {
-        return dataManager.getSourceLanguageList();
-    }
-
-    public ArrayList<String> getDestinationLanguages() {
-        return dataManager.getDestinationLanguageList(userPreferences.getTranslateDirection().split("-")[0]);
+    public ArrayList<String> getLanguagesList() {
+        return dataManager.getLanguagesList();
     }
 
 
