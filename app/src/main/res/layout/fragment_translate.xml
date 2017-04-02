@@ -46,13 +46,18 @@
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp" />
 
-                    <ImageView
+                    <FrameLayout
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true">
 
-                        android:id="@+id/iv_swap_language"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_lang_change" />
+                        <ImageView
+                            android:id="@+id/iv_swap_language"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_lang_change" />
+                    </FrameLayout>
 
                     <TextView
                         android:id="@+id/tv_selected_dest_lang"
@@ -81,10 +86,10 @@
                     android:id="@+id/edit_input_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="4dp"
                     android:background="@android:color/transparent"
                     android:gravity="top|left"
                     android:inputType="textAutoComplete|text|textMultiLine"
-                    android:maxLines="5"
                     android:scrollbars="vertical" />
 
                 <ImageView
@@ -128,11 +133,11 @@
                 android:layout_height="0dp"
                 android:layout_weight="4">
 
-
                 <TextView
                     android:id="@+id/tv_translated_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="4dp"
                     android:layout_marginBottom="10dp" />
 
                 <TextView
