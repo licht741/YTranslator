@@ -28,8 +28,6 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
     private static final String DICTIONARY_ID = "DICTIONARY";
     private long mDictionaryID;
 
-    private WordObject mWordObject;
-
     @Inject
     DataManager dataManager;
 
@@ -85,7 +83,7 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
 
         unbinder = ButterKnife.bind(this, root);
 
-        mWordObject = dataManager.getCachedDictionary(mDictionaryID);
+        WordObject mWordObject = dataManager.getCachedDictionary(mDictionaryID);
 
         dictionaryWord.setText(mWordObject.getText());
         dictionaryTranscription.setText(String.format("[%s]", mWordObject.getTrans()));

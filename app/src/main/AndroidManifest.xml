@@ -32,7 +32,7 @@
         <activity
             android:name=".ui.DictionaryView.DictionaryActivity"
             android:label="@string/title_activity_dictionary"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

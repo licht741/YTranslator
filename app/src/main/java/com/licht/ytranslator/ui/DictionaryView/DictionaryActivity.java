@@ -16,16 +16,10 @@ import javax.inject.Inject;
 
 public class DictionaryActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-
     @Inject
     DataManager dataManager;
 
     private Word mWord;
-    private String word;
-    private String dirs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +28,20 @@ public class DictionaryActivity extends AppCompatActivity {
 
         YTransApp.getAppComponent().inject(this);
 
-        word = getIntent().getStringExtra("WORD");
-        dirs = getIntent().getStringExtra("DIRECTION");
+        String word = getIntent().getStringExtra("WORD");
+        String dirs = getIntent().getStringExtra("DIRECTION");
 
         mWord = dataManager.getCachedWord(word, dirs);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(mWord.getWord().toUpperCase());
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 

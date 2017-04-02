@@ -77,7 +77,7 @@ class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
         final StringBuilder result = new StringBuilder();
         result.append(wordMeaningObject.getText()).append(", ");
         for (StringWrapper stringWrapper : wordMeaningObject.getSynonimes())
-            result.append(stringWrapper.getContent() + ", ");
+            result.append(stringWrapper.getContent()).append(", ");
 
         if (result.length() > 1)
             result.delete(result.length() - 2, result.length());
