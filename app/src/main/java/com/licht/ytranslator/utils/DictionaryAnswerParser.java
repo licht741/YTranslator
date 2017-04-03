@@ -77,10 +77,6 @@ public class DictionaryAnswerParser {
 
             }
 
-            if (ex != null) {
-                int x = 0;
-            }
-
             JsonArray arr = el1.getAsJsonArray("mean");
             if (arr != null)
                 for (int k = 0; k < arr.size(); ++k) {

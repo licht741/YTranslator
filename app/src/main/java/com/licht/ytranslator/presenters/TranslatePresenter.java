@@ -8,7 +8,7 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.data.model.WordObject;
-import com.licht.ytranslator.data.sources.UserPreferences;
+import com.licht.ytranslator.data.sources.TranslatePreferences;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
 import com.licht.ytranslator.utils.DictionaryAnswerParser;
 
@@ -25,14 +25,14 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     @Inject
     DataManager dataManager;
 
-    private UserPreferences userPreferences;
+    private TranslatePreferences translatePreferences;
 
     private ITranslateView view;
 
     public TranslatePresenter() {
         super();
         YTransApp.getAppComponent().inject(this);
-        userPreferences = new UserPreferences();
+        translatePreferences = new TranslatePreferences();
     }
 
     @Override
@@ -49,16 +49,16 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
      * Инициализирует окно перевода значениями, которые были при закрытии
      */
     public void requestData() {
-        String input = userPreferences.getInputText();
+        String input = translatePreferences.getInputText();
         if (input == null) {
             input = "";
-            userPreferences.setInputText(input);
+            translatePreferences.setInputText(input);
         }
 
-        String translateDirection = userPreferences.getTranslateDirection();
+        String translateDirection = translatePreferences.getTranslateDirection();
         if (translateDirection == null || "".equals(translateDirection)) {
             translateDirection = "en-ru";
-            userPreferences.setDirectionText(translateDirection);
+            translatePreferences.setDirectionText(translateDirection);
         }
 
         initializeData(input, translateDirection);
@@ -93,7 +93,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
             return;
         }
 
-        userPreferences.setInputText(content);
+        translatePreferences.setInputText(content);
 
         if (view != null) {
             view.detailsAreAvailable(false);
@@ -105,8 +105,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
 
     public void translateText() {
-        final String text = userPreferences.getInputText();
-        final String direction = userPreferences.getTranslateDirection();
+        final String text = translatePreferences.getInputText();
+        final String direction = translatePreferences.getTranslateDirection();
 
         final HistoryObject historyObject = dataManager.getHistoryWord(text, direction);
         if (historyObject != null)
@@ -143,10 +143,10 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         // Переводим название языка в его кодовое обозначение
         final String langSymbol = dataManager.getLanguageSymbolByName(newSourceLanguage);
 
-        final String currentDirection = userPreferences.getTranslateDirection();
+        final String currentDirection = translatePreferences.getTranslateDirection();
         final String[] tokens = currentDirection.split("-");
         final String newDirection = String.format("%s-%s", langSymbol, tokens[1]);
-        userPreferences.setDirectionText(newDirection);
+        translatePreferences.setDirectionText(newDirection);
 
         updateLanguagePairInView(newDirection);
     }
@@ -160,27 +160,27 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         // Переводим название языка в его кодовое обозначение
         final String langSymbol = dataManager.getLanguageSymbolByName(newDestinationLanguage);
 
-        final String currentDirection = userPreferences.getTranslateDirection();
+        final String currentDirection = translatePreferences.getTranslateDirection();
         final String[] tokens = currentDirection.split("-");
         final String newDirection = String.format("%s-%s", tokens[0], langSymbol);
 
-        userPreferences.setDirectionText(newDirection);
+        translatePreferences.setDirectionText(newDirection);
 
         updateLanguagePairInView(newDirection);
     }
 
     public void onSwapLanguages() {
-        final String currentDirection = userPreferences.getTranslateDirection();
+        final String currentDirection = translatePreferences.getTranslateDirection();
         final String[] tokens = currentDirection.split("-");
         final String newDirection = String.format("%s-%s", tokens[1], tokens[0]);
-        userPreferences.setDirectionText(newDirection);
+        translatePreferences.setDirectionText(newDirection);
 
         if (view == null)
             return;
 
         view.setLanguagePair(dataManager.getLanguageByCode(tokens[1]), dataManager.getLanguageByCode(tokens[0]));
 
-        HistoryObject obj = dataManager.getHistoryWord(userPreferences.getInputText(), currentDirection);
+        HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(), currentDirection);
         if (obj != null)
             view.setInputText(obj.getTranslate());
 
@@ -189,12 +189,12 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
 
     public void onOpenDictionaryClick() {
         if (view != null)
-            view.openDictionary(userPreferences.getInputText(), userPreferences.getTranslateDirection());
+            view.openDictionary(translatePreferences.getInputText(), translatePreferences.getTranslateDirection());
     }
 
     public void onStarredClick() {
-        HistoryObject obj = dataManager.getHistoryWord(userPreferences.getInputText(),
-                userPreferences.getTranslateDirection());
+        HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(),
+                translatePreferences.getTranslateDirection());
         if (obj == null)
             return;
 
@@ -211,12 +211,12 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     public String getSourceLanguage() {
-        final String sym = userPreferences.getTranslateDirection().split("-")[0];
+        final String sym = translatePreferences.getTranslateDirection().split("-")[0];
         return dataManager.getLanguageByCode(sym);
     }
 
     public String getDestinationLanguage() {
-        final String sym = userPreferences.getTranslateDirection().split("-")[1];
+        final String sym = translatePreferences.getTranslateDirection().split("-")[1];
         return dataManager.getLanguageByCode(sym);
     }
 
@@ -283,16 +283,16 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
     private void addWordToHistory() {
-        final String text = userPreferences.getInputText();
-        final String direction = userPreferences.getTranslateDirection();
+        final String text = translatePreferences.getInputText();
+        final String direction = translatePreferences.getTranslateDirection();
 
 
         dataManager.updateHistoryWord(text, direction, true);
     }
 
     private void updateStarredWord(boolean isStarredNow) {
-        final String text = userPreferences.getInputText();
-        final String direction = userPreferences.getTranslateDirection();
+        final String text = translatePreferences.getInputText();
+        final String direction = translatePreferences.getTranslateDirection();
 
         dataManager.updateStarredWord(text, direction, isStarredNow);
     }

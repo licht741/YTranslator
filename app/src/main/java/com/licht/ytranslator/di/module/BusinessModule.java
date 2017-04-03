@@ -1,6 +1,6 @@
 package com.licht.ytranslator.di.module;
 
-import com.licht.ytranslator.data.sources.AppPreferences;
+import com.licht.ytranslator.data.sources.CachedPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.presenters.HistoryPresenter;
@@ -36,8 +36,8 @@ public class BusinessModule {
 
     @Provides
     @Singleton
-    AppPreferences provideAppPreferences() {
-        return new AppPreferences();
+    CachedPreferences provideAppPreferences() {
+        return new CachedPreferences();
     }
 
     @Provides

@@ -31,7 +31,6 @@
         <activity android:name=".ui.LanguageSelectView.SelectLanguageActivity" />
         <activity
             android:name=".ui.DictionaryView.DictionaryActivity"
-            android:label="@string/title_activity_dictionary"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 

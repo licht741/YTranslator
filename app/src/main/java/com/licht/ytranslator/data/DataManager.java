@@ -11,7 +11,7 @@ import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.data.model.WordObject;
-import com.licht.ytranslator.data.sources.AppPreferences;
+import com.licht.ytranslator.data.sources.CachedPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.utils.LocalizationUtils;
 
@@ -38,7 +38,7 @@ public class DataManager {
     CacheData cacheData;
 
     @Inject
-    AppPreferences appPreferences;
+    CachedPreferences cachedPreferences;
 
     private Localization[] mLocalizations = null;
     private String[] mTranslateTypes = null;
@@ -68,7 +68,7 @@ public class DataManager {
      * @return True, если для данной локализации данные были загружены, иначе False.
      */
     public boolean isDataForLocalizationCached(String localization) {
-        return appPreferences.getDataCached(localization);
+        return cachedPreferences.getDataCached(localization);
     }
 
     /**
@@ -77,7 +77,7 @@ public class DataManager {
      * @param localization Локализация UI, для которой данные были закэшированны
      */
     public void setDataForLocalizationIsCached(String localization) {
-        appPreferences.putDataCached(localization, true);
+        cachedPreferences.putDataCached(localization, true);
     }
 
     /**

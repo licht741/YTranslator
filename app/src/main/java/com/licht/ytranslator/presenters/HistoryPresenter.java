@@ -44,7 +44,6 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
         dataManager.setWordStarred(word, direction, newStarredState);
     }
 
-
     private List<HistoryObject> extractStarredWords(List<HistoryObject> items) {
         final List<HistoryObject> starred = new ArrayList<>();
         for (HistoryObject item : items)
