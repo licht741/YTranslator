@@ -142,8 +142,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     public void setLanguagePair(String source, String destination) {
         tvSelectedSourceLang.setText(source);
         tvSelectedDestLang.setText(destination);
-
-        notifyLanguageChanges();
     }
 
     @Override
@@ -189,12 +187,12 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
             case REQ_CODE_SOURCE_LANGUAGE:
                 final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
-                presenter.onUpdateSourceLanguage(resultLanguage);
+                presenter.onUpdateSourceLanguage(resultLanguage); // todo
                 break;
 
             case REQ_CODE_DESTINATION_LANGUAGE:
                 final String destLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
-                presenter.onUpdateDestinationLanguage(destLanguage);
+                presenter.onUpdateDestinationLanguage(destLanguage); // todo
                 break;
         }
     }
@@ -228,7 +226,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @OnClick(R.id.iv_clear_input)
     public void onClearInput() {
-        presenter.onClearInput();
+        isStarVisible(false);
+        detailsAreAvailable(false);
+        setInputText("");
     }
 
     @OnClick(R.id.tv_selected_source_lang)
@@ -305,7 +305,15 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         Utils.hideKeyboard(getActivity());
     }
 
-    private void notifyLanguageChanges() {
+
+    @Override
+    public void onLanguageChanges() {
         onTextInput(mCurrentWord);
+    }
+
+    @Override
+    public void onLanguagesSwapped() {
+        mCurrentWord = tvTranslatedText.getText().toString();
+        inputText.setText(mCurrentWord);
     }
 }

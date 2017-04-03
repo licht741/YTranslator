@@ -1,8 +1,12 @@
 package com.licht.ytranslator.di.module;
 
+import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
+import com.licht.ytranslator.data.endpoint.YandexTranslateAPI;
 import com.licht.ytranslator.data.sources.CachedPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.data.DataManager;
+import com.licht.ytranslator.data.sources.TranslatePreferences;
+import com.licht.ytranslator.loaders.TranslateLoader;
 import com.licht.ytranslator.presenters.HistoryPresenter;
 import com.licht.ytranslator.presenters.LoaderPresenter;
 import com.licht.ytranslator.presenters.TranslatePresenter;
@@ -17,15 +21,26 @@ public class BusinessModule {
 
     @Provides
     @Singleton
-    TranslatePresenter provideTranslatePresenter() {
-        return new TranslatePresenter();
+    TranslatePresenter provideTranslatePresenter(DataManager dataManager,
+                                                 TranslatePreferences translatePreferences,
+                                                 TranslateLoader translateLoader) {
+        return new TranslatePresenter(dataManager, translateLoader, translatePreferences);
     }
 
     // Todo remove to another module
     @Provides
     @Singleton
-    DataManager provideDataManger() {
-        return new DataManager();
+    DataManager provideDataManager(YandexTranslateAPI yandexTranslateAPI,
+                                   YandexDictionaryAPI yandexDictionaryAPI,
+                                   CacheData cacheData,
+                                   CachedPreferences cachedPreferences) {
+        return new DataManager(yandexTranslateAPI, yandexDictionaryAPI, cacheData, cachedPreferences);
+    }
+
+    @Provides
+    @Singleton
+    TranslatePreferences provideTranslatePreferences() {
+        return new TranslatePreferences();
     }
 
     @Provides
@@ -42,14 +57,20 @@ public class BusinessModule {
 
     @Provides
     @Singleton
-    LoaderPresenter provideLoaderPresenter() {
-        return new LoaderPresenter();
+    LoaderPresenter provideLoaderPresenter(DataManager dataManager) {
+        return new LoaderPresenter(dataManager);
     }
 
     @Provides
     @Singleton
-    HistoryPresenter provideHistoryPresenter() {
-        return new HistoryPresenter();
+    HistoryPresenter provideHistoryPresenter(DataManager dataManager) {
+        return new HistoryPresenter(dataManager);
+    }
+
+    @Provides
+    @Singleton
+    TranslateLoader provideTranslateLoader(DataManager dataManager) {
+        return new TranslateLoader(dataManager);
     }
 
 }

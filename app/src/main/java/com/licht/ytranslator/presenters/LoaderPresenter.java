@@ -24,14 +24,13 @@ import retrofit2.Response;
 
 public class LoaderPresenter implements IPresenter<ILoadingView> {
 
-    @Inject
-    DataManager dataManager;
-
     private ILoadingView view;
 
-    public LoaderPresenter() {
+    private DataManager dataManager;
+
+    public LoaderPresenter(DataManager dataManager) {
         super();
-        YTransApp.getAppComponent().inject(this);
+        this.dataManager = dataManager;
     }
 
     @Override

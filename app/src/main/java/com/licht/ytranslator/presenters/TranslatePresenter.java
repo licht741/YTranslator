@@ -1,38 +1,32 @@
 package com.licht.ytranslator.presenters;
 
-import com.google.gson.JsonObject;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.HistoryObject;
-import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.Word;
-import com.licht.ytranslator.data.model.WordObject;
 import com.licht.ytranslator.data.sources.TranslatePreferences;
+import com.licht.ytranslator.loaders.TranslateLoader;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
-import com.licht.ytranslator.utils.DictionaryAnswerParser;
 
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
-import io.realm.RealmList;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class TranslatePresenter implements IPresenter<ITranslateView> {
-    @Inject
-    DataManager dataManager;
-
+public class TranslatePresenter implements IPresenter<ITranslateView>, OnTranslateResultListener {
+    private DataManager dataManager;
     private TranslatePreferences translatePreferences;
+    private TranslateLoader translateLoader;
 
     private ITranslateView view;
 
-    public TranslatePresenter() {
+    public TranslatePresenter(DataManager dataManager,
+                              TranslateLoader translateLoader,
+                              TranslatePreferences translatePreferences) {
         super();
-        YTransApp.getAppComponent().inject(this);
-        translatePreferences = new TranslatePreferences();
+        this.dataManager = dataManager;
+        this.translateLoader = translateLoader;
+        this.translatePreferences = translatePreferences;
+
+        translateLoader.setOnTranslateResultListener(this);
     }
 
     @Override
@@ -104,25 +98,15 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
     }
 
 
-    public void translateText() {
+    private void translateText() {
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
 
-        final HistoryObject historyObject = dataManager.getHistoryWord(text, direction);
-        if (historyObject != null)
-            initializeTranslate(historyObject);
-        else {
-            final String key = YTransApp.get().getString(R.string.key_translate);
-            requestTranslation(key, text, direction);
-        }
+        final String key = YTransApp.get().getString(R.string.key_translate);
+        translateLoader.translate(key, text, direction);
 
-        final Word word = dataManager.getCachedWord(text, direction);
-        if (word != null)
-            initializeDictionary(word);
-        else {
-            final String keyDict = YTransApp.get().getString(R.string.key_dictionary);
-            requestMeaningFromDictionary(keyDict, text, direction);
-        }
+        final String keyDict = YTransApp.get().getString(R.string.key_dictionary);
+        translateLoader.getDictionaryMeanings(keyDict, text, direction);
     }
 
     public void onKeyboardHide() {
@@ -149,6 +133,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         translatePreferences.setDirectionText(newDirection);
 
         updateLanguagePairInView(newDirection);
+        view.onLanguageChanges();
     }
 
     /**
@@ -167,6 +152,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         translatePreferences.setDirectionText(newDirection);
 
         updateLanguagePairInView(newDirection);
+        view.onLanguageChanges();
     }
 
     public void onSwapLanguages() {
@@ -179,11 +165,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
             return;
 
         view.setLanguagePair(dataManager.getLanguageByCode(tokens[1]), dataManager.getLanguageByCode(tokens[0]));
-
-        HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(), currentDirection);
-        if (obj != null)
-            view.setInputText(obj.getTranslate());
-
+        view.onLanguagesSwapped();
     }
 
 
@@ -204,11 +186,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         view.setIsStarredView(!isFavorites);
     }
 
-    public void onClearInput() {
-        view.isStarVisible(false);
-        view.detailsAreAvailable(false);
-        view.setInputText("");
-    }
 
     public String getSourceLanguage() {
         final String sym = translatePreferences.getTranslateDirection().split("-")[0];
@@ -224,68 +201,25 @@ public class TranslatePresenter implements IPresenter<ITranslateView> {
         return dataManager.getLanguagesList();
     }
 
-
-    private void requestTranslation(String key, String text, String direction) {
-        dataManager.requestTranslation(key, text, direction).enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, Response<Result> response) {
-                final int code = response.body().code; // todo check code
-
-                final String result = response.body().text.get(0);
-                HistoryObject historyObject = new HistoryObject(text, result, direction, false, false);
-                dataManager.addWordToHistory(historyObject);
-
-                initializeTranslate(historyObject);
-            }
-
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                // todo
-            }
-        });
-    }
-
-    private void requestMeaningFromDictionary(String key, String text, String direction) {
-        dataManager.getDataFromDictionary(key, text, direction).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                // todo check result
-
-                RealmList<WordObject> dicts = DictionaryAnswerParser.parse(response.body());
-                Word w = new Word(text, direction, dicts);
-                dataManager.cacheDictionaryWord(w);
-                initializeDictionary(w);
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                // todo
-            }
-        });
-    }
-
-    private void initializeTranslate(HistoryObject result) {
+    @Override
+    public void onTranslateResult(HistoryObject historyObject) {
         if (view == null)
             return;
-        view.setTranslatedText(result.getTranslate());
+        view.setTranslatedText(historyObject.getTranslate());
         view.isStarVisible(true);
-        view.setIsStarredView(result.isFavorites());
+        view.setIsStarredView(historyObject.isFavorites());
     }
 
-    private void initializeDictionary(Word w) {
+    @Override
+    public void onDictionaryResult(Word w) {
         final boolean detailsAreAvailable = w.getDictionaries().size() > 0;
         if (view != null)
             view.detailsAreAvailable(detailsAreAvailable);
     }
 
-    private void doInTranslateFailure() {
-        // todo
-    }
-
     private void addWordToHistory() {
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
-
 
         dataManager.updateHistoryWord(text, direction, true);
     }

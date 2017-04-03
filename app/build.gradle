@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'realm-android'
-
+apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 25
@@ -27,6 +27,48 @@ android {
     }
 }
 
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+}
+
+def coverageSourceDirs = [
+        '../app/src/main/java'
+]
+
+task jacocoTestReport(type: JacocoReport, dependsOn: "testDebugUnitTest") {
+    group = "Reporting"
+
+    description = "Generate Jacoco coverage reports"
+
+    classDirectories = fileTree(
+            dir: '../app/build/intermediates/classes/debug',
+            excludes: ['**/R.class',
+                       '**/R$*.class',
+                       '**/*$ViewInjector*.*',
+                       '**/*$ViewBinder*.*',   //DI
+                       '**/*_MembersInjector*.*',  //DI
+                       '**/*_Factory*.*',  //DI
+                       '**/testrx/model/dto/*.*', //dto model
+                       '**/testrx/presenter/vo/*.*', //vo model
+                       '**/testrx/other/**',
+                       '**/BuildConfig.*',
+                       '**/Manifest*.*',
+                       '**/Lambda$*.class',
+                       '**/Lambda.class',
+                       '**/*Lambda.class',
+                       '**/*Lambda*.class']
+    )
+
+    additionalSourceDirs = files(coverageSourceDirs)
+    sourceDirectories = files(coverageSourceDirs)
+    executionData = files('../app/build/jacoco/testDebugUnitTest.exec')
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -48,6 +90,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 
     testCompile 'org.robolectric:robolectric:3.0'
+    testCompile "org.mockito:mockito-core:2.0.57-beta"
 }
 
 repositories {

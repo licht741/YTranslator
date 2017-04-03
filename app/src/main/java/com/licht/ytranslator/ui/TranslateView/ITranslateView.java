@@ -11,4 +11,7 @@ public interface ITranslateView {
 
     void setIsStarredView(boolean isStarred);
     void isStarVisible(boolean isVisible);
+
+    void onLanguageChanges();
+    void onLanguagesSwapped();
 }

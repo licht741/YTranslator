@@ -11,8 +11,8 @@ import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.data.model.WordObject;
-import com.licht.ytranslator.data.sources.CachedPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
+import com.licht.ytranslator.data.sources.CachedPreferences;
 import com.licht.ytranslator.utils.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -20,24 +20,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import retrofit2.Call;
 
 /**
  * Реализует паттерн "Фасад", инкапсулирая работу со всеми возможными источниками данных
  */
 public class DataManager {
-    @Inject
+    //    @Inject
     YandexTranslateAPI yandexTranslateAPI;
 
-    @Inject
+    //    @Inject
     YandexDictionaryAPI yandexDictionaryAPI;
 
-    @Inject
+    //    @Inject
     CacheData cacheData;
 
-    @Inject
+    //    @Inject
     CachedPreferences cachedPreferences;
 
     private Localization[] mLocalizations = null;
@@ -47,9 +45,16 @@ public class DataManager {
      */
     private String mLocalSymbol = null;
 
-    public DataManager() {
+    public DataManager(YandexTranslateAPI yandexTranslateAPI,
+                       YandexDictionaryAPI yandexDictionaryAPI,
+                       CacheData cacheData,
+                       CachedPreferences cachedPreferences) {
         super();
-        YTransApp.getAppComponent().inject(this);
+
+        this.yandexTranslateAPI = yandexTranslateAPI;
+        this.yandexDictionaryAPI = yandexDictionaryAPI;
+        this.cacheData = cacheData;
+        this.cachedPreferences = cachedPreferences;
 
         mLocalSymbol = LocalizationUtils.getCurrentLocalizationSymbol();
 

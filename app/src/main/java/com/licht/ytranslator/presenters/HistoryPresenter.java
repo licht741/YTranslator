@@ -1,6 +1,5 @@
 package com.licht.ytranslator.presenters;
 
-import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.ui.HistoryView.IHistoryView;
@@ -8,17 +7,15 @@ import com.licht.ytranslator.ui.HistoryView.IHistoryView;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 public class HistoryPresenter implements IPresenter<IHistoryView> {
-    @Inject
-    DataManager dataManager;
+
+    private DataManager dataManager;
 
     private IHistoryView view;
 
-    public HistoryPresenter() {
+    public HistoryPresenter(DataManager dataManager) {
         super();
-        YTransApp.getAppComponent().inject(this);
+        this.dataManager = dataManager;
     }
 
     @Override
@@ -31,6 +28,11 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
         view = null;
     }
 
+    /**
+     * Вызывается для получения слов из истории
+     *
+     * @param starredOnly Вернуть список из избранных слов
+     */
     public void requestData(boolean starredOnly) {
         List<HistoryObject> allItems = dataManager.getHistoryWords();
 
@@ -40,10 +42,20 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
             view.setData(allItems);
     }
 
-    public void setWordStarredState(String word, String direction, boolean newStarredState) {
-        dataManager.setWordStarred(word, direction, newStarredState);
+    /**
+     * Добавление или удаление слова из списка избранного
+     *
+     * @param text            Переводимый текст
+     * @param direction       Направление перевода
+     * @param newStarredState True, если слово добавляется в избранное, иначе False
+     */
+    public void setWordStarredState(String text, String direction, boolean newStarredState) {
+        dataManager.setWordStarred(text, direction, newStarredState);
     }
 
+    /**
+     * Извлекает из списка слова, попавшие в избранное
+     */
     private List<HistoryObject> extractStarredWords(List<HistoryObject> items) {
         final List<HistoryObject> starred = new ArrayList<>();
         for (HistoryObject item : items)
