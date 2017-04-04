@@ -102,6 +102,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Если во фрагмент были явно переданы параметры перевода (переводимый текст и направление перевода),
+        // то мы выводим их. Это может произойти при выборе слова из истории или списка избранных
+        //
+        // Если ничего не было передано, то мы используем параметры,
+        // которые использовались при последнем переводе
         final Bundle args = getArguments();
         if (args == null) {
             presenter.requestData();
@@ -117,7 +122,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @Override
     public void onStart() {
         super.onStart();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Переводчик");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.translate_title);
     }
 
     @Override
@@ -184,21 +189,21 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         super.onActivityResult(requestCode, resultCode, data);
         if (data == null)
             return;
+
         switch (requestCode) {
             case REQ_CODE_SPEECH_INPUT:
                 final String input = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
                 setInputText(input);
-                onTextInput(input);
                 break;
 
             case REQ_CODE_SOURCE_LANGUAGE:
                 final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
-                presenter.onUpdateSourceLanguage(resultLanguage); // todo
+                presenter.onUpdateSourceLanguage(resultLanguage);
                 break;
 
             case REQ_CODE_DESTINATION_LANGUAGE:
                 final String destLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
-                presenter.onUpdateDestinationLanguage(destLanguage); // todo
+                presenter.onUpdateDestinationLanguage(destLanguage);
                 break;
         }
     }
@@ -283,8 +288,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     private void initUI(View root) {
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(ContextCompat.getColor(getContext(),
-                                  android.R.color.white));
+        toolbar.setTitleTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
 
         DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,

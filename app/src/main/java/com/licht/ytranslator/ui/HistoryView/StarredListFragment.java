@@ -4,6 +4,7 @@ package com.licht.ytranslator.ui.HistoryView;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -102,6 +103,7 @@ public class StarredListFragment extends Fragment implements IHistoryView {
     private void initUI(View root) {
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());

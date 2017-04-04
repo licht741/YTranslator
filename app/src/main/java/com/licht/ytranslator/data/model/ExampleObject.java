@@ -1,10 +1,12 @@
 package com.licht.ytranslator.data.model;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
+/**
+ * Обёртка над примерами использованиями фразы.
+ * Получаются через API Яндекс Словаря.
+ */
 public class ExampleObject extends RealmObject {
     private StringWrapper phrase;
     private RealmList<StringWrapper> translates;

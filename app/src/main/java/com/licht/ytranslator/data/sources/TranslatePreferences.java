@@ -6,6 +6,9 @@ import android.support.annotation.Nullable;
 
 import com.licht.ytranslator.YTransApp;
 
+/**
+ * Хранит информацию о последнем переводе (переводимый текст, направление перевода)
+ */
 public class TranslatePreferences {
     private static final String PREF_NAME = "user_preferences";
 

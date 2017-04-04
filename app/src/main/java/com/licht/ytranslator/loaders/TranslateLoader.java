@@ -4,12 +4,13 @@ import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.licht.ytranslator.data.DataManager;
+import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Result;
-import com.licht.ytranslator.data.model.Word;
 import com.licht.ytranslator.data.model.WordObject;
 import com.licht.ytranslator.presenters.OnTranslateResultListener;
 import com.licht.ytranslator.utils.DictionaryAnswerParser;
+import com.licht.ytranslator.utils.LocalizationUtils;
 
 import io.realm.RealmList;
 import retrofit2.Call;
@@ -40,9 +41,6 @@ public class TranslateLoader {
      * @param direction направление перевода
      */
     public void translate(String key, String text, String direction) {
-
-        Log.e(TAG, "translate: " + key + " " + text + " " + direction);
-
         // Сначала проверяем, был ли этот запрос закеширован
         final HistoryObject historyObject = mDataManager.getHistoryWord(text, direction);
         if (historyObject != null && mListener != null) {
@@ -85,20 +83,21 @@ public class TranslateLoader {
         Log.e(TAG, "getDictionaryMeanings: " + key + " " + text + " " + direction);
 
         // Если нашли закешированный результат, возвращаем его
-        final Word word = mDataManager.getCachedWord(text, direction);
-        if (word != null && mListener != null)
-            mListener.onDictionaryResult(word);
+        final DictionaryObject dictionaryObject = mDataManager.getCachedWord(text, direction);
+        if (dictionaryObject != null && mListener != null)
+            mListener.onDictionaryResult(dictionaryObject);
 
-        mDataManager.getDataFromDictionary(key, text, direction).enqueue(new Callback<JsonObject>() {
+        mDataManager.getDataFromDictionary(
+                key,
+                text,
+                direction,
+                LocalizationUtils.getCurrentLocalizationSymbol()).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                // todo check result
 
                 RealmList<WordObject> dicts = DictionaryAnswerParser.parse(response.body());
-                Word w = new Word(text, direction, dicts);
+                DictionaryObject w = new DictionaryObject(text, direction, dicts);
                 mDataManager.cacheDictionaryWord(w);
-
-                Log.e(TAG, "mDataManager.getDataFromDictionary: " + key + " " + text + " " + direction);
 
                 if (mListener != null)
                     mListener.onDictionaryResult(w);

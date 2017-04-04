@@ -9,13 +9,17 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.Result;
 import com.licht.ytranslator.data.model.SupportedTranslation;
-import com.licht.ytranslator.data.model.Word;
+import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.model.WordObject;
 import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.data.sources.CachedPreferences;
 import com.licht.ytranslator.utils.LocalizationUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +30,9 @@ import retrofit2.Call;
  * Реализует паттерн "Фасад", инкапсулирая работу со всеми возможными источниками данных
  */
 public class DataManager {
-    //    @Inject
     YandexTranslateAPI yandexTranslateAPI;
-
-    //    @Inject
     YandexDictionaryAPI yandexDictionaryAPI;
-
-    //    @Inject
     CacheData cacheData;
-
-    //    @Inject
     CachedPreferences cachedPreferences;
 
     private Localization[] mLocalizations = null;
@@ -138,8 +135,17 @@ public class DataManager {
      * Обращения к API
      */
 
-    public Call<JsonObject> getDataFromDictionary(String key, String text, String lang) {
-        return yandexDictionaryAPI.getMeaning(buildMapToRequest(key, lang, text));
+    /**
+     * Получает перевод текста в указанном направлении через API Яндекс Словаря
+     *
+     * @param key ключ API
+     * @param text переводимый текст
+     * @param lang направление перевода
+     * @param ui используемая локализация приложения
+     * @return Объект, используемый для асинхронной загрузки данных
+     */
+    public Call<JsonObject> getDataFromDictionary(String key, String text, String lang, String ui) {
+        return yandexDictionaryAPI.getMeaning(buildMapToRequest(key, lang, text, ui));
     }
 
     /**
@@ -187,7 +193,7 @@ public class DataManager {
      * @param dir  Направление перевод
      * @return Объект, содержащий информацию о слове
      */
-    public Word getCachedWord(String word, String dir) {
+    public DictionaryObject getCachedWord(String word, String dir) {
         return cacheData.getCachedWord(word, dir);
     }
 
@@ -195,21 +201,27 @@ public class DataManager {
         return cacheData.getCachedDictionary(id);
     }
 
-    public synchronized void cacheDictionaryWord(Word word) {
-        cacheData.cacheDictionary(word);
+    public synchronized void cacheDictionaryWord(DictionaryObject dictionaryObject) {
+        cacheData.cacheDictionary(dictionaryObject);
     }
 
     /*
      * Остальные функции
      */
 
+    private ArrayList<String> mCachedLanguagesList = null;
     public ArrayList<String> getLanguagesList() {
-        checkCachedLocalizations();
-        final ArrayList<String> list = new ArrayList<>();
-        for (Localization localization : mLocalizations)
-            list.add(localization.getLanguageTitle());
+        if (mCachedLanguagesList != null)
+            return mCachedLanguagesList;
 
-        return list;
+        checkCachedLocalizations();
+        mCachedLanguagesList = new ArrayList<>();
+        for (Localization localization : mLocalizations)
+            mCachedLanguagesList.add(localization.getLanguageTitle());
+
+        Collections.sort(mCachedLanguagesList, String::compareTo);
+
+        return mCachedLanguagesList;
     }
 
     public int getCacheSize() {
@@ -235,6 +247,12 @@ public class DataManager {
         mapJSON.put("key", key);
         mapJSON.put("text", text);
         mapJSON.put("lang", lang);
+        return mapJSON;
+    }
+
+    private Map<String, String> buildMapToRequest(String key, String lang, String text, String ui) {
+        Map<String, String> mapJSON = buildMapToRequest(key, lang, text);
+        mapJSON.put("ui", ui);
         return mapJSON;
     }
 

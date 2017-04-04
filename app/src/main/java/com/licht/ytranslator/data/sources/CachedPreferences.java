@@ -8,7 +8,7 @@ import com.licht.ytranslator.YTransApp;
 import javax.inject.Inject;
 
 /**
- *
+ * Хранит информацию о закэшированности данных для локализации
  */
 public class CachedPreferences {
     private static final String PREF_NAME = "pref_name";

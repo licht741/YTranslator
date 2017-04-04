@@ -86,10 +86,10 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
         WordObject mWordObject = dataManager.getCachedDictionary(mDictionaryID);
 
         dictionaryWord.setText(mWordObject.getText());
-        dictionaryTranscription.setText(String.format("[%s]", mWordObject.getTrans()));
+        if(!"".equals(mWordObject.getTrans()))
+            dictionaryTranscription.setText(String.format("[%s]", mWordObject.getTrans()));
 
         rvDictionary.setHasFixedSize(true);
-
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         rvDictionary.setLayoutManager(mLayoutManager);
 

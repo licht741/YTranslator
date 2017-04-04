@@ -10,7 +10,7 @@ import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.WordObject;
-import com.licht.ytranslator.data.model.Word;
+import com.licht.ytranslator.data.model.DictionaryObject;
 
 import javax.inject.Inject;
 
@@ -19,7 +19,7 @@ public class DictionaryActivity extends AppCompatActivity {
     @Inject
     DataManager dataManager;
 
-    private Word mWord;
+    private DictionaryObject mDictionaryObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +31,12 @@ public class DictionaryActivity extends AppCompatActivity {
         String word = getIntent().getStringExtra("WORD");
         String dirs = getIntent().getStringExtra("DIRECTION");
 
-        mWord = dataManager.getCachedWord(word, dirs);
+        mDictionaryObject = dataManager.getCachedWord(word, dirs);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(mWord.getWord().toUpperCase());
+        getSupportActionBar().setTitle(mDictionaryObject.getWord().toUpperCase());
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -54,7 +54,7 @@ public class DictionaryActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        for (WordObject wordObject : mWord.getDictionaries()) {
+        for (WordObject wordObject : mDictionaryObject.getDictionaries()) {
             final String title = wordObject.getType();
             adapter.addFragment(DictionaryFragment.newInstance(wordObject.getId()), title);
         }

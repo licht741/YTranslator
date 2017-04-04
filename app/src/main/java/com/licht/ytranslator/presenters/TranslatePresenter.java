@@ -4,7 +4,7 @@ import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.HistoryObject;
-import com.licht.ytranslator.data.model.Word;
+import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.sources.TranslatePreferences;
 import com.licht.ytranslator.loaders.TranslateLoader;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
@@ -211,7 +211,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     }
 
     @Override
-    public void onDictionaryResult(Word w) {
+    public void onDictionaryResult(DictionaryObject w) {
         final boolean detailsAreAvailable = w.getDictionaries().size() > 0;
         if (view != null)
             view.detailsAreAvailable(detailsAreAvailable);

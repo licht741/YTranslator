@@ -4,18 +4,22 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
- * Обёртка над информацией о переводе слова
+ * Обёртка над расширенной информацией о переводе слова
+ * Получаются через API Яндекс Словаря
  */
-public class Word extends RealmObject {
+public class DictionaryObject extends RealmObject {
+    // Word и Direction используются как составной ключ для поиска
     private String word;
     private String direction;
+
+    // Различные значения слова
     private RealmList<WordObject> dictionaries;
 
-    public Word() {
+    public DictionaryObject() {
         super();
     }
 
-    public Word(String word, String direction, RealmList<WordObject> dictionaries) {
+    public DictionaryObject(String word, String direction, RealmList<WordObject> dictionaries) {
         this.word = word;
         this.direction = direction;
         this.dictionaries = dictionaries;
