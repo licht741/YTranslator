@@ -10,6 +10,9 @@
     <string name="key_dictionary">dict.1.1.20170319T122541Z.cff081847419cf25.f6806ef378d456d28f2bd813aba2b47a761f8b7b</string>
 
     <string name="translate_title">Translate</string>
+    <string name="history_title">History</string>
+    <string name="favorites_title">Favorites</string>
+
     <string name="translate_input_hint">Enter your text to translate it</string>
     <string name="tap_for_detalization">Tap for detalization</string>
 </resources>

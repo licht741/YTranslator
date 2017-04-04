@@ -133,9 +133,9 @@
                 <TextView
                     android:id="@+id/tv_show_details_label"
                     android:layout_width="wrap_content"
-                    android:layout_height="15dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="15dp"
                     android:text="@string/tap_for_detalization"
                     android:textSize="14sp"
                     android:visibility="invisible" />
