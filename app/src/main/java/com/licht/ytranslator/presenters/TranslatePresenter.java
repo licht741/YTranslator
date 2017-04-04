@@ -83,7 +83,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
             return;
 
         if ("".equals(content)) {
-            view.setTranslatedText("");
+            view.setTranslatedText(content, "");
             return;
         }
 
@@ -205,7 +205,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     public void onTranslateResult(HistoryObject historyObject) {
         if (view == null)
             return;
-        view.setTranslatedText(historyObject.getTranslate());
+        view.setTranslatedText(historyObject.getWord(), historyObject.getTranslate());
         view.isStarVisible(true);
         view.setIsStarredView(historyObject.isFavorites());
     }

@@ -48,7 +48,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     private Unbinder unbinder;
 
     @BindView(R.id.edit_input_text)
-    ExtendedEditText inputText;
+    ExtendedEditText tvInputText;
     @BindView(R.id.tv_translated_text)
     TextView tvTranslatedText;
     @BindView(R.id.tv_selected_source_lang)
@@ -146,12 +146,18 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @Override
     public void setInputText(String text) {
-        inputText.setText(text);
+        tvInputText.setText(text);
     }
 
     @Override
-    public void setTranslatedText(String text) {
-        tvTranslatedText.setText(text);
+    public void setTranslatedText(String inputText, String outputText) {
+
+        // Могла возникнуть такая ситуация, что для текста, который ввели раньше, получили ответ позже,
+        // чем от текста, который ввели позже
+        // Поэтому, перед выводом результата проверяем, что выводим перевод именно того текста,
+        // который сейчас введён.
+        if (tvInputText.getText().toString().equals(inputText))
+            tvTranslatedText.setText(outputText);
     }
 
     @Override
@@ -289,14 +295,14 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
 
-        editTextSub = RxTextView.textChanges(inputText)
+        editTextSub = RxTextView.textChanges(tvInputText)
                 .filter(seq -> seq != null)
                 .subscribe(charSequence -> {
                     mCurrentWord = charSequence.toString();
                     onTextInput(mCurrentWord);
                 });
 
-        inputText.setOnEditTextImeBackListener(this);
+        tvInputText.setOnEditTextImeBackListener(this);
     }
 
     @Override
@@ -314,6 +320,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @Override
     public void onLanguagesSwapped() {
         mCurrentWord = tvTranslatedText.getText().toString();
-        inputText.setText(mCurrentWord);
+        tvInputText.setText(mCurrentWord);
     }
 }
