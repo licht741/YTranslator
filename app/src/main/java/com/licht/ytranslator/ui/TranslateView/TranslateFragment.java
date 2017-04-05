@@ -12,13 +12,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding.widget.RxTextView;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.presenters.TranslatePresenter;
@@ -39,7 +40,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import rx.Subscription;
 
 public class TranslateFragment extends Fragment implements ITranslateView, ExtendedEditTextListener {
     @Inject
@@ -47,20 +47,12 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     private Unbinder unbinder;
 
-    @BindView(R.id.edit_input_text)
-    ExtendedEditText tvInputText;
-    @BindView(R.id.tv_translated_text)
-    TextView tvTranslatedText;
-    @BindView(R.id.tv_selected_source_lang)
-    TextView tvSelectedSourceLang;
-    @BindView(R.id.tv_selected_dest_lang)
-    TextView tvSelectedDestLang;
-    @BindView(R.id.tv_show_details_label)
-    TextView tvShowDetailsLabel;
-    @BindView(R.id.iv_is_starred)
-    ImageView ivIsStarred;
-
-    Subscription editTextSub;
+    @BindView(R.id.edit_input_text) ExtendedEditText tvInputText;
+    @BindView(R.id.tv_translated_text) TextView tvTranslatedText;
+    @BindView(R.id.tv_selected_source_lang) TextView tvSelectedSourceLang;
+    @BindView(R.id.tv_selected_dest_lang) TextView tvSelectedDestLang;
+    @BindView(R.id.tv_show_details_label) TextView tvShowDetailsLabel;
+    @BindView(R.id.iv_is_starred) ImageView ivIsStarred;
 
     private String mCurrentWord;
 
@@ -220,7 +212,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         super.onDestroyView();
         unbinder.unbind();
         presenter.unbindView();
-        editTextSub.unsubscribe();
     }
 
 
@@ -299,12 +290,19 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
 
-        editTextSub = RxTextView.textChanges(tvInputText)
-                .filter(seq -> seq != null)
-                .subscribe(charSequence -> {
-                    mCurrentWord = charSequence.toString();
-                    onTextInput(mCurrentWord);
-                });
+        tvInputText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mCurrentWord = s.toString();
+                onTextInput(mCurrentWord);
+            }
+        });
 
         tvInputText.setOnEditTextImeBackListener(this);
     }

@@ -80,13 +80,14 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="10dp"
                 android:layout_weight="4">
 
                 <com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditText
                     android:id="@+id/edit_input_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="4dp"
+                    android:layout_margin="10dp"
                     android:background="@android:color/transparent"
                     android:gravity="top|left"
                     android:hint="@string/translate_input_hint"
@@ -112,13 +113,10 @@
 
             </android.support.v7.widget.CardView>
 
-            <android.support.v4.widget.Space
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
-
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="10dp"
                 android:layout_weight="4">
 
                 <TextView
@@ -130,15 +128,32 @@
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/tv_show_details_label"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center"
-                    android:layout_marginBottom="15dp"
-                    android:text="@string/tap_for_detalization"
-                    android:textSize="14sp"
-                    android:visibility="invisible" />
+                    android:layout_marginBottom="5dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_gravity="center"
+                        android:id="@+id/tv_show_details_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/tap_for_detalization"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="10dp"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:text="Переведено сервисом «Яндекс.Переводчик»"/>
+
+                </LinearLayout>
 
                 <ImageView
                     android:id="@+id/iv_is_starred"

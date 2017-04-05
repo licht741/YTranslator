@@ -110,11 +110,12 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     }
 
     public void onKeyboardHide() {
+        translatePreferences.getInputText();
         // Если пользователь закрыл клавиатуру, то он просматривает перевод слова
         // В этой ситуации мы сохраняем слово в историю
 
         // Помечаем, что слово, которое мы ранее закэшировали, теперь входит в историю
-        addWordToHistory();
+        addExistingTranslatingToHistory();
 
     }
 
@@ -176,7 +177,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
 
     public void onStarredClick() {
         HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(),
-                translatePreferences.getTranslateDirection());
+                                                       translatePreferences.getTranslateDirection());
         if (obj == null)
             return;
 
@@ -217,10 +218,12 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
             view.detailsAreAvailable(detailsAreAvailable);
     }
 
-    private void addWordToHistory() {
+    /**
+     * Добавляет перевод (ранее закэшированный) в историю
+     */
+    private void addExistingTranslatingToHistory() {
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
-
         dataManager.updateHistoryWord(text, direction, true);
     }
 
