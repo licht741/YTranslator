@@ -182,6 +182,31 @@ public class CacheData {
         realm.commitTransaction();
     }
 
+    public void clearHistory() {
+        final Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(r -> {
+            final RealmQuery query = r.where(HistoryObject.class).equalTo("inHistory", true);
+            RealmResults results = query.findAll();
+            for (Object object : results) {
+                HistoryObject historyObject = (HistoryObject)object;
+                historyObject.setInHistory(false);
+                historyObject.setFavorites(false);
+            }
+        });
+    }
+
+    public void clearStarredList() {
+        final Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(r -> {
+            final RealmQuery query = r.where(HistoryObject.class).equalTo("isFavorites", true);
+            RealmResults results = query.findAll();
+            for (Object object : results) {
+                HistoryObject historyObject = (HistoryObject)object;
+                historyObject.setFavorites(false);
+            }
+        });
+    }
+
     public List<HistoryObject> getFavoritesWords() {
         final Realm realm = Realm.getDefaultInstance();
         return realm.where(HistoryObject.class)

@@ -12,6 +12,10 @@
     <string name="translate_title">Translate</string>
     <string name="history_title">History</string>
     <string name="favorites_title">Favorites</string>
+    <string name="history_clear">Do you want to clear history?</string>
+    <string name="starred_clear">Do you want to clear starred clear?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string name="translate_input_hint">Enter your text to translate it</string>
     <string name="tap_for_detalization">Tap for detalization</string>

@@ -7,11 +7,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -58,8 +62,9 @@ public class StarredListFragment extends Fragment implements IHistoryView {
         final View root = inflater.inflate(R.layout.fragment_starred_list, container, false);
         unbinder = ButterKnife.bind(this, root);
         presenter.bindView(this);
-
         initUI(root);
+
+        setHasOptionsMenu(true);
         return root;
     }
 
@@ -71,7 +76,7 @@ public class StarredListFragment extends Fragment implements IHistoryView {
 
     @Override
     public void onItemSelected(String word, String direction) {
-        ((MainActivity)getActivity()).setFragment(false, TranslateFragment.newInstance(word, direction));
+        ((MainActivity) getActivity()).setFragment(false, TranslateFragment.newInstance(word, direction));
     }
 
     @Override
@@ -84,8 +89,7 @@ public class StarredListFragment extends Fragment implements IHistoryView {
         if (items.size() == 0) {
             noContentView.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             noContentView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
@@ -94,10 +98,24 @@ public class StarredListFragment extends Fragment implements IHistoryView {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_history, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
         presenter.unbindView();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_history_clear)
+            showClearStarredListDialog();
+
+        return true;
     }
 
     private void initUI(View root) {
@@ -115,6 +133,16 @@ public class StarredListFragment extends Fragment implements IHistoryView {
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+    }
+
+    private void showClearStarredListDialog() {
+        if (adapter.getItemCount() > 0)
+            new AlertDialog
+                    .Builder(getActivity()).setMessage(R.string.starred_clear)
+                    .setPositiveButton(R.string.yes, ((dialog, which) -> presenter.clearHistory(true)))
+                    .setNegativeButton(R.string.no, null).create()
+                    .show();
+
     }
 
 }

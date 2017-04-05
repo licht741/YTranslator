@@ -34,12 +34,10 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
      * @param starredOnly Вернуть список из избранных слов
      */
     public void requestData(boolean starredOnly) {
-        List<HistoryObject> allItems = dataManager.getHistoryWords();
-
         if (starredOnly)
-            view.setData(extractStarredWords(allItems));
+            view.setData(extractStarredWords(dataManager.getStarredWords()));
         else
-            view.setData(allItems);
+            view.setData(dataManager.getHistoryWords());
     }
 
     /**
@@ -51,6 +49,19 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
      */
     public void setWordStarredState(String text, String direction, boolean newStarredState) {
         dataManager.setWordStarred(text, direction, newStarredState);
+    }
+
+
+    /**
+     * Очистка истории от переводов
+     *
+     * @param starredOnly True, если требуется удалить только избранные переводы. False, если удаляются все
+     */
+    public void clearHistory(boolean starredOnly) {
+        dataManager.clearHistory(starredOnly);
+
+        if (view != null)
+            view.setData(new ArrayList<>());
     }
 
     /**

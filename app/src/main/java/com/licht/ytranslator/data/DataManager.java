@@ -131,6 +131,14 @@ public class DataManager {
         return cacheData.getFavoritesWords();
     }
 
+    public void clearHistory(boolean starredOnly) {
+        if (starredOnly)
+            cacheData.clearStarredList();
+        else
+            cacheData.clearHistory();
+    }
+
+
     /*
      * Обращения к API
      */
