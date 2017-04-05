@@ -232,12 +232,13 @@ public class DataManager {
         return mCachedLanguagesList;
     }
 
-    public int getCacheSize() {
-        return cacheData.getCacheSize();
-    }
+    public void clearCacheIfNecessary() {
+        final int cacheSize = cacheData.getCacheSize();
 
-    public void clearCache() {
-        cacheData.clearCache();
+        // Очищаем кэш, если общее количество закэшированных переводов больше какой-то константы
+        final int MAX_CACHE_LIMIT = 1000;
+        if (cacheSize > MAX_CACHE_LIMIT)
+            cacheData.clearCache();
     }
 
     private void checkCachedLocalizations() {

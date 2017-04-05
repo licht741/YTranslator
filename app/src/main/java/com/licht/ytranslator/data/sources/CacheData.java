@@ -2,11 +2,11 @@ package com.licht.ytranslator.data.sources;
 
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
+import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.SupportedTranslation;
-import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.model.WordMeaningObject;
 import com.licht.ytranslator.data.model.WordObject;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
@@ -91,9 +91,9 @@ public class CacheData {
     public DictionaryObject getCachedWord(String word, String dir) {
         final Realm realm = Realm.getDefaultInstance();
         DictionaryObject w = realm.where(DictionaryObject.class)
-                            .equalTo("word", word)
-                            .equalTo("direction", dir)
-                            .findFirst();
+                .equalTo("word", word)
+                .equalTo("direction", dir)
+                .findFirst();
         if (w != null)
             w = realm.copyFromRealm(w);
         return w;
@@ -188,7 +188,7 @@ public class CacheData {
             final RealmQuery query = r.where(HistoryObject.class).equalTo("inHistory", true);
             RealmResults results = query.findAll();
             for (Object object : results) {
-                HistoryObject historyObject = (HistoryObject)object;
+                HistoryObject historyObject = (HistoryObject) object;
                 historyObject.setInHistory(false);
                 historyObject.setFavorites(false);
             }
@@ -201,7 +201,7 @@ public class CacheData {
             final RealmQuery query = r.where(HistoryObject.class).equalTo("isFavorites", true);
             RealmResults results = query.findAll();
             for (Object object : results) {
-                HistoryObject historyObject = (HistoryObject)object;
+                HistoryObject historyObject = (HistoryObject) object;
                 historyObject.setFavorites(false);
             }
         });
@@ -224,24 +224,44 @@ public class CacheData {
         realm.commitTransaction();
     }
 
+    /**
+     * @return Возвращает общее количество закэшированных переводов
+     */
     public int getCacheSize() {
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(DictionaryObject.class).findAll().size();
+        return realm.where(HistoryObject.class).findAll().size();
     }
 
+    /**
+     * Осуществляет очистку базы данных от кэшированных переводов
+     * Удаляются переводы, не попавшие в историю.
+     */
     public void clearCache() {
         final Realm realm = Realm.getDefaultInstance();
-        final RealmQuery query = realm.where(DictionaryObject.class);
-        for (HistoryObject hist : getHistoryWords())
-            query.notEqualTo("word", hist.getWord());
-        final List<DictionaryObject> wordsToRemove = query.findAll();
 
         // Realm не поддерживает каскадное удаление объектов,
         // поэтому очистка осуществляется вручную
+
+        // Выбираем переводы, которые не попали в историю
+        final RealmQuery query = realm.where(HistoryObject.class).equalTo("inHistory", false);
         realm.beginTransaction();
-        for (DictionaryObject dictionaryObject : wordsToRemove) {
+        final List<HistoryObject> translatesToRemove = query.findAll();
+        for (HistoryObject historyObject : translatesToRemove) {
+
+            // Код нахождения элемента продублирован из функции getCachedWord(), т.к.
+            // она возвращает неуправляемый (unmanaged) объект,
+            // а для работы с Realm нужен управляемый (managed)
+            DictionaryObject dictionaryObject = realm.where(DictionaryObject.class)
+                    .equalTo("word", historyObject.getWord())
+                    .equalTo("direction", historyObject.getDirection())
+                    .findFirst();
+
+            if (dictionaryObject == null)
+                continue;
+
             for (WordObject wordObject : dictionaryObject.getDictionaries()) {
                 for (WordMeaningObject m : wordObject.getWordMeaningObjects()) {
+
                     m.getSynonimes().deleteAllFromRealm();
                     m.getMeanings().deleteAllFromRealm();
 
@@ -254,8 +274,6 @@ public class CacheData {
             dictionaryObject.getDictionaries().deleteAllFromRealm();
         }
         query.findAll().deleteAllFromRealm();
-
         realm.commitTransaction();
-
     }
 }
