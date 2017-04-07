@@ -35,7 +35,7 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
      */
     public void requestData(boolean starredOnly) {
         if (starredOnly)
-            view.setData(extractStarredWords(dataManager.getStarredWords()));
+            view.setData(dataManager.getStarredWords());
         else
             view.setData(dataManager.getHistoryWords());
     }
@@ -64,15 +64,4 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
             view.setData(new ArrayList<>());
     }
 
-    /**
-     * Извлекает из списка слова, попавшие в избранное
-     */
-    private List<HistoryObject> extractStarredWords(List<HistoryObject> items) {
-        final List<HistoryObject> starred = new ArrayList<>();
-        for (HistoryObject item : items)
-            if (item.isFavorites())
-                starred.add(item);
-
-        return starred;
-    }
 }

@@ -30,13 +30,13 @@ import retrofit2.Call;
  * Реализует паттерн "Фасад", инкапсулирая работу со всеми возможными источниками данных
  */
 public class DataManager {
-    YandexTranslateAPI yandexTranslateAPI;
-    YandexDictionaryAPI yandexDictionaryAPI;
-    CacheData cacheData;
-    CachedPreferences cachedPreferences;
+    private YandexTranslateAPI yandexTranslateAPI;
+    private YandexDictionaryAPI yandexDictionaryAPI;
+    private CacheData cacheData;
+    private CachedPreferences cachedPreferences;
 
     private Localization[] mLocalizations = null;
-    private String[] mTranslateTypes = null;
+
     /**
      * Используемая локализация UI
      */
@@ -56,7 +56,6 @@ public class DataManager {
         mLocalSymbol = LocalizationUtils.getCurrentLocalizationSymbol();
 
         checkCachedLocalizations();
-        checkTranslateTypes();
     }
 
     /*
@@ -188,9 +187,8 @@ public class DataManager {
     public void cacheLanguageData(List<SupportedTranslation> supportedTranslations,
                                   List<Localization> localizations) {
         cacheData.saveTranslateType(supportedTranslations);
-        mTranslateTypes = null;
-
         cacheData.saveLocalization(localizations);
+
         mLocalizations = null;
     }
 
@@ -232,6 +230,12 @@ public class DataManager {
         return mCachedLanguagesList;
     }
 
+    /**
+     * Оценивает количество кэшированных переводов базе данных и удаляет кэшированные переводы,
+     * если их количество превысило некоторый лимит
+     *
+     * Не удаляются кэшированные переводы, которые попали в историю
+     */
     public void clearCacheIfNecessary() {
         final int cacheSize = cacheData.getCacheSize();
 
@@ -246,10 +250,6 @@ public class DataManager {
             mLocalizations = cacheData.getLanguageList(mLocalSymbol);
     }
 
-    private void checkTranslateTypes() {
-        if (mTranslateTypes == null)
-            mTranslateTypes = cacheData.getTranslateTypes();
-    }
 
     private Map<String, String> buildMapToRequest(String key, String lang, String text) {
         Map<String, String> mapJSON = new HashMap<>();

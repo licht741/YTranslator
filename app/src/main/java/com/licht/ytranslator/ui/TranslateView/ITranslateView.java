@@ -14,4 +14,6 @@ public interface ITranslateView {
 
     void onLanguageChanges();
     void onLanguagesSwapped();
+
+    void startAudioWithInputLanguage(String inputLanguageSym);
 }

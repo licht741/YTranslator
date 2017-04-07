@@ -19,4 +19,5 @@
 
     <string name="translate_input_hint">Enter your text to translate it</string>
     <string name="tap_for_detalization">Tap for detalization</string>
+    <string name="audio_prompt">Say the phrase</string>
 </resources>

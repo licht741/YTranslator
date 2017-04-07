@@ -2,6 +2,7 @@ package com.licht.ytranslator.ui.TranslateView;
 
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
@@ -17,6 +18,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -217,7 +219,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @OnClick(R.id.iv_microphone)
     public void onMicrophoneClick() {
-        startAudio();
+        presenter.onStartAudio();
+        //startAudio();
     }
 
 
@@ -228,9 +231,14 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @OnClick(R.id.iv_clear_input)
     public void onClearInput() {
+        if (tvInputText.getText().length() == 0)
+            return;
+
         isStarVisible(false);
         detailsAreAvailable(false);
         setInputText("");
+
+        showKeyboard();
     }
 
     @OnClick(R.id.tv_selected_source_lang)
@@ -262,18 +270,16 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     }
 
 
-    private void startAudio() { // // TODO: 30.03.2017
+    public void startAudioWithInputLanguage(String inputLanguageSym) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 
-        final Locale locale = new Locale(LocalizationUtils.getCurrentLocalizationSymbol());
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale);
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch (ActivityNotFoundException a) {
+        Locale locale = new Locale(inputLanguageSym);
 
-        }
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.audio_prompt));
+
+        startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
     }
 
     private void initUI(View root) {
@@ -304,6 +310,12 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
             }
         });
 
+        tvInputText.setOnLongClickListener(v -> {
+            showKeyboard();
+
+            return false;
+        });
+
         tvInputText.setOnEditTextImeBackListener(this);
     }
 
@@ -312,7 +324,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         super.onStop();
         Utils.hideKeyboard(getActivity());
     }
-
 
     @Override
     public void onLanguageChanges() {
@@ -323,5 +334,15 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     public void onLanguagesSwapped() {
         mCurrentWord = tvTranslatedText.getText().toString();
         tvInputText.setText(mCurrentWord);
+    }
+
+    /**
+     * Ставит фокус на поле ввода текста и открывает клавиатуру.
+     */
+    private void showKeyboard() {
+        tvInputText.requestFocus();
+
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(tvInputText, InputMethodManager.SHOW_IMPLICIT);
     }
 }

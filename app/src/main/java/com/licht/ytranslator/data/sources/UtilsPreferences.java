@@ -8,7 +8,7 @@ import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.model.StringWrapper;
 
 /**
- * Realm не поддерживает автоинкрементальные идентификаторы, поэтому они реализуютсяя вручную
+ * Realm не поддерживает автоинкрементальные идентификаторы, поэтому они реализуются вручную
  */
 public class UtilsPreferences {
     private static final String PREF_NAME = "pref_ids";

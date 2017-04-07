@@ -28,23 +28,12 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
     private static final String DICTIONARY_ID = "DICTIONARY";
     private long mDictionaryID;
 
-    @Inject
-    DataManager dataManager;
-
-    @BindView(R.id.tv_dictionary_word)
-    TextView dictionaryWord;
-
-    @BindView(R.id.tv_dictionary_transcr)
-    TextView dictionaryTranscription;
-
-    @BindView(R.id.rv_dictionary)
-    RecyclerView rvDictionary;
-
+    @Inject DataManager dataManager;
     private Unbinder unbinder;
 
-    @Inject
-    DataManager manager;
-
+    @BindView(R.id.tv_dictionary_word) TextView dictionaryWord;
+    @BindView(R.id.tv_dictionary_transcr) TextView dictionaryTranscription;
+    @BindView(R.id.rv_dictionary) RecyclerView rvDictionary;
 
     public DictionaryFragment() {
         YTransApp.getAppComponent().inject(this);
@@ -62,9 +51,8 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mDictionaryID = getArguments().getLong(DICTIONARY_ID);
-        }
+
+        mDictionaryID = getArguments().getLong(DICTIONARY_ID);
     }
 
     @Override
@@ -86,7 +74,9 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
         WordObject mWordObject = dataManager.getCachedDictionary(mDictionaryID);
 
         dictionaryWord.setText(mWordObject.getText());
-        if(!"".equals(mWordObject.getTrans()))
+        if("".equals(mWordObject.getTrans()))
+            dictionaryTranscription.setVisibility(View.VISIBLE);
+        else
             dictionaryTranscription.setText(String.format("[%s]", mWordObject.getTrans()));
 
         rvDictionary.setHasFixedSize(true);

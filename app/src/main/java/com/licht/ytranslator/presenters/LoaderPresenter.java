@@ -61,6 +61,9 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
         }
     }
 
+    /**
+     * Вызывает очистку кэша через DataManager
+     */
     public void checkCache() {
         dataManager.clearCacheIfNecessary();
     }

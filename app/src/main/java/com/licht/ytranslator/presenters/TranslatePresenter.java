@@ -187,6 +187,13 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         view.setIsStarredView(!isFavorites);
     }
 
+    public void onStartAudio() {
+        final String inputLanguageSymbol = translatePreferences.getTranslateDirection().split("-")[0];
+
+        if (view != null)
+            view.startAudioWithInputLanguage(inputLanguageSymbol);
+
+    }
 
     public String getSourceLanguage() {
         final String sym = translatePreferences.getTranslateDirection().split("-")[0];

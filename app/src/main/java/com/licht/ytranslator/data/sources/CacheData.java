@@ -46,6 +46,7 @@ public class CacheData {
         realm.commitTransaction();
     }
 
+
     public String[] getTranslateTypes() {
         final Realm realm = Realm.getDefaultInstance();
         RealmResults<SupportedTranslation> results = realm.where(SupportedTranslation.class).findAll();
@@ -250,7 +251,7 @@ public class CacheData {
 
             // Код нахождения элемента продублирован из функции getCachedWord(), т.к.
             // она возвращает неуправляемый (unmanaged) объект,
-            // а для работы с Realm нужен управляемый (managed)
+            // а для работы с Realm нам нужен управляемый (managed)
             DictionaryObject dictionaryObject = realm.where(DictionaryObject.class)
                     .equalTo("word", historyObject.getWord())
                     .equalTo("direction", historyObject.getDirection())
