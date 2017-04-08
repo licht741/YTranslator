@@ -134,17 +134,6 @@ public class CacheData {
         });
     }
 
-    public boolean isStarredWord(String word, String direction) {
-        final Realm realm = Realm.getDefaultInstance();
-        HistoryObject obj = realm.where(HistoryObject.class)
-                .equalTo("translate", word)
-                .equalTo("direction", direction)
-                .findFirst();
-        if (obj != null)
-            obj = realm.copyFromRealm(obj);
-        return obj != null && obj.isFavorites();
-    }
-
     public HistoryObject getWordFromHistory(String word, String direction) {
         final Realm realm = Realm.getDefaultInstance();
         HistoryObject historyObject = realm.where(HistoryObject.class)

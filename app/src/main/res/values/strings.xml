@@ -23,7 +23,7 @@
     <string name="history_list_is_empty">History list is empty</string>
     <string name="starred_list_is_empty">Starred list is empty</string>
 
-    <string name="error_translate_getting">Error getting translation           </string>
-
+    <string name="error_translate_getting">Error getting translation</string>
+    <string name="error_voice_error">Voice input is unavailable</string>
 
 </resources>

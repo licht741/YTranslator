@@ -121,16 +121,28 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.translate_title);
     }
 
+    /**
+     * @param isVisible True, если значок должен отображаться, иначе False
+     */
     @Override
     public void isStarVisible(boolean isVisible) {
         ivIsStarred.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
+
+    /**
+     * @param ctrl Элемент управление
+     * @param text Текстовое содержимое
+     */
     @Override
     public void onImeBack(ExtendedEditText ctrl, String text) {
         presenter.onKeyboardHide();
     }
 
+    /**
+     * @param word      Переводимый текст
+     * @param direction Направление перевода
+     */
     @Override
     public void openDictionary(String word, String direction) {
         Intent intent = new Intent(getActivity(), DictionaryActivity.class);
@@ -139,17 +151,28 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         getActivity().startActivity(intent);
     }
 
+    /**
+     * @param source      Язык, с которого осуществляется перевод
+     * @param destination Язык, на который осуществляется перевод
+     */
     @Override
     public void setLanguagePair(String source, String destination) {
         tvSelectedSourceLang.setText(source);
         tvSelectedDestLang.setText(destination);
     }
 
+    /**
+     * @param text Текст, устанавливаемый в поле ввода
+     */
     @Override
     public void setInputText(String text) {
         tvInputText.setText(text);
     }
 
+    /**
+     * @param inputText  Введённый текст
+     * @param outputText Полученный перевод
+     */
     @Override
     public void setTranslatedText(String inputText, String outputText) {
 
@@ -161,8 +184,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
             tvTranslatedText.setText(outputText);
     }
 
+    /**
+     * @param isStarred True, если перевод в избранном, иначе False.
+     */
     @Override
-    public void setIsStarredView(boolean isStarred) {
+    public void isStarredText(boolean isStarred) {
         if (isStarred)
             ivIsStarred.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_star));
         else
@@ -204,6 +230,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         }
     }
 
+    /**
+     * Вызывается при изменении содержимого поля ввода
+     *
+     * @param text Актуальный текст
+     */
     private void onTextInput(String text) {
         if (text == null || "".equals(text)) {
             isStarVisible(false);
@@ -223,7 +254,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @OnClick(R.id.iv_microphone)
     public void onMicrophoneClick() {
         presenter.onStartAudio();
-        //startAudio();
     }
 
 
@@ -273,6 +303,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     }
 
 
+    /**
+     * @param inputLanguageSym Язык, на котором осуществляется голосовой ввод
+     */
     public void startAudioWithInputLanguage(String inputLanguageSym) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -282,7 +315,13 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale);
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.audio_prompt));
 
-        startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch(ActivityNotFoundException e){
+            Toast.makeText(getContext(), getString(R.string.error_voice_error), Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
     private void initUI(View root) {
@@ -330,17 +369,26 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         Utils.hideKeyboard(getActivity());
     }
 
+    /**
+     * Вызывается когда один из языков был изменён, и необходимо обновить перевод
+     */
     @Override
     public void onLanguageChanges() {
         onTextInput(mCurrentWord);
     }
 
+    /**
+     * Вызывается, когда изменилось направление перевода
+     */
     @Override
     public void onLanguagesSwapped() {
         mCurrentWord = tvTranslatedText.getText().toString();
         tvInputText.setText(mCurrentWord);
     }
 
+    /**
+     * Сообщает о том, что получить перевод не получилось, и необходимо сообщить об этом пользователю
+     */
     @Override
     public void onTranslateFailure() {
         Toast.makeText(getContext(), getString(R.string.error_translate_getting),

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="error_translate_getting">Ошибка при получении перевода</string>
+    <string name="error_voice_test">Голосовой ввод недоступен</string>
 </resources>

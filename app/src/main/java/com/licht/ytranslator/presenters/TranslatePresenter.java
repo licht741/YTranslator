@@ -1,7 +1,5 @@
 package com.licht.ytranslator.presenters;
 
-import android.widget.Toast;
-
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
@@ -192,7 +190,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         final boolean isFavorites = obj.isFavorites();
 
         updateStarredWord(!isFavorites);
-        view.setIsStarredView(!isFavorites);
+        view.isStarredText(!isFavorites);
     }
 
     public void onStartAudio() {
@@ -223,7 +221,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
             return;
         view.setTranslatedText(historyObject.getWord(), historyObject.getTranslate());
         view.isStarVisible(true);
-        view.setIsStarredView(historyObject.isFavorites());
+        view.isStarredText(historyObject.isFavorites());
     }
 
     @Override
