@@ -22,6 +22,8 @@ public class TranslateLoader {
 
     private OnTranslateResultListener mListener;
 
+    private final int SUCCESS_REQUEST_CODE = 200;
+
     public TranslateLoader(DataManager dataManager) {
         mDataManager = dataManager;
     }
@@ -52,7 +54,10 @@ public class TranslateLoader {
         mDataManager.requestTranslation(key, text, direction).enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
-                final int code = response.body().code; // todo check code
+                if (response == null || response.code() != SUCCESS_REQUEST_CODE) {
+                    onTranslateFailure();
+                    return;
+                }
 
                 final String result = response.body().text.get(0);
                 HistoryObject historyObject = new HistoryObject(text, result, direction, false, false);
@@ -61,12 +66,11 @@ public class TranslateLoader {
                 if (mListener != null)
                     mListener.onTranslateResult(historyObject);
 
-                Log.e(TAG, "mDataManager.requestTranslation: " + key + " " + text + " " + direction);
             }
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-                // todo
+                onTranslateFailure();
             }
         });
     }
@@ -105,8 +109,12 @@ public class TranslateLoader {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                // todo
             }
         });
+    }
+
+    private void onTranslateFailure() {
+        if (mListener != null)
+            mListener.onTranslateFailure();
     }
 }

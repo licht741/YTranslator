@@ -38,7 +38,7 @@
                 android:layout_marginRight="50dp"
                 android:gravity="center"
                 android:textSize="24sp"
-                android:text="В избранном пока что ничего нет"/>
+                android:text="@string/starred_list_is_empty"/>
 
         </LinearLayout>
 

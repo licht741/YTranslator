@@ -1,5 +1,7 @@
 package com.licht.ytranslator.presenters;
 
+import android.widget.Toast;
+
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
@@ -57,6 +59,12 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
 
         initializeData(input, translateDirection);
 
+    }
+
+    @Override
+    public void onTranslateFailure() {
+        if (view != null)
+            view.onTranslateFailure();
     }
 
     /**

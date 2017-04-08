@@ -85,6 +85,12 @@ public class StarredListFragment extends Fragment implements IHistoryView {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.starred_title);
+    }
+
+    @Override
     public void setData(List<HistoryObject> items) {
         if (items.size() == 0) {
             noContentView.setVisibility(View.VISIBLE);

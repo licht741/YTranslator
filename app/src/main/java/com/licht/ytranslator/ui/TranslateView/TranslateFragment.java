@@ -15,12 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
@@ -203,8 +205,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     }
 
     private void onTextInput(String text) {
-        if (text == null || "".equals(text))
-            setIsStarredView(false);
+        if (text == null || "".equals(text)) {
+            isStarVisible(false);
+        }
         presenter.onTextInput(text);
 
     }
@@ -317,6 +320,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         });
 
         tvInputText.setOnEditTextImeBackListener(this);
+
+        tvTranslatedText.setMovementMethod(new ScrollingMovementMethod());
     }
 
     @Override
@@ -334,6 +339,12 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     public void onLanguagesSwapped() {
         mCurrentWord = tvTranslatedText.getText().toString();
         tvInputText.setText(mCurrentWord);
+    }
+
+    @Override
+    public void onTranslateFailure() {
+        Toast.makeText(getContext(), getString(R.string.error_translate_getting),
+                Toast.LENGTH_SHORT).show();
     }
 
     /**

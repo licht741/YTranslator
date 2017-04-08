@@ -1,23 +1,29 @@
 <resources>
-    <string name="app_name">YTranslator</string>
+    <string name="app_name" translatable="false">YTranslator</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="key_translate" translatable="false">trnsl.1.1.20170318T151457Z.233174f560c42e3d.b08e19f199a26a1d9e019c96cb0629f00a0f6224</string>
+    <string name="key_dictionary" translatable="false">dict.1.1.20170319T122541Z.cff081847419cf25.f6806ef378d456d28f2bd813aba2b47a761f8b7b</string>
 
-    <string name="key_translate">trnsl.1.1.20170318T151457Z.233174f560c42e3d.b08e19f199a26a1d9e019c96cb0629f00a0f6224</string>
-    <string name="key_dictionary">dict.1.1.20170319T122541Z.cff081847419cf25.f6806ef378d456d28f2bd813aba2b47a761f8b7b</string>
+    <string name="action_settings" translatable="false">Settings</string>
 
     <string name="translate_title">Translate</string>
     <string name="history_title">History</string>
-    <string name="favorites_title">Favorites</string>
+    <string name="starred_title">Starred translates</string>
     <string name="history_clear">Do you want to clear history?</string>
-    <string name="starred_clear">Do you want to clear starred clear?</string>
+    <string name="starred_clear">Do you want to clear starred translates?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
     <string name="translate_input_hint">Enter your text to translate it</string>
     <string name="tap_for_detalization">Tap for detalization</string>
     <string name="audio_prompt">Say the phrase</string>
+    <string name="history_list_is_empty">History list is empty</string>
+    <string name="starred_list_is_empty">Starred list is empty</string>
+
+    <string name="error_translate_getting">Error getting translation           </string>
+
+
 </resources>

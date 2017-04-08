@@ -1,14 +1,17 @@
 package com.licht.ytranslator.data.model;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 
 /**
  * Обёртка над закэшированным переводом текста с указанным направлением перевода
  */
 public class HistoryObject extends RealmObject {
+    @Index
     private String word;
-    private String translate;
+    @Index
     private String direction;
+    private String translate;
     // True, если перевод попал в историю переводов. Иначе False.
     private boolean inHistory;
     // True, если перевод был добавлен в избранное. Иначе False

@@ -2,6 +2,7 @@ package com.licht.ytranslator.data.model;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 
 /**
  * Обёртка над расширенной информацией о переводе слова
@@ -9,7 +10,10 @@ import io.realm.RealmObject;
  */
 public class DictionaryObject extends RealmObject {
     // Word и Direction используются как составной ключ для поиска
+    @Index
     private String word;
+
+    @Index
     private String direction;
 
     // Различные значения слова

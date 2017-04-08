@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="translate_title">Переводчик</string>
+    <string name="history_title">История</string>
+    <string name="starred_title">Избранные переводы</string>
+    <string name="history_clear">Вы хотите очистить историю?</string>
+    <string name="starred_clear">Do you удалить отмеченные переводы?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <string name="translate_input_hint">Введите текст для перевода</string>
+    <string name="tap_for_detalization">Нажмите, чтобы посмотреть детали</string>
+    <string name="audio_prompt">Произнесите фразу</string>
+    <string name="history_list_is_empty">История переводов пуста</string>
+    <string name="starred_list_is_empty">Избранных переводов нет</string>
+
+</resources>

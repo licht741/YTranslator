@@ -74,6 +74,12 @@ public class HistoryListFragment extends Fragment implements IHistoryView {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.history_title);
+    }
+
     private void initUI(View root) {
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
