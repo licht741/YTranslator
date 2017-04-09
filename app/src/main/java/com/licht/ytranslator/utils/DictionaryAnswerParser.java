@@ -13,7 +13,7 @@ import io.realm.RealmList;
 
 public class DictionaryAnswerParser {
 
-    private static UtilsPreferences utilsPreferences = new UtilsPreferences();
+    private static final UtilsPreferences utilsPreferences = new UtilsPreferences();
 
     public static RealmList<WordObject> parse(JsonObject obj) {
         if (obj == null)

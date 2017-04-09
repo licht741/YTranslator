@@ -3,9 +3,7 @@ package com.licht.ytranslator.data.sources;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.gson.FieldNamingPolicy;
 import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.model.StringWrapper;
 
 /**
  * Realm не поддерживает автоинкрементальные идентификаторы, поэтому они реализуются вручную
@@ -15,7 +13,7 @@ public class UtilsPreferences {
 
     private static final String PREF_DICTIONARY_NUMBER = "DICT_NUMBER";
 
-    private SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
 
     public UtilsPreferences() {
         super();

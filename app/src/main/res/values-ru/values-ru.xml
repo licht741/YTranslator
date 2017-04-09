@@ -5,7 +5,7 @@
     <string name="history_title">История</string>
     <string name="starred_title">Избранные переводы</string>
     <string name="history_clear">Вы хотите очистить историю?</string>
-    <string name="starred_clear">Do you удалить отмеченные переводы?</string>
+    <string name="starred_clear">Вы хотите удалить отмеченные переводы?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
 
@@ -14,5 +14,8 @@
     <string name="audio_prompt">Произнесите фразу</string>
     <string name="history_list_is_empty">История переводов пуста</string>
     <string name="starred_list_is_empty">Избранных переводов нет</string>
+
+    <string name="error_translate_getting">Ошибка при получении перевода</string>
+    <string name="error_voice_error">Голосовой ввод недоступен</string>
 
 </resources>

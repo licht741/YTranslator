@@ -17,7 +17,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordView
 
     private List<HistoryObject> items = new ArrayList<>();
 
-    private IHistoryView view;
+    private final IHistoryView view;
 
     public HistoryAdapter(IHistoryView view) {
         super();
@@ -67,10 +67,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordView
     }
 
     class WordViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivIcon;
-        TextView tvPhrase;
-        TextView tvTrans;
-        TextView tvDirection;
+        final ImageView ivIcon;
+        final TextView tvPhrase;
+        final TextView tvTrans;
+        final TextView tvDirection;
 
         public WordViewHolder(View itemView) {
             super(itemView);

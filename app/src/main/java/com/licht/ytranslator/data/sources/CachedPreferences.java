@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 
 import com.licht.ytranslator.YTransApp;
 
-import javax.inject.Inject;
-
 /**
  * Хранит информацию о закэшированности данных для локализации
  */
@@ -15,7 +13,7 @@ public class CachedPreferences {
 
     private static final String PREF_DATA_CACHED_PREFIX = "DATA_CACHED_";
 
-    private SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
 
     public CachedPreferences() {
         super();

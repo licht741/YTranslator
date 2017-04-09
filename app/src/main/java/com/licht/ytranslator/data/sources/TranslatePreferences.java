@@ -12,7 +12,7 @@ import com.licht.ytranslator.YTransApp;
 public class TranslatePreferences {
     private static final String PREF_NAME = "user_preferences";
 
-    private SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
 
     private static final String PREF_INPUT_TEXT = "INPUT_TEXT";
     private static final String PREF_TRANSLATE_DIRECTION = "TRANSLATE_DIRECTION";

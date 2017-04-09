@@ -4,6 +4,7 @@ package com.licht.ytranslator.ui.TranslateView;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
@@ -31,7 +32,6 @@ import com.licht.ytranslator.ui.DictionaryView.DictionaryActivity;
 import com.licht.ytranslator.ui.LanguageSelectView.SelectLanguageActivity;
 import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditText;
 import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditTextListener;
-import com.licht.ytranslator.utils.LocalizationUtils;
 import com.licht.ytranslator.utils.Utils;
 
 import java.util.ArrayList;
@@ -57,6 +57,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @BindView(R.id.tv_selected_dest_lang) TextView tvSelectedDestLang;
     @BindView(R.id.tv_show_details_label) TextView tvShowDetailsLabel;
     @BindView(R.id.iv_is_starred) ImageView ivIsStarred;
+    @BindView(R.id.iv_share) ImageView ivShare;
 
     private String mCurrentWord;
 
@@ -126,7 +127,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
      */
     @Override
     public void isStarVisible(boolean isVisible) {
-        ivIsStarred.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+        final int visibility = isVisible ? View.VISIBLE : View.INVISIBLE;
+        ivIsStarred.setVisibility(visibility);
+        ivShare.setVisibility(visibility);
     }
 
 
@@ -236,9 +239,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
      * @param text Актуальный текст
      */
     private void onTextInput(String text) {
-        if (text == null || "".equals(text)) {
+        if (text == null || "".equals(text))
             isStarVisible(false);
-        }
+
         presenter.onTextInput(text);
 
     }
@@ -289,6 +292,12 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     }
 
+    @OnClick(R.id.tv_yandex_translate)
+    public void onYandexTranslateLabelClick() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://translate.yandex.ru"));
+        startActivity(browserIntent);
+    }
+
     @OnClick(R.id.tv_selected_dest_lang)
     public void onSelectedDestinationClick() {
         final String selectedLanguage = presenter.getDestinationLanguage();
@@ -331,12 +340,27 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                if (getActivity() != null) {
+                    presenter.onKeyboardHide();
+                    Utils.hideKeyboard(getActivity());
+                }
+            }
+        };
         drawer.addDrawerListener(toggle);
 
         toggle.syncState();
 
         ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
+        ivShare.setOnClickListener(v -> presenter.onShareText());
 
         tvInputText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -403,5 +427,17 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(tvInputText, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    /**
+     * Использовать механизм шаринга текста
+     *
+     * @param content Текст для шаринга
+     */
+    @Override
+    public void shareText(String content) {
+        final Intent sendIntent = Utils.createIntentToSharing(content);
+        if (sendIntent.resolveActivity(getActivity().getPackageManager()) != null)
+            getActivity().startActivity(sendIntent);
     }
 }

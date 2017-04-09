@@ -46,18 +46,6 @@ public class CacheData {
         realm.commitTransaction();
     }
 
-
-    public String[] getTranslateTypes() {
-        final Realm realm = Realm.getDefaultInstance();
-        RealmResults<SupportedTranslation> results = realm.where(SupportedTranslation.class).findAll();
-
-        String[] translateTypes = new String[results.size()];
-        for (int i = 0; i < results.size(); ++i)
-            translateTypes[i] = results.get(i).getTranslation();
-
-        return translateTypes;
-    }
-
     public Localization[] getLanguageList(String localSymbol) {
         final Realm realm = Realm.getDefaultInstance();
         RealmResults<Localization> localizations = realm.where(Localization.class)
@@ -160,16 +148,18 @@ public class CacheData {
 
 
     public void updateHistoryWord(String word, String direction, boolean isHistoryWord) {
-        final Realm realm = Realm.getDefaultInstance();
-        final HistoryObject w = realm.where(HistoryObject.class)
-                .equalTo("word", word)
-                .equalTo("direction", direction).findFirst();
-        if (w == null)
-            return;
+        Realm.getDefaultInstance().executeTransactionAsync(realm -> {
+            final HistoryObject w = realm.where(HistoryObject.class)
+                    .equalTo("word", word)
+                    .equalTo("direction", direction).findFirst();
 
-        realm.beginTransaction();
-        w.setInHistory(isHistoryWord);
-        realm.commitTransaction();
+            // Если слово не было найдено, то произошла какая-то ошибка,
+            // и мы просто игнорируем добавление в историю
+            if (w == null)
+                return;
+
+            w.setInHistory(isHistoryWord);
+        });
     }
 
     public void clearHistory() {
@@ -205,13 +195,14 @@ public class CacheData {
     }
 
     public void setWordStarred(String word, String direction, boolean iStarred) {
-        final Realm realm = Realm.getDefaultInstance();
-        final HistoryObject w = realm.where(HistoryObject.class)
-                .equalTo("word", word)
-                .equalTo("direction", direction).findFirst();
-        realm.beginTransaction();
-        w.setFavorites(iStarred);
-        realm.commitTransaction();
+        Realm.getDefaultInstance().executeTransactionAsync(r -> {
+            final HistoryObject w = r.where(HistoryObject.class)
+                    .equalTo("word", word).equalTo("direction", direction)
+                    .findFirst();
+
+            if (w != null)
+                w.setFavorites(iStarred);
+        });
     }
 
     /**

@@ -5,20 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.licht.ytranslator.ui.MainActivity;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.DataManager;
-import com.licht.ytranslator.data.model.Localization;
-import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.presenters.LoaderPresenter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -45,12 +35,6 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
         presenter.bindView(this);
         presenter.requestData();
         presenter.checkCache();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
     }
 
     @Override

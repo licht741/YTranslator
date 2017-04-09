@@ -12,12 +12,13 @@ import android.widget.TextView;
 import com.licht.ytranslator.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.LanguageViewHolder> {
 
-    private ISelectLanguageView view;
-    private ArrayList<String> mLanguages;
-    private String currentSelectedLanguage;
+    private final ISelectLanguageView view;
+    private final List<String> mLanguages;
+    private final String currentSelectedLanguage;
     private Context context;
 
     public LanguageListAdapter(ISelectLanguageView view, ArrayList<String> mLanguages, String currentSelectedLanguage) {
@@ -59,8 +60,8 @@ public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapte
     }
 
     class LanguageViewHolder extends RecyclerView.ViewHolder {
-        TextView mLanguage;
-        ImageView mIsSelected;
+        final TextView mLanguage;
+        final ImageView mIsSelected;
 
         LanguageViewHolder(View itemView) {
             super(itemView);

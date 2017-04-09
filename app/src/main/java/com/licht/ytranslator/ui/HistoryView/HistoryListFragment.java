@@ -37,7 +37,7 @@ import butterknife.Unbinder;
 
 public class HistoryListFragment extends Fragment implements IHistoryView {
 
-    Unbinder unbinder;
+    private Unbinder unbinder;
 
     @Inject
     HistoryPresenter presenter;

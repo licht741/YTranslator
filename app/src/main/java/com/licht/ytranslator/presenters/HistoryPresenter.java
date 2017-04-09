@@ -1,15 +1,13 @@
 package com.licht.ytranslator.presenters;
 
 import com.licht.ytranslator.data.DataManager;
-import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.ui.HistoryView.IHistoryView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class HistoryPresenter implements IPresenter<IHistoryView> {
 
-    private DataManager dataManager;
+    private final DataManager dataManager;
 
     private IHistoryView view;
 

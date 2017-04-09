@@ -7,12 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.licht.ytranslator.R;
-import com.licht.ytranslator.YTransApp;
-import com.licht.ytranslator.data.DataManager;
 
 import java.util.ArrayList;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,7 +22,7 @@ public class SelectLanguageActivity extends AppCompatActivity implements ISelect
     @BindView(R.id.rv_languages_list)
     RecyclerView mRecyclerView;
 
-    Unbinder unbinder;
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

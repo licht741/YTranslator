@@ -16,10 +16,7 @@ import com.licht.ytranslator.data.sources.CachedPreferences;
 import com.licht.ytranslator.utils.LocalizationUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +27,10 @@ import retrofit2.Call;
  * Реализует паттерн "Фасад", инкапсулирая работу со всеми возможными источниками данных
  */
 public class DataManager {
-    private YandexTranslateAPI yandexTranslateAPI;
-    private YandexDictionaryAPI yandexDictionaryAPI;
-    private CacheData cacheData;
-    private CachedPreferences cachedPreferences;
+    private final YandexTranslateAPI yandexTranslateAPI;
+    private final YandexDictionaryAPI yandexDictionaryAPI;
+    private final CacheData cacheData;
+    private final CachedPreferences cachedPreferences;
 
     private Localization[] mLocalizations = null;
 
@@ -57,86 +54,6 @@ public class DataManager {
 
         checkCachedLocalizations();
     }
-
-    /*
-     * Обращения к данным SharedPreferences
-     */
-
-    /**
-     * Проверяет наличие кэшированных данных для выбранной локализации UI
-     *
-     * @param localization Выбранная локализация
-     * @return True, если для данной локализации данные были загружены, иначе False.
-     */
-    public boolean isDataForLocalizationCached(String localization) {
-        return cachedPreferences.getDataCached(localization);
-    }
-
-    /**
-     * Ставит отметку, что данные для данной локализации UI были закэшированны
-     *
-     * @param localization Локализация UI, для которой данные были закэшированны
-     */
-    public void setDataForLocalizationIsCached(String localization) {
-        cachedPreferences.putDataCached(localization, true);
-    }
-
-    /**
-     * Возвращает название языка по символьному коду, используемое в текущей локализации UI
-     *
-     * @param languageSymbol Символьный код языка
-     * @return Название языка, используемые в текущей локализации UI
-     */
-    private String getLanguageName(String languageSymbol) {
-        return cacheData.getTransMeaning(mLocalSymbol, languageSymbol);
-    }
-
-    /*
-     * Обращения к БД
-     */
-
-    /**
-     * Возвращает символьный код языка, которому соответствует указанное имя языка
-     *
-     * @param languageName Имя языка, используемое в текущей локализации UI
-     * @return Символьный код языка
-     */
-    public String getLanguageSymbolByName(String languageName) {
-        checkCachedLocalizations();
-        for (Localization localization : mLocalizations)
-            if (localization.getLanguageTitle().equals(languageName))
-                return localization.getLanguageSymbol();
-
-        return "";
-    }
-
-    public void setWordStarred(String word, String direction, boolean iStarred) {
-        cacheData.setWordStarred(word, direction, iStarred);
-    }
-
-    public void addWordToHistory(HistoryObject item) {
-        cacheData.addWordToHistory(item);
-    }
-
-    public List<HistoryObject> getHistoryWords() {
-        return cacheData.getHistoryWords();
-    }
-
-    public HistoryObject getHistoryWord(String word, String direction) {
-        return cacheData.getWordFromHistory(word, direction);
-    }
-
-    public List<HistoryObject> getStarredWords() {
-        return cacheData.getFavoritesWords();
-    }
-
-    public void clearHistory(boolean starredOnly) {
-        if (starredOnly)
-            cacheData.clearStarredList();
-        else
-            cacheData.clearHistory();
-    }
-
 
     /*
      * Обращения к API
@@ -174,8 +91,108 @@ public class DataManager {
      * @return Объект, используемый для асинхронной загрузки данных
      */
     public Call<Result> requestTranslation(String key, String text, String lang) {
-
         return yandexTranslateAPI.translate(buildMapToRequest(key, lang, text));
+    }
+
+
+
+
+    /*
+     * Обращения к данным SharedPreferences
+     */
+
+    /**
+     * Проверяет наличие кэшированных данных для выбранной локализации UI
+     *
+     * @param localization Выбранная локализация
+     * @return True, если для данной локализации данные были загружены, иначе False.
+     */
+    public boolean isDataForLocalizationCached(String localization) {
+        return cachedPreferences.getDataCached(localization);
+    }
+
+    /**
+     * Ставит отметку, что данные для данной локализации UI были закэшированны
+     *
+     * @param localization Локализация UI, для которой данные были закэшированны
+     */
+    public void setDataForLocalizationIsCached(String localization) {
+        cachedPreferences.putDataCached(localization, true);
+    }
+
+    /**
+     * Возвращает название языка по символьному коду, используемое в текущей локализации UI
+     *
+     * @param languageSymbol Символьный код языка
+     * @return Название языка, используемые в текущей локализации UI
+     */
+    private String getLanguageName(String languageSymbol) {
+        return cacheData.getTransMeaning(mLocalSymbol, languageSymbol);
+    }
+
+    /*
+     * Обращения к данным БД
+     */
+
+    /**
+     * Добавляет или удаляет перевод из списка избранного
+     *
+     * @param word Переводимый текст
+     * @param direction Направление перевода
+     * @param iStarred Добавлен ли перевод в избранное сейчас
+     */
+    public void setWordStarred(String word, String direction, boolean iStarred) {
+        cacheData.setWordStarred(word, direction, iStarred);
+    }
+
+    /**
+     * Добавляет перевод в историю
+     *
+     * @param item Объект перевода
+     */
+    public void addWordToHistory(HistoryObject item) {
+        cacheData.addWordToHistory(item);
+    }
+
+    /**
+     * Возвращает список переводов из истории
+     *
+     * @return Список переводов из истории
+     */
+    public List<HistoryObject> getHistoryWords() {
+        return cacheData.getHistoryWords();
+    }
+
+    /**
+     * Находит объект перевода по переводимому тексту и направлению перевода
+     *
+     * @param word Переводимый текст
+     * @param direction Направление перевода
+     * @return Объект перевода
+     */
+    public HistoryObject getHistoryWord(String word, String direction) {
+        return cacheData.getWordFromHistory(word, direction);
+    }
+
+    /**
+     * Возвращает список переводов, попавших в избранное
+     *
+     * @return Список избранных переводов
+     */
+    public List<HistoryObject> getStarredWords() {
+        return cacheData.getFavoritesWords();
+    }
+
+    /**
+     * Удаляет все переводы из истории
+     *
+     * @param starredOnly True, если удаляются только избранные переводы. False, если удаляется вся история
+     */
+    public void clearHistory(boolean starredOnly) {
+        if (starredOnly)
+            cacheData.clearStarredList();
+        else
+            cacheData.clearHistory();
     }
 
     /**
@@ -207,28 +224,14 @@ public class DataManager {
         return cacheData.getCachedDictionary(id);
     }
 
-    public synchronized void cacheDictionaryWord(DictionaryObject dictionaryObject) {
+    public void cacheDictionaryWord(DictionaryObject dictionaryObject) {
         cacheData.cacheDictionary(dictionaryObject);
     }
 
-    /*
-     * Остальные функции
-     */
-
-    private ArrayList<String> mCachedLanguagesList = null;
-    public ArrayList<String> getLanguagesList() {
-        if (mCachedLanguagesList != null)
-            return mCachedLanguagesList;
-
-        checkCachedLocalizations();
-        mCachedLanguagesList = new ArrayList<>();
-        for (Localization localization : mLocalizations)
-            mCachedLanguagesList.add(localization.getLanguageTitle());
-
-        Collections.sort(mCachedLanguagesList, String::compareTo);
-
-        return mCachedLanguagesList;
+    public void updateHistoryWord(String word, String direction, boolean isHistoryWord) {
+        cacheData.updateHistoryWord(word, direction, isHistoryWord);
     }
+
 
     /**
      * Оценивает количество кэшированных переводов базе данных и удаляет кэшированные переводы,
@@ -245,11 +248,60 @@ public class DataManager {
             cacheData.clearCache();
     }
 
+
+    /**
+     * Возвращает символьный код языка, которому соответствует указанное имя языка
+     *
+     * @param languageName Имя языка, используемое в текущей локализации UI
+     * @return Символьный код языка
+     */
+    public String getLanguageSymbolByName(String languageName) {
+        checkCachedLocalizations();
+        for (Localization localization : mLocalizations)
+            if (localization.getLanguageTitle().equals(languageName))
+                return localization.getLanguageSymbol();
+
+        return "";
+    }
+
+    /*
+     * Остальные функции
+     */
+
+    private ArrayList<String> mCachedLanguagesList = null;
+
+    public ArrayList<String> getLanguagesList() {
+        if (mCachedLanguagesList != null)
+            return mCachedLanguagesList;
+
+        checkCachedLocalizations();
+        mCachedLanguagesList = new ArrayList<>();
+        for (Localization localization : mLocalizations)
+            mCachedLanguagesList.add(localization.getLanguageTitle());
+
+        Collections.sort(mCachedLanguagesList, String::compareTo);
+
+        return mCachedLanguagesList;
+    }
+
     private void checkCachedLocalizations() {
         if (mLocalizations == null)
             mLocalizations = cacheData.getLanguageList(mLocalSymbol);
     }
 
+
+    public String getLanguageByCode(String code) {
+        checkCachedLocalizations();
+        for (Localization localization : mLocalizations)
+            if (localization.getLanguageSymbol().equals(code))
+                return localization.getLanguageTitle();
+        return "";
+    }
+
+
+    /*
+     * Вспомогательные функции
+     */
 
     private Map<String, String> buildMapToRequest(String key, String lang, String text) {
         Map<String, String> mapJSON = new HashMap<>();
@@ -263,21 +315,5 @@ public class DataManager {
         Map<String, String> mapJSON = buildMapToRequest(key, lang, text);
         mapJSON.put("ui", ui);
         return mapJSON;
-    }
-
-    public void updateHistoryWord(String word, String direction, boolean isHistoryWord) {
-        cacheData.updateHistoryWord(word, direction, isHistoryWord);
-    }
-
-    public void updateStarredWord(String word, String direction, boolean isStarredNow) {
-        cacheData.setWordStarred(word, direction, isStarredNow);
-    }
-
-    public String getLanguageByCode(String code) {
-        checkCachedLocalizations();
-        for (Localization localization : mLocalizations)
-            if (localization.getLanguageSymbol().equals(code))
-                return localization.getLanguageTitle();
-        return "";
     }
 }

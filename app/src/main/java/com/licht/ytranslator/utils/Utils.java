@@ -54,6 +54,10 @@ public class Utils {
         return stringBuilder.toString();
     }
 
+    public static String formattedTranslatingToShare(String text, String translate) {
+        return String.format("%s - %s", text, translate);
+    }
+
     public static Intent createIntentToSharing(String content) {
         final Intent intent = new Intent();
 

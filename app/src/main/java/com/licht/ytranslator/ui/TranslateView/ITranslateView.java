@@ -74,4 +74,11 @@ public interface ITranslateView {
      * Сообщает о том, что получить перевод не получилось, и необходимо сообщить об этом пользователю
      */
     void onTranslateFailure();
+
+    /**
+     * Использовать механизм шаринга текста
+     *
+     * @param content Текст для шаринга
+     */
+    void shareText(String content);
 }

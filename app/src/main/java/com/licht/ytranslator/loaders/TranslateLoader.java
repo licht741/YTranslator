@@ -18,7 +18,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TranslateLoader {
-    private DataManager mDataManager;
+    private final DataManager mDataManager;
 
     private OnTranslateResultListener mListener;
 

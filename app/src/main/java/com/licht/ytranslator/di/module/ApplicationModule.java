@@ -10,7 +10,7 @@ import dagger.Provides;
 
 @Module
 public class ApplicationModule {
-    private YTransApp mApp;
+    private final YTransApp mApp;
 
     public ApplicationModule(YTransApp app) {
         super();

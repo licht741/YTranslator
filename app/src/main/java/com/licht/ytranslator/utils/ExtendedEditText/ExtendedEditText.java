@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.EditText;
 
-public class ExtendedEditText extends EditText {
+public class ExtendedEditText extends android.support.v7.widget.AppCompatEditText {
 
     private ExtendedEditTextListener mOnImeBack;
 

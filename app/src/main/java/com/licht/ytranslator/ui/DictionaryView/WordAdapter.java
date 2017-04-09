@@ -1,6 +1,5 @@
 package com.licht.ytranslator.ui.DictionaryView;
 
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +14,8 @@ import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.WordMeaningObject;
 
 class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
-    private IDictionaryView view;
-    private WordObject wordObject;
+    private final IDictionaryView view;
+    private final WordObject wordObject;
 
     WordAdapter(IDictionaryView view,
                        WordObject wordObject) {
@@ -105,11 +104,11 @@ class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
     }
 
     class WordViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCardNumber;
-        TextView tvTranslating;
-        TextView tvMeaning;
-        TextView tvExamples;
-        ImageView ivShare;
+        final TextView tvCardNumber;
+        final TextView tvTranslating;
+        final TextView tvMeaning;
+        final TextView tvExamples;
+        final ImageView ivShare;
 
         WordViewHolder(View itemView) {
             super(itemView);

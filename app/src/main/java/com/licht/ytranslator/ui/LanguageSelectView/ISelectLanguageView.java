@@ -1,5 +1,5 @@
 package com.licht.ytranslator.ui.LanguageSelectView;
 
-public interface ISelectLanguageView {
+interface ISelectLanguageView {
     void sendResult(String result);
 }

@@ -8,13 +8,14 @@ import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.sources.TranslatePreferences;
 import com.licht.ytranslator.loaders.TranslateLoader;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
+import com.licht.ytranslator.utils.Utils;
 
 import java.util.ArrayList;
 
 public class TranslatePresenter implements IPresenter<ITranslateView>, OnTranslateResultListener {
-    private DataManager dataManager;
-    private TranslatePreferences translatePreferences;
-    private TranslateLoader translateLoader;
+    private final DataManager dataManager;
+    private final TranslatePreferences translatePreferences;
+    private final TranslateLoader translateLoader;
 
     private ITranslateView view;
 
@@ -116,7 +117,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     }
 
     public void onKeyboardHide() {
-        translatePreferences.getInputText();
         // Если пользователь закрыл клавиатуру, то он просматривает перевод слова
         // В этой ситуации мы сохраняем слово в историю
 
@@ -231,6 +231,21 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
             view.detailsAreAvailable(detailsAreAvailable);
     }
 
+    public void onShareText() {
+        final String text = translatePreferences.getInputText();
+        final String direction = translatePreferences.getTranslateDirection();
+
+        final HistoryObject historyObject = dataManager.getHistoryWord(text, direction);
+        if (historyObject == null)
+            return;
+
+        final String translate = historyObject.getTranslate();
+        final String res = Utils.formattedTranslatingToShare(text, translate);
+
+        if (view != null)
+            view.shareText(res);
+    }
+
     /**
      * Добавляет перевод (ранее закэшированный) в историю
      */
@@ -244,7 +259,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
 
-        dataManager.updateStarredWord(text, direction, isStarredNow);
+        dataManager.setWordStarred(text, direction, isStarredNow);
     }
 
     private void updateLanguagePairInView(String direction) {

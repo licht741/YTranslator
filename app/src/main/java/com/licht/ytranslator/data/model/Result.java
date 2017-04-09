@@ -4,8 +4,8 @@ import java.util.List;
 
 /** Обёртка над результатом перевода, возвращаемым с сервера */
 public class Result {
-    public int code;
-    public String lang;
+    private int code;
+    private String lang;
     public List<String> text;
 
     public Result() {

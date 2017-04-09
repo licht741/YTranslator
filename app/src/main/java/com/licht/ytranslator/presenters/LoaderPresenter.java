@@ -1,11 +1,8 @@
 package com.licht.ytranslator.presenters;
 
-import android.util.Log;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.SupportedTranslation;
@@ -16,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,7 +21,7 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
 
     private ILoadingView view;
 
-    private DataManager dataManager;
+    private final DataManager dataManager;
 
     public LoaderPresenter(DataManager dataManager) {
         super();
