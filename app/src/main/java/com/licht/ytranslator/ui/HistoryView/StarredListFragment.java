@@ -54,6 +54,7 @@ public class StarredListFragment extends Fragment implements IHistoryView {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         YTransApp.getAppComponent().inject(this);
+        setRetainInstance(true);
     }
 
     @Override

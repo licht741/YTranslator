@@ -188,10 +188,17 @@ public class CacheData {
     }
 
     public List<HistoryObject> getFavoritesWords() {
+        List<HistoryObject> favorites = new ArrayList<>();
+
         final Realm realm = Realm.getDefaultInstance();
-        return realm.where(HistoryObject.class)
+        RealmResults<HistoryObject> searchRes = realm.where(HistoryObject.class)
                 .equalTo("isFavorites", true)
                 .findAll();
+
+        for (HistoryObject obj : searchRes)
+            favorites.add(realm.copyFromRealm(obj));
+
+        return favorites;
     }
 
     public void setWordStarred(String word, String direction, boolean iStarred) {
@@ -226,7 +233,8 @@ public class CacheData {
         // Выбираем переводы, которые не попали в историю
         final RealmQuery query = realm.where(HistoryObject.class).equalTo("inHistory", false);
         realm.beginTransaction();
-        final List<HistoryObject> translatesToRemove = query.findAll();
+
+        final RealmResults<HistoryObject> translatesToRemove = query.findAll();
         for (HistoryObject historyObject : translatesToRemove) {
 
             // Код нахождения элемента продублирован из функции getCachedWord(), т.к.

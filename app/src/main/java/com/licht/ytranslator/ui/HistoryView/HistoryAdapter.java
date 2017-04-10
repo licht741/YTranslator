@@ -13,13 +13,13 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder> {
+class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder> {
 
     private List<HistoryObject> items = new ArrayList<>();
 
     private final IHistoryView view;
 
-    public HistoryAdapter(IHistoryView view) {
+    HistoryAdapter(IHistoryView view) {
         super();
         this.view = view;
     }
@@ -72,7 +72,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordView
         final TextView tvTrans;
         final TextView tvDirection;
 
-        public WordViewHolder(View itemView) {
+        WordViewHolder(View itemView) {
             super(itemView);
 
             ivIcon = (ImageView) itemView.findViewById(R.id.iv_history_word_icon);
@@ -81,7 +81,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordView
             tvDirection = (TextView) itemView.findViewById(R.id.tv_history_word_dir);
         }
 
-        public void setIcon(boolean isStarred) {
+        void setIcon(boolean isStarred) {
             if (isStarred)
                 ivIcon.setImageResource(R.drawable.ic_star);
             else

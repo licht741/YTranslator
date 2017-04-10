@@ -3,7 +3,6 @@ package com.licht.ytranslator.utils.ExtendedEditText;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.widget.EditText;
 
 public class ExtendedEditText extends android.support.v7.widget.AppCompatEditText {
 

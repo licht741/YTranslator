@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.licht.ytranslator.R;
@@ -24,10 +25,14 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        Log.e("MainActivity", "setFragment(false, new TranslateFragment())");
 
-        setFragment(false, new TranslateFragment());
+        Fragment fmt = getSupportFragmentManager().findFragmentByTag(TAG);
+        if (fmt == null)
+            setFragment(false, new TranslateFragment());
     }
 
+    private final String TAG = "Fragment";
     public void setFragment(boolean addToBackStack, Fragment fragment) {
         if (getCurrentFragmentClass() != null && getCurrentFragmentClass() == fragment.getClass())
             return;
@@ -35,11 +40,11 @@ public class MainActivity extends AppCompatActivity
         if (addToBackStack)
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, fragment)
+                    .replace(R.id.container, fragment, TAG)
                     .addToBackStack(null)
                     .commit();
             else
-            getSupportFragmentManager()
+                getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, fragment)
                     .commit();
