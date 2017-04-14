@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +37,7 @@ import com.licht.ytranslator.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -119,26 +121,27 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @Override
     public void onStart() {
         super.onStart();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.translate_title);
+
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setTitle(R.string.translate_title);
     }
 
-    /**
-     * @param isVisible True, если значок должен отображаться, иначе False
-     */
     @Override
-    public void isStarVisible(boolean isVisible) {
-        final int visibility = isVisible ? View.VISIBLE : View.INVISIBLE;
+    public void isTranslateActionsAvailable(boolean isAvailable) {
+        final int visibility = isAvailable ? View.VISIBLE : View.INVISIBLE;
         ivIsStarred.setVisibility(visibility);
         ivShare.setVisibility(visibility);
     }
 
-
     /**
-     * @param ctrl Элемент управление
+     * @param ctrl Элемент управления
      * @param text Текстовое содержимое
      */
     @Override
     public void onImeBack(ExtendedEditText ctrl, String text) {
+        // Если пользователь спрятал клавиатуру, вероятно, он хочет посмотреть перевод введённого текста
+        // Предупреждаем об этом презентер, помечаем перевод в истории
         presenter.onKeyboardHide();
     }
 
@@ -215,17 +218,28 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         if (data == null)
             return;
 
+        // Обрабатываем ответы, полученные из других активити
         switch (requestCode) {
+            // обрабататываем результат голосового ввода
             case REQ_CODE_SPEECH_INPUT:
-                final String input = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
-                setInputText(input);
+                List<String> results =  data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                if (results.size() > 0) {
+                    final String input = results.get(0);
+                    setInputText(input);
+                }
+                else // не удалось распознать текст, или возникла какая-то другая ошибка
+                    Toast.makeText(getContext(), getString(R.string.error_voice_error),
+                                   Toast.LENGTH_SHORT).show();
+
                 break;
 
+            // Был выбран новый язык ввода
             case REQ_CODE_SOURCE_LANGUAGE:
                 final String resultLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
                 presenter.onUpdateSourceLanguage(resultLanguage);
                 break;
 
+            // Был выбран новый язык назначения
             case REQ_CODE_DESTINATION_LANGUAGE:
                 final String destLanguage = data.getStringExtra(SelectLanguageActivity.RESULT_LANGUAGE);
                 presenter.onUpdateDestinationLanguage(destLanguage);
@@ -240,7 +254,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
      */
     private void onTextInput(String text) {
         if (text == null || "".equals(text))
-            isStarVisible(false);
+            isTranslateActionsAvailable(false);
 
         presenter.onTextInput(text);
 
@@ -270,26 +284,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         if (tvInputText.getText().length() == 0)
             return;
 
-        isStarVisible(false);
+        isTranslateActionsAvailable(false);
         detailsAreAvailable(false);
         setInputText("");
 
         showKeyboard();
-    }
-
-    @OnClick(R.id.tv_selected_source_lang)
-    public void onSelectedSourceClick() {
-        final String selectedLanguage = presenter.getSourceLanguage();
-        final ArrayList<String> languages = presenter.getLanguagesList();
-        Collections.sort(languages);
-
-        Intent intent = new Intent(getContext(), SelectLanguageActivity.class);
-        Bundle b = new Bundle();
-        b.putString(SelectLanguageActivity.SELECTED_LANGUAGE, selectedLanguage);
-        b.putStringArrayList(SelectLanguageActivity.AVAILABLE_LANGUAGE_LIST, languages);
-        intent.putExtras(b);
-        startActivityForResult(intent, REQ_CODE_SOURCE_LANGUAGE);
-
     }
 
     @OnClick(R.id.tv_yandex_translate)
@@ -298,19 +297,16 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         startActivity(browserIntent);
     }
 
-    @OnClick(R.id.tv_selected_dest_lang)
-    public void onSelectedDestinationClick() {
-        final String selectedLanguage = presenter.getDestinationLanguage();
-        final ArrayList<String> languages = presenter.getLanguagesList();
+    @OnClick(R.id.tv_selected_source_lang)
+    public void onSelectedSourceClick() {
+        startActivityToSelectLanguage(REQ_CODE_SOURCE_LANGUAGE);
 
-        Intent intent = new Intent(getContext(), SelectLanguageActivity.class);
-        Bundle b = new Bundle();
-        b.putString(SelectLanguageActivity.SELECTED_LANGUAGE, selectedLanguage);
-        b.putStringArrayList(SelectLanguageActivity.AVAILABLE_LANGUAGE_LIST, languages);
-        intent.putExtras(b);
-        startActivityForResult(intent, REQ_CODE_DESTINATION_LANGUAGE);
     }
 
+    @OnClick(R.id.tv_selected_dest_lang)
+    public void onSelectedDestinationClick() {
+        startActivityToSelectLanguage(REQ_CODE_DESTINATION_LANGUAGE);
+    }
 
     /**
      * @param inputLanguageSym Язык, на котором осуществляется голосовой ввод
@@ -326,10 +322,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         try {
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch(ActivityNotFoundException e){
+        } catch(ActivityNotFoundException e){ // Если на устройстве не поддерживается голосовой ввод
             Toast.makeText(getContext(), getString(R.string.error_voice_error), Toast.LENGTH_SHORT).show();
         }
-
 
     }
 
@@ -348,6 +343,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
             @Override
             public void onDrawerOpened(View drawerView) {
+                // закрываем клавиатуру при открытии бокового меню
                 super.onDrawerOpened(drawerView);
                 if (getActivity() != null) {
                     presenter.onKeyboardHide();
@@ -365,7 +361,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         tvInputText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
@@ -378,12 +373,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         tvInputText.setOnLongClickListener(v -> {
             showKeyboard();
-
             return false;
         });
-
         tvInputText.setOnEditTextImeBackListener(this);
-
         tvTranslatedText.setMovementMethod(new ScrollingMovementMethod());
     }
 
@@ -439,5 +431,24 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         final Intent sendIntent = Utils.createIntentToSharing(content);
         if (sendIntent.resolveActivity(getActivity().getPackageManager()) != null)
             getActivity().startActivity(sendIntent);
+    }
+
+    /**
+     * Запускает активити для выбора языка, участвующего в переводе
+     *
+     * @param requestCode Код, по которому обрабатывается возвращаемый из активити результат
+     */
+    private void startActivityToSelectLanguage(final int requestCode) {
+        // Возможные варианты для выбора языка и используемый сейчас язык.
+        final String selectedLanguage = presenter.getDestinationLanguage();
+        final ArrayList<String> languages = presenter.getLanguagesList();
+
+        // Создаём активити для выбор языка и запускаем его
+        Intent intent = new Intent(getContext(), SelectLanguageActivity.class);
+        Bundle b = new Bundle();
+        b.putString(SelectLanguageActivity.SELECTED_LANGUAGE, selectedLanguage);
+        b.putStringArrayList(SelectLanguageActivity.AVAILABLE_LANGUAGE_LIST, languages);
+        intent.putExtras(b);
+        startActivityForResult(intent, requestCode);
     }
 }

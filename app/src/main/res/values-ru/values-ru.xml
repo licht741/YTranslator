@@ -18,4 +18,5 @@
     <string name="error_translate_getting">Ошибка при получении перевода</string>
     <string name="error_voice_error">Голосовой ввод недоступен</string>
 
+    <string name="failed_input_recognize">Не удалось распознать голосовой ввод</string>
 </resources>

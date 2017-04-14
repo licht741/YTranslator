@@ -44,12 +44,18 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
      * Инициализирует окно перевода значениями, которые были при закрытии
      */
     public void requestData() {
+        // Получаем использованный в последний раз переводимый текст
+        // Если его нет (возможно только в том случае, если приложение открывается в первый раз),
+        // то устанавливаем и возвращаем пустой текст
         String input = translatePreferences.getInputText();
         if (input == null) {
             input = "";
             translatePreferences.setInputText(input);
         }
 
+        // Получаем использованное в последний раз направление перевода
+        // Если его нет (возможно только в том случае, если приложение открывается в первый раз),
+        // то устанавливаем и возвращаем стандартное направление (с английского на русский)
         String translateDirection = translatePreferences.getTranslateDirection();
         if (translateDirection == null || "".equals(translateDirection)) {
             translateDirection = "en-ru";
@@ -68,8 +74,9 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
 
     /**
      * Инициализирует окно перевода переданными значениями
+     * Источник полученных значений может быть разным (последний перевод, выбор перевода из истории)
      *
-     * @param inputText          Переводимый текст
+     * @param inputText Переводимый текст
      * @param translateDirection Направление перевода
      */
     public void initializeData(String inputText, String translateDirection) {
@@ -77,13 +84,13 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
 
         view.setInputText(inputText);
         view.setLanguagePair(dataManager.getLanguageByCode(languages[0]),
-                dataManager.getLanguageByCode(languages[1]));
+                             dataManager.getLanguageByCode(languages[1]));
     }
 
     /**
      * Вызывается при изменении содержимого поля ввода текста на экране перевода
      *
-     * @param content Новый текст
+     * @param content Введённый текст
      */
     public void onTextInput(String content) {
         if (content == null)
@@ -94,20 +101,24 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
             return;
         }
 
+        // Полученный для перевода текст валиден.
+        // Сохраняем его как последний введенный текст в настройках
         translatePreferences.setInputText(content);
 
         if (view != null) {
             view.detailsAreAvailable(false);
-            view.isStarVisible(false);
+            view.isTranslateActionsAvailable(false);
         }
 
+        // Запрашиваем перевод
         translateText();
     }
-
 
     private void translateText() {
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
+
+        // Делаем асинхронные запросы к Яндекс Переводчику и Яндекс Словарю
 
         final String key = YTransApp.get().getString(R.string.key_translate);
         translateLoader.translate(key, text, direction);
@@ -184,21 +195,25 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     public void onStarredClick() {
         HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(),
                                                        translatePreferences.getTranslateDirection());
+        // Если из-за какой-то ошибки мы можем добавить в избранное слово, которого нет в истории,
+        // то не делаем ничего
         if (obj == null)
             return;
 
+        // Меняем значение избранности слова на обратное
         final boolean isFavorites = obj.isFavorites();
-
         updateStarredWord(!isFavorites);
-        view.isStarredText(!isFavorites);
+
+        if (view != null)
+            view.isStarredText(!isFavorites);
     }
 
     public void onStartAudio() {
+        // Передаём исходный язык (язык, с которого осуществляется перевод) как параметр для
+        // голосового ввода
         final String inputLanguageSymbol = translatePreferences.getTranslateDirection().split("-")[0];
-
         if (view != null)
             view.startAudioWithInputLanguage(inputLanguageSymbol);
-
     }
 
     public String getSourceLanguage() {
@@ -217,15 +232,17 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
 
     @Override
     public void onTranslateResult(HistoryObject historyObject) {
+        // Получили результат от асинхронного запроса к Яндекс Переводчику, обрабатываем его
         if (view == null)
             return;
         view.setTranslatedText(historyObject.getWord(), historyObject.getTranslate());
-        view.isStarVisible(true);
+        view.isTranslateActionsAvailable(true);
         view.isStarredText(historyObject.isFavorites());
     }
 
     @Override
     public void onDictionaryResult(DictionaryObject w) {
+        // Получили результат от асинхронного запроса к Яндекс Словарю, обрабатываем его
         final boolean detailsAreAvailable = w.getDictionaries().size() > 0;
         if (view != null)
             view.detailsAreAvailable(detailsAreAvailable);

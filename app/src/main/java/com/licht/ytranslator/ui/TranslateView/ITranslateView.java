@@ -47,11 +47,11 @@ public interface ITranslateView {
     void isStarredText(boolean isStarred);
 
     /**
-     * Передаёт необходимость отображения значка избранности
+     * Устанавливает отображение действий над отображённым текстом
      *
-     * @param isVisible True, если значок должен отображаться, иначе False
+     * @param isAvailable True, если действия доступны и должны отображаться, иначе False
      */
-    void isStarVisible(boolean isVisible);
+    void isTranslateActionsAvailable(boolean isAvailable);
 
     /**
      * Вызывается когда один из языков был изменён, и необходимо обновить перевод
