@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.licht.ytranslator.R;
@@ -115,6 +116,10 @@ public class StarredListFragment extends Fragment implements IHistoryView, Searc
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setOnQueryTextListener(this);
+
+        EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchEditText.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
+        searchEditText.setHintTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
 
         super.onCreateOptionsMenu(menu, inflater);
     }

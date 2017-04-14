@@ -3,6 +3,7 @@ package com.licht.ytranslator.ui.HistoryView;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,7 +22,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
@@ -82,6 +85,10 @@ public class HistoryListFragment extends Fragment implements IHistoryView, Searc
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setOnQueryTextListener(this);
+
+        EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchEditText.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
+        searchEditText.setHintTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
 
         super.onCreateOptionsMenu(menu, inflater);
     }
