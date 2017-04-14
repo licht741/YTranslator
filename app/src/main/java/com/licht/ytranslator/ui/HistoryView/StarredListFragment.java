@@ -166,7 +166,9 @@ public class StarredListFragment extends Fragment implements IHistoryView, Searc
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                searchView.onActionViewCollapsed();
+
+                if (searchView != null)
+                    searchView.onActionViewCollapsed();
             }
         };
         drawer.addDrawerListener(toggle);

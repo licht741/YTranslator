@@ -82,6 +82,9 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     public void initializeData(String inputText, String translateDirection) {
         final String[] languages = translateDirection.split("-");
 
+        if (view == null)
+            return;
+
         view.setInputText(inputText);
         view.setLanguagePair(dataManager.getLanguageByCode(languages[0]),
                              dataManager.getLanguageByCode(languages[1]));
@@ -151,7 +154,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         translatePreferences.setDirectionText(newDirection);
 
         updateLanguagePairInView(newDirection);
-        view.onLanguageChanges();
+        if (view != null)
+            view.onLanguageChanges();
     }
 
     /**
@@ -170,7 +174,9 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         translatePreferences.setDirectionText(newDirection);
 
         updateLanguagePairInView(newDirection);
-        view.onLanguageChanges();
+
+        if (view != null)
+            view.onLanguageChanges();
     }
 
     public void onSwapLanguages() {
@@ -285,6 +291,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         final String sourceLanguage = dataManager.getLanguageByCode(tokens[0]);
         final String destinationLanguage = dataManager.getLanguageByCode(tokens[1]);
 
-        view.setLanguagePair(sourceLanguage, destinationLanguage);
+        if (view != null)
+            view.setLanguagePair(sourceLanguage, destinationLanguage);
     }
 }
