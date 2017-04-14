@@ -1,6 +1,7 @@
 package com.licht.ytranslator.ui.DictionaryView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +22,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class DictionaryFragment extends Fragment implements IDictionaryView {
@@ -93,5 +95,12 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @OnClick(R.id.label_yandex_dictionary)
+    void onYandexLabelClick() {
+        final String url = getString(R.string.yandex_dictionary_url);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(browserIntent);
     }
 }

@@ -293,7 +293,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @OnClick(R.id.tv_yandex_translate)
     public void onYandexTranslateLabelClick() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://translate.yandex.ru"));
+        final String url = getString(R.string.yandex_translate_url);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(browserIntent);
     }
 
