@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,9 +15,13 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import java.util.ArrayList;
 import java.util.List;
 
-class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder> {
+class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder>
+        implements Filterable {
 
-    private List<HistoryObject> items = new ArrayList<>();
+    private final List<HistoryObject> items = new ArrayList<>();
+    private final List<HistoryObject> filteredItems = new ArrayList<>();
+
+    private TranslateFilter filter;
 
     private final IHistoryView view;
 
@@ -25,7 +31,12 @@ class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder>
     }
 
     public void setData(List<HistoryObject> items) {
-        this.items = items;
+        this.items.clear();
+        this.items.addAll(items);
+
+        this.filteredItems.clear();
+        this.filteredItems.addAll(items);
+
         notifyDataSetChanged();
     }
 
@@ -37,7 +48,7 @@ class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder>
 
     @Override
     public void onBindViewHolder(WordViewHolder holder, int position) {
-        final HistoryObject item = items.get(position);
+        final HistoryObject item = filteredItems.get(position);
 
         holder.tvPhrase.setText(item.getWord());
         holder.tvTrans.setText(item.getTranslate());
@@ -48,25 +59,31 @@ class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder>
         holder.setIcon(item.isFavorites());
 
         holder.itemView.setOnClickListener(v ->
-            view.onItemSelected(item.getWord(), item.getDirection()));
+                view.onItemSelected(item.getWord(), item.getDirection()));
 
         holder.ivIcon.setOnClickListener(v -> {
             final boolean newStarredState = !items.get(position).isFavorites();
 
             holder.setIcon(newStarredState);
-            view.onStarredChanged(item.getWord(),
-                    item.getDirection(),
-                    newStarredState);
+            view.onStarredChanged(item.getWord(), item.getDirection(), newStarredState);
             items.get(position).setFavorites(newStarredState);
         });
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return filteredItems.size();
     }
 
-    class WordViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public Filter getFilter() {
+        if (filter == null)
+            filter = new TranslateFilter(this, items);
+
+        return filter;
+    }
+
+    static class WordViewHolder extends RecyclerView.ViewHolder {
         final ImageView ivIcon;
         final TextView tvPhrase;
         final TextView tvTrans;
@@ -88,4 +105,46 @@ class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder>
                 ivIcon.setImageResource(R.drawable.ic_bookmark);
         }
     }
+
+    private static class TranslateFilter extends Filter {
+        private final HistoryAdapter adapter;
+        private final List<HistoryObject> originalList;
+        private final List<HistoryObject> filteredList;
+
+        private TranslateFilter(HistoryAdapter adapter, List<HistoryObject> items) {
+            super();
+            this.adapter = adapter;
+            this.originalList = items;
+            this.filteredList = new ArrayList<>();
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            filteredList.clear();
+            final FilterResults results = new FilterResults();
+
+            if (constraint.length() > 0) {
+                final String pattern = constraint.toString().toLowerCase().trim();
+
+                // Выбираем переводы, где введённый текст встречается в тексте, или в переводе
+                for (final HistoryObject historyObject : originalList)
+                    if (historyObject.getWord().toLowerCase().contains(pattern) ||
+                            historyObject.getTranslate().toLowerCase().contains(pattern))
+                        filteredList.add(historyObject);
+            } else
+                filteredList.addAll(originalList);
+
+            results.values = filteredList;
+            results.count = filteredList.size();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            adapter.filteredItems.clear();
+            adapter.filteredItems.addAll((List<HistoryObject>) results.values);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
 }

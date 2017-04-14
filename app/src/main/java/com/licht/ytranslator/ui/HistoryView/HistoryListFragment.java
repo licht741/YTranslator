@@ -1,6 +1,8 @@
 package com.licht.ytranslator.ui.HistoryView;
 
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +29,7 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.presenters.HistoryPresenter;
 import com.licht.ytranslator.ui.MainActivity;
 import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
+import com.licht.ytranslator.utils.Utils;
 
 import java.util.List;
 
@@ -35,18 +39,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class HistoryListFragment extends Fragment implements IHistoryView {
+public class HistoryListFragment extends Fragment implements IHistoryView, SearchView.OnQueryTextListener {
 
     private Unbinder unbinder;
 
     @Inject
     HistoryPresenter presenter;
 
-    @BindView(R.id.rv_history_list)
-    RecyclerView recyclerView;
+    @BindView(R.id.rv_history_list) RecyclerView recyclerView;
+    @BindView(R.id.view_no_content) RelativeLayout noContentView;
 
-    @BindView(R.id.view_no_content)
-    RelativeLayout noContentView;
+    private SearchView searchView;
 
     private final HistoryAdapter adapter = new HistoryAdapter(this);
 
@@ -69,9 +72,17 @@ public class HistoryListFragment extends Fragment implements IHistoryView {
         return root;
     }
 
+
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_history, menu);
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        searchView.setOnQueryTextListener(this);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -79,6 +90,19 @@ public class HistoryListFragment extends Fragment implements IHistoryView {
     public void onStart() {
         super.onStart();
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.history_title);
+    }
+
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        adapter.getFilter().filter(newText);
+        return false;
     }
 
     private void initUI(View root) {
@@ -93,7 +117,13 @@ public class HistoryListFragment extends Fragment implements IHistoryView {
 
         DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                searchView.onActionViewCollapsed();
+            }
+        };
         drawer.addDrawerListener(toggle);
         toggle.syncState();
     }

@@ -337,11 +337,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-
-            @Override
             public void onDrawerOpened(View drawerView) {
                 // закрываем клавиатуру при открытии бокового меню
                 super.onDrawerOpened(drawerView);
