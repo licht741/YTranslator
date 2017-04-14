@@ -3,7 +3,6 @@ package com.licht.ytranslator.ui.HistoryView;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
@@ -32,7 +30,6 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.presenters.HistoryPresenter;
 import com.licht.ytranslator.ui.MainActivity;
 import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
-import com.licht.ytranslator.utils.Utils;
 
 import java.util.List;
 

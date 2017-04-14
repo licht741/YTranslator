@@ -36,7 +36,6 @@ import com.licht.ytranslator.utils.ExtendedEditText.ExtendedEditTextListener;
 import com.licht.ytranslator.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 

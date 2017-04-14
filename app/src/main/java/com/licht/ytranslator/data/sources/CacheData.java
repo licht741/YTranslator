@@ -207,8 +207,11 @@ public class CacheData {
                     .equalTo("word", word).equalTo("direction", direction)
                     .findFirst();
 
-            if (w != null)
+            if (w != null) {
+                w.setInHistory(true);
                 w.setFavorites(iStarred);
+            }
+
         });
     }
 
