@@ -7,6 +7,7 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.sources.TranslatePreferences;
 import com.licht.ytranslator.loaders.TranslateLoader;
+import com.licht.ytranslator.presenters.base.IPresenter;
 import com.licht.ytranslator.ui.TranslateView.ITranslateView;
 import com.licht.ytranslator.utils.Utils;
 
@@ -82,10 +83,10 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     public void initializeData(String inputText, String translateDirection) {
         final String[] languages = translateDirection.split("-");
 
+        translatePreferences.setDirectionText(translateDirection);
+
         if (view == null)
             return;
-
-        translatePreferences.setDirectionText(translateDirection);
 
         view.setInputText(inputText);
         view.setLanguagePair(dataManager.getLanguageByCode(languages[0]),
@@ -123,7 +124,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
 
-        // Делаем асинхронные запросы к Яндекс Переводчику и Яндекс Словарю
+        // Делаем асинхронные запросы к Яндекс Переводчику и Яндекс Словарю через лоадер
 
         final String key = YTransApp.get().getString(R.string.key_translate);
         translateLoader.translate(key, text, direction);

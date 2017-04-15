@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        Log.e("MainActivity", "setFragment(false, new TranslateFragment())");
 
+        // Если никакой фрагмент не восстанавливается системой, то запускаем новый
         Fragment fmt = getSupportFragmentManager().findFragmentByTag(TAG);
         if (fmt == null)
             setFragment(false, new TranslateFragment());
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity
 
     private final String TAG = "Fragment";
     public void setFragment(boolean addToBackStack, Fragment fragment) {
+        // Если мы хотим перейти на экран, который уже открыт, ничего не делаем
         if (getCurrentFragmentClass() != null && getCurrentFragmentClass() == fragment.getClass())
             return;
 
@@ -46,25 +47,26 @@ public class MainActivity extends AppCompatActivity
             else
                 getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, fragment)
+                    .replace(R.id.container, fragment, TAG)
                     .commit();
     }
 
     @Override
     public void onBackPressed() {
+        // По нажатию на кнопку возврата, сначала закрываем боковое меню (если оно было открыто)
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        else
             super.onBackPressed();
-        }
     }
 
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
+        // Обрабатываем выбор экрана в боковом меню
+        int id = item.getItemId();
         if (id == R.id.nav_translate)
             setFragment(false, new TranslateFragment());
         else if (id == R.id.nav_history)

@@ -72,7 +72,29 @@ public class HistoryListFragment extends Fragment implements IHistoryView, Searc
         return root;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("search", searchView.getQuery().toString());
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState == null || !savedInstanceState.containsKey("search"))
+            return;
+
+        final String search = savedInstanceState.getString("search");
+        if ("".equals(search))
+            return;
+
+        searchView.post(() -> {
+            searchView.onActionViewExpanded();
+            searchView.setQuery(search, false);
+        });
+
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

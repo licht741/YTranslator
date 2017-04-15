@@ -1,6 +1,7 @@
 package com.licht.ytranslator;
 
 import android.app.Application;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.licht.ytranslator.di.component.AppComponent;
 import com.licht.ytranslator.di.component.DaggerAppComponent;
@@ -22,6 +23,7 @@ public class YTransApp extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         appComponent = DaggerAppComponent.builder()
                 .applicationModule(new ApplicationModule(this))

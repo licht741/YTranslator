@@ -1,6 +1,7 @@
 package com.licht.ytranslator.presenters;
 
 import com.licht.ytranslator.data.DataManager;
+import com.licht.ytranslator.presenters.base.IPresenter;
 import com.licht.ytranslator.ui.HistoryView.IHistoryView;
 
 import java.util.ArrayList;

@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.SupportedTranslation;
+import com.licht.ytranslator.presenters.base.IPresenter;
 import com.licht.ytranslator.ui.LoadingScreen.ILoadingView;
 import com.licht.ytranslator.utils.LocalizationUtils;
 

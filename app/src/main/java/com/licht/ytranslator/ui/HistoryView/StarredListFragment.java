@@ -46,8 +46,10 @@ public class StarredListFragment extends Fragment implements IHistoryView, Searc
     @Inject
     HistoryPresenter presenter;
 
-    @BindView(R.id.rv_history_list) RecyclerView recyclerView;
-    @BindView(R.id.view_no_content) RelativeLayout noContentView;
+    @BindView(R.id.rv_history_list)
+    RecyclerView recyclerView;
+    @BindView(R.id.view_no_content)
+    RelativeLayout noContentView;
 
     private SearchView searchView;
 
@@ -70,6 +72,31 @@ public class StarredListFragment extends Fragment implements IHistoryView, Searc
 
         setHasOptionsMenu(true);
         return root;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString("search", searchView.getQuery().toString());
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState == null || !savedInstanceState.containsKey("search"))
+            return;
+
+        final String search = savedInstanceState.getString("search");
+        if ("".equals(search))
+            return;
+
+        searchView.post(() -> {
+            searchView.onActionViewExpanded();
+            searchView.setQuery(search, false);
+        });
+
     }
 
     @Override

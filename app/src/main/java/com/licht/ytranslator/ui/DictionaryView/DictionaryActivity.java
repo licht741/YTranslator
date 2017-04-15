@@ -16,6 +16,8 @@ import javax.inject.Inject;
 
 public class DictionaryActivity extends AppCompatActivity {
 
+    // На этом экране достаточно простая логика,
+    // поэтому используем источник данных напрямую, без презентера
     @Inject
     DataManager dataManager;
 
@@ -53,6 +55,7 @@ public class DictionaryActivity extends AppCompatActivity {
 
 
     private void setupViewPager(ViewPager viewPager) {
+        // Для каждого возможного толкования слова заводим отдельную вкладку
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         for (WordObject wordObject : mDictionaryObject.getDictionaries()) {
             final String title = wordObject.getType();

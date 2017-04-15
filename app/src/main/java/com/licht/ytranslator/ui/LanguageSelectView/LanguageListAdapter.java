@@ -42,6 +42,8 @@ class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.Langu
         final String lang = mLanguages.get(position);
 
         holder.mLanguage.setText(lang);
+
+        // Отдельно помечаем текущий язык
         if (lang.equals(currentSelectedLanguage)) {
             holder.mIsSelected.setVisibility(View.VISIBLE);
             holder.mIsSelected.setImageResource(R.drawable.ic_selected);
