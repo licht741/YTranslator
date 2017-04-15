@@ -6,6 +6,8 @@ import com.licht.ytranslator.di.component.AppComponent;
 import com.licht.ytranslator.di.component.DaggerAppComponent;
 import com.licht.ytranslator.di.module.ApplicationModule;
 import com.licht.ytranslator.di.module.BusinessModule;
+import com.licht.ytranslator.di.module.DataModule;
+import com.licht.ytranslator.di.module.NetworkModule;
 
 public class YTransApp extends Application {
     private static YTransApp instance;
@@ -23,7 +25,9 @@ public class YTransApp extends Application {
 
         appComponent = DaggerAppComponent.builder()
                 .applicationModule(new ApplicationModule(this))
-                .businessModule(new BusinessModule()).build();
+                .businessModule(new BusinessModule())
+                .networkModule(new NetworkModule())
+                .dataModule(new DataModule()).build();
     }
 
     public static AppComponent getAppComponent() {

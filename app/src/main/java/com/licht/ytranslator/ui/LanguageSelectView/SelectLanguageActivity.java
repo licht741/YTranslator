@@ -2,9 +2,11 @@ package com.licht.ytranslator.ui.LanguageSelectView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 
 import com.licht.ytranslator.R;
 
@@ -19,9 +21,7 @@ public class SelectLanguageActivity extends AppCompatActivity implements ISelect
     public static final String SELECTED_LANGUAGE = "SELECTED_LANGUAGE";
     public static final String RESULT_LANGUAGE = "RESULT_LANGUAGE";
 
-    @BindView(R.id.rv_languages_list)
-    RecyclerView mRecyclerView;
-
+    @BindView(R.id.rv_languages_list) RecyclerView mRecyclerView;
     private Unbinder unbinder;
 
     @Override
@@ -34,6 +34,8 @@ public class SelectLanguageActivity extends AppCompatActivity implements ISelect
         ArrayList<String> languagesList = b.getStringArrayList(AVAILABLE_LANGUAGE_LIST);
         String currentLanguage = b.getString(SELECTED_LANGUAGE);
 
+        initUI();
+
         mRecyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -41,6 +43,12 @@ public class SelectLanguageActivity extends AppCompatActivity implements ISelect
 
         LanguageListAdapter mAdapter = new LanguageListAdapter(this, languagesList, currentLanguage);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getSupportActionBar().setTitle(getString(R.string.select_language));
     }
 
     @Override
@@ -55,5 +63,11 @@ public class SelectLanguageActivity extends AppCompatActivity implements ISelect
     protected void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
+    }
+
+    private void initUI() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.white));
     }
 }

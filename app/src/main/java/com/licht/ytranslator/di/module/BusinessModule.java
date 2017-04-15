@@ -6,6 +6,7 @@ import com.licht.ytranslator.data.sources.CachedPreferences;
 import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.sources.TranslatePreferences;
+import com.licht.ytranslator.data.sources.UtilsPreferences;
 import com.licht.ytranslator.loaders.TranslateLoader;
 import com.licht.ytranslator.presenters.HistoryPresenter;
 import com.licht.ytranslator.presenters.LoaderPresenter;
@@ -27,32 +28,10 @@ public class BusinessModule {
         return new TranslatePresenter(dataManager, translateLoader, translatePreferences);
     }
 
-    // Todo remove to another module
-    @Provides
-    @Singleton
-    DataManager provideDataManager(YandexTranslateAPI yandexTranslateAPI,
-                                   YandexDictionaryAPI yandexDictionaryAPI,
-                                   CacheData cacheData,
-                                   CachedPreferences cachedPreferences) {
-        return new DataManager(yandexTranslateAPI, yandexDictionaryAPI, cacheData, cachedPreferences);
-    }
-
     @Provides
     @Singleton
     TranslatePreferences provideTranslatePreferences() {
         return new TranslatePreferences();
-    }
-
-    @Provides
-    @Singleton
-    CacheData provideCacheData() {
-        return new CacheData();
-    }
-
-    @Provides
-    @Singleton
-    CachedPreferences provideAppPreferences() {
-        return new CachedPreferences();
     }
 
     @Provides

@@ -227,8 +227,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
                     setInputText(input);
                 }
                 else // не удалось распознать текст, или возникла какая-то другая ошибка
-                    Toast.makeText(getContext(), getString(R.string.error_voice_error),
-                                   Toast.LENGTH_SHORT).show();
+                    Utils.showToast(getContext(), getString(R.string.error_voice_error));
 
                 break;
 
@@ -299,13 +298,13 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @OnClick(R.id.tv_selected_source_lang)
     public void onSelectedSourceClick() {
-        startActivityToSelectLanguage(REQ_CODE_SOURCE_LANGUAGE);
+        startActivityToSelectLanguage(REQ_CODE_SOURCE_LANGUAGE, presenter.getSourceLanguage());
 
     }
 
     @OnClick(R.id.tv_selected_dest_lang)
     public void onSelectedDestinationClick() {
-        startActivityToSelectLanguage(REQ_CODE_DESTINATION_LANGUAGE);
+        startActivityToSelectLanguage(REQ_CODE_DESTINATION_LANGUAGE, presenter.getDestinationLanguage());
     }
 
     /**
@@ -433,9 +432,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
      *
      * @param requestCode Код, по которому обрабатывается возвращаемый из активити результат
      */
-    private void startActivityToSelectLanguage(final int requestCode) {
-        // Возможные варианты для выбора языка и используемый сейчас язык.
-        final String selectedLanguage = presenter.getDestinationLanguage();
+    private void startActivityToSelectLanguage(final int requestCode,
+                                               final String selectedLanguage) {
+        // Список языков
         final ArrayList<String> languages = presenter.getLanguagesList();
 
         // Создаём активити для выбор языка и запускаем его

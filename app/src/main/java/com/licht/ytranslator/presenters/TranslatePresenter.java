@@ -85,6 +85,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         if (view == null)
             return;
 
+        translatePreferences.setDirectionText(translateDirection);
+
         view.setInputText(inputText);
         view.setLanguagePair(dataManager.getLanguageByCode(languages[0]),
                              dataManager.getLanguageByCode(languages[1]));
@@ -201,7 +203,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     public void onStarredClick() {
         HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(),
                                                        translatePreferences.getTranslateDirection());
-        // Если из-за какой-то ошибки мы можем добавить в избранное слово, которого нет в истории,
+        // Если из-за какой-то ошибки мы можем добавить в избранное слово, которое не было закэшировано,
         // то не делаем ничего
         if (obj == null)
             return;

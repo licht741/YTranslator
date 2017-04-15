@@ -1,8 +1,10 @@
 package com.licht.ytranslator.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.StringWrapper;
@@ -66,6 +68,10 @@ public class Utils {
         intent.setType("text/plain");
 
         return intent;
+    }
+
+    public static void showToast(Context context, CharSequence text) {
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
 }

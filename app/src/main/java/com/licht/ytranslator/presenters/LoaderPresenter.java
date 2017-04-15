@@ -17,6 +17,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Загружает данные для работы приложения (локализацию, список языков)
+ */
 public class LoaderPresenter implements IPresenter<ILoadingView> {
 
     private ILoadingView view;
@@ -34,26 +37,49 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
     }
 
     public void requestData() {
+        // Получаем используемую в приложении локализацию.
+        // Всего возможно 2 локализации: русская, английская. Это связано с тем, что приложение
+        // локализованно только на эти языки
         final String localConst = LocalizationUtils.getCurrentLocalizationSymbol();
+
+        // Если мы уже загрузили данные для выбранной локализации, то больше ничего делать не надо
         final boolean isDataCached = dataManager.isDataForLocalizationCached(localConst);
         if (isDataCached)
-            view.finishLoading();
-        else {
-            dataManager.loadDataForLocalization(localConst).enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                    JsonObject json = response.body();
-                    cacheData(json, localConst);
-                    dataManager.setDataForLocalizationIsCached(localConst);
-                    view.finishLoading();
-                }
+            if (view != null) {
+                view.finishLoading();
+                return;
+            }
 
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    t.printStackTrace();
-                }
-            });
-        }
+        // Если данных нет, то начинаем загрузку
+        dataManager.loadDataForLocalization(localConst).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response == null || !response.isSuccessful())
+                    onLoadingFailure();
+
+                // Кэшируем данные, помечаем, и завершаем загрузку
+                JsonObject json = response.body();
+                cacheData(json, localConst);
+                dataManager.setDataForLocalizationIsCached(localConst);
+
+                if (view != null)
+                    view.finishLoading();
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (view != null)
+                    view.onLoadingFailure();
+            }
+        });
+    }
+
+    /**
+     * Вызывается при невозможности загрузки данных (например отсутствие интернета, таймаут, ошибка сервера)
+     */
+    private void onLoadingFailure() {
+        if (view != null)
+            view.onLoadingFailure();
     }
 
     /**
@@ -68,6 +94,12 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
         view = null;
     }
 
+    /**
+     * Разбирает полученный JSON и кэширует его в приложении
+     *
+     * @param object полученный JSON
+     * @param localizationConst текущая локализация
+     */
     private void cacheData(JsonObject object, String localizationConst) {
         JsonArray dirs = object.getAsJsonArray("dirs");
 

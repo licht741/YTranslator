@@ -303,6 +303,7 @@ public class DataManager {
      * Вспомогательные функции
      */
 
+    // Функции составляют объект для POST-запросов
     private Map<String, String> buildMapToRequest(String key, String lang, String text) {
         Map<String, String> mapJSON = new HashMap<>();
         mapJSON.put("key", key);

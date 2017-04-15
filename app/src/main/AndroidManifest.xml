@@ -40,7 +40,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.LanguageSelectView.SelectLanguageActivity" />
+            android:name=".ui.LanguageSelectView.SelectLanguageActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".ui.DictionaryView.DictionaryActivity"
             android:theme="@style/AppTheme.NoActionBar" />

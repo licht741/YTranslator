@@ -22,14 +22,13 @@ import io.realm.RealmResults;
 
 public class CacheData {
 
-    @Inject
-    UtilsPreferences utilsPreferences;
+    private UtilsPreferences utilsPreferences;
 
-    public CacheData() {
+    public CacheData(UtilsPreferences utilsPreferences) {
         super();
         Realm.init(YTransApp.get());
 
-        YTransApp.getAppComponent().inject(this);
+        this.utilsPreferences = utilsPreferences;
 
         Stetho.initialize(
                 Stetho.newInitializerBuilder(YTransApp.get())
@@ -136,9 +135,10 @@ public class CacheData {
 
     public List<HistoryObject> getHistoryWords() {
         final Realm realm = Realm.getDefaultInstance();
-        List<HistoryObject> res = realm.where(HistoryObject.class).equalTo("inHistory", true).findAll();
+        List<HistoryObject> res = realm.where(HistoryObject.class)
+                .equalTo("inHistory", true).findAll().sort("word");
 
-        // Открепляем объекты от realm, для того, чтоб модифицировать их не в транзакциях
+        // Открепляем объекты от realm, для того, чтоб модифицировать их вне транзакций
         List<HistoryObject> historyObjects = new ArrayList<>();
         for (HistoryObject obj : res)
             historyObjects.add(realm.copyFromRealm(obj));
@@ -193,7 +193,8 @@ public class CacheData {
         final Realm realm = Realm.getDefaultInstance();
         RealmResults<HistoryObject> searchRes = realm.where(HistoryObject.class)
                 .equalTo("isFavorites", true)
-                .findAll();
+                .findAll()
+                .sort("word");
 
         for (HistoryObject obj : searchRes)
             favorites.add(realm.copyFromRealm(obj));

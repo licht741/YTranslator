@@ -14,16 +14,16 @@ import com.licht.ytranslator.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.LanguageViewHolder> {
+class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.LanguageViewHolder> {
 
     private final ISelectLanguageView view;
     private final List<String> mLanguages;
     private final String currentSelectedLanguage;
     private Context context;
 
-    public LanguageListAdapter(ISelectLanguageView view, ArrayList<String> mLanguages, String currentSelectedLanguage) {
+    LanguageListAdapter(ISelectLanguageView view, List<String> languages, String currentSelectedLanguage) {
         this.view = view;
-        this.mLanguages = mLanguages;
+        this.mLanguages = languages;
         this.currentSelectedLanguage = currentSelectedLanguage;
     }
 
@@ -59,7 +59,7 @@ public class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapte
         return mLanguages.size();
     }
 
-    class LanguageViewHolder extends RecyclerView.ViewHolder {
+    static class LanguageViewHolder extends RecyclerView.ViewHolder {
         final TextView mLanguage;
         final ImageView mIsSelected;
 

@@ -27,8 +27,4 @@ public class ApplicationModule {
         return mApp;
     }
 
-    @Provides
-    UtilsPreferences provideUtilsPreferences() {
-        return new UtilsPreferences();
-    }
 }

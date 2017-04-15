@@ -4,6 +4,7 @@ import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.di.module.ApplicationModule;
 import com.licht.ytranslator.di.module.BusinessModule;
+import com.licht.ytranslator.di.module.DataModule;
 import com.licht.ytranslator.di.module.NetworkModule;
 import com.licht.ytranslator.presenters.HistoryPresenter;
 import com.licht.ytranslator.presenters.LoaderPresenter;
@@ -21,29 +22,14 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, BusinessModule.class, NetworkModule.class})
+@Component(modules = {ApplicationModule.class, BusinessModule.class,
+                        NetworkModule.class, DataModule.class})
 public interface AppComponent {
     void inject(TranslateFragment fragment);
-
-    void inject(TranslatePresenter presenter);
-
-    void inject(DataManager manager);
-
     void inject(LoadingScreenActivity activity);
-
-    void inject(LoaderPresenter presenter);
-
     void inject(SelectLanguageActivity activity);
-
     void inject(DictionaryFragment fragment);
-
-    void inject(CacheData cacheData);
-
     void inject(DictionaryActivity activity);
-
-    void inject(HistoryPresenter presenter);
-
     void inject(HistoryListFragment fragment);
-
     void inject(StarredListFragment fragment);
 }

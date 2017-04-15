@@ -13,6 +13,4 @@ public interface YandexDictionaryAPI {
     @FormUrlEncoded
     @POST("/api/v1/dicservice.json/lookup")
     Call<JsonObject> getMeaning(@FieldMap Map<String, String> map);
-
-
 }
