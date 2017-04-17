@@ -2,11 +2,13 @@ package com.licht.ytranslator.ui.TranslateView;
 
 
 import android.content.ActivityNotFoundException;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +23,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -59,6 +62,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @BindView(R.id.tv_show_details_label) TextView tvShowDetailsLabel;
     @BindView(R.id.iv_is_starred) ImageView ivIsStarred;
     @BindView(R.id.iv_share) ImageView ivShare;
+    @BindView(R.id.iv_copy) ImageView ivCopy;
+    @BindView(R.id.iv_microphone) ImageView ivMicrophone;
+    @BindView(R.id.iv_clear_input) ImageView ivClear;
 
     private String mCurrentWord;
 
@@ -137,6 +143,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         final int visibility = isAvailable ? View.VISIBLE : View.INVISIBLE;
         ivIsStarred.setVisibility(visibility);
         ivShare.setVisibility(visibility);
+        ivCopy.setVisibility(visibility);
     }
 
     /**
@@ -280,29 +287,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         presenter.unbindView();
     }
 
-
-    @OnClick(R.id.iv_microphone)
-    public void onMicrophoneClick() {
-        presenter.onStartAudio();
-    }
-
-
     @OnClick(R.id.iv_swap_language)
     public void swapLanguages() {
         presenter.onSwapLanguages();
-    }
-
-    @OnClick(R.id.iv_clear_input)
-    public void onClearInput() {
-        if ("".equals(tvInputText.getText().toString()))
-            return;
-
-        // Очищаем поля, открываем клавиатуру для ввода
-        isTranslateActionsAvailable(false);
-        detailsAreAvailable(false);
-        setInputText("");
-
-        showKeyboard();
     }
 
     @OnClick(R.id.tv_yandex_translate)
@@ -368,7 +355,37 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         toggle.syncState();
 
         ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
-        ivShare.setOnClickListener(v -> presenter.onShareText());
+
+        ivMicrophone.setOnClickListener(v -> {
+            showAnimationOnIconClick(v);
+            presenter.onStartAudio();
+        });
+
+        ivClear.setOnClickListener(v -> {
+            showAnimationOnIconClick(v);
+            if ("".equals(tvInputText.getText().toString()))
+                return;
+
+            // Очищаем поля, открываем клавиатуру для ввода
+            isTranslateActionsAvailable(false);
+            detailsAreAvailable(false);
+            setInputText("");
+
+            showKeyboard();
+        });
+
+        ivShare.setOnClickListener(v ->  {
+            showAnimationOnIconClick(v);
+            presenter.onShareText();
+        });
+
+        ivCopy.setOnClickListener(v -> {
+            showAnimationOnIconClick(v);
+            ClipboardManager clipboard = (ClipboardManager)
+                    getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(tvTranslatedText.getText());
+        });
+
 
         tvInputText.addTextChangedListener(new TextWatcher() {
             // Первые 2 случая обрабатывать не нужно
@@ -399,6 +416,10 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     public void onStop() {
         super.onStop();
         Utils.hideKeyboard(getActivity());
+    }
+
+    private void showAnimationOnIconClick(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.anim_icon_click));
     }
 
     /**

@@ -201,7 +201,6 @@
 
                     <android.support.v4.widget.Space
                         android:layout_width="match_parent"
-
                         android:layout_height="10dp" />
 
                     <ImageView
@@ -212,6 +211,23 @@
                         android:layout_margin="2dp"
                         android:visibility="visible"
                         app:srcCompat="@drawable/ic_share" />
+
+                    <android.support.v4.widget.Space
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp" />
+
+                    <ImageView
+                        android:id="@+id/iv_copy"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="left|center_vertical"
+                        android:layout_margin="2dp"
+                        android:visibility="visible"
+                        app:srcCompat="@drawable/ic_copy" />
+
+                    <android.support.v4.widget.Space
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp" />
 
                 </LinearLayout>
 
