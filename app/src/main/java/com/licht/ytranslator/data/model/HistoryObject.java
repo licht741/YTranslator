@@ -1,5 +1,7 @@
 package com.licht.ytranslator.data.model;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 
@@ -19,6 +21,8 @@ public class HistoryObject extends RealmObject {
     private boolean inHistory;
     // True, если перевод был добавлен в избранное. Иначе False
     private boolean isFavorites;
+    // Время кэширования этого перевода
+    private Date firstUsingDate;
 
     public HistoryObject() {
         super();
@@ -28,12 +32,14 @@ public class HistoryObject extends RealmObject {
                          String translate,
                          String direction,
                          boolean inHistory,
-                         boolean isFavorites) {
+                         boolean isFavorites,
+                         Date firstUsingDate) {
         this.word = word;
         this.translate = translate;
         this.direction = direction;
         this.isFavorites = isFavorites;
         this.inHistory = inHistory;
+        this.firstUsingDate = firstUsingDate;
     }
 
     public boolean isInHistory() {
@@ -74,5 +80,13 @@ public class HistoryObject extends RealmObject {
 
     public void setFavorites(boolean favorites) {
         isFavorites = favorites;
+    }
+
+    public Date getFirstUsingDate() {
+        return firstUsingDate;
+    }
+
+    public void setFirstUsingDate(Date firstUsingDate) {
+        this.firstUsingDate = firstUsingDate;
     }
 }

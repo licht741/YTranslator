@@ -10,6 +10,8 @@ import com.licht.ytranslator.presenters.OnTranslateResultListener;
 import com.licht.ytranslator.utils.DictionaryAnswerParser;
 import com.licht.ytranslator.utils.LocalizationUtils;
 
+import java.util.Date;
+
 import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,7 +64,8 @@ public class TranslateLoader {
                 // Ответ получен, получили перевод
                 // Кэшируем его, вызываем callback функция листенера
                 final String result = response.body().text.get(0);
-                HistoryObject historyObject = new HistoryObject(text, result, direction, false, false);
+                HistoryObject historyObject = 
+                        new HistoryObject(text, result, direction, false, false, new Date());
                 mDataManager.addWordToHistory(historyObject);
 
                 if (mListener != null)
