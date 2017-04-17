@@ -12,6 +12,8 @@ import com.licht.ytranslator.data.model.WordObject;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -229,13 +231,21 @@ public class CacheData {
      * Удаляются переводы, не попавшие в историю.
      */
     public void clearCache() {
+        // Количество дней, которое может храниться кэшированный перевод
+        final int nDays = 3;
+        final Date dateNDaysAgo = getDateNDayAgo(nDays);
+
         final Realm realm = Realm.getDefaultInstance();
 
         // Realm не поддерживает каскадное удаление объектов,
-        // поэтому очистка осуществляется вручную
+        // поэтому приходится удалять объекты вручную
 
-        // Выбираем переводы, которые не попали в историю
-        final RealmQuery query = realm.where(HistoryObject.class).equalTo("inHistory", false);
+        // Выбираем переводы по заданному условию
+        // (не попали в историю, с вышедшим временем жизни)
+        final RealmQuery query =
+                realm.where(HistoryObject.class).equalTo("inHistory", false)
+                .lessThanOrEqualTo("firstUsingDate", dateNDaysAgo);
+
         realm.beginTransaction();
 
         final RealmResults<HistoryObject> translatesToRemove = query.findAll();
@@ -268,5 +278,15 @@ public class CacheData {
         }
         query.findAll().deleteAllFromRealm();
         realm.commitTransaction();
+    }
+
+    /**
+     * Возвращает дату, которая была N дней назад
+     */
+    private Date getDateNDayAgo(int n) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_YEAR,-n);
+        return cal.getTime();
     }
 }
