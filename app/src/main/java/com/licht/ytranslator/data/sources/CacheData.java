@@ -194,7 +194,7 @@ public class CacheData {
         RealmResults<HistoryObject> searchRes = realm.where(HistoryObject.class)
                 .equalTo("isFavorites", true)
                 .findAll()
-                .sort("word");
+                .sort("firstUsingDate");
 
         for (HistoryObject obj : searchRes)
             favorites.add(realm.copyFromRealm(obj));

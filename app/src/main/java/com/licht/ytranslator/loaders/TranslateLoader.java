@@ -64,7 +64,7 @@ public class TranslateLoader {
                 // Ответ получен, получили перевод
                 // Кэшируем его, вызываем callback функция листенера
                 final String result = response.body().text.get(0);
-                HistoryObject historyObject = 
+                HistoryObject historyObject =
                         new HistoryObject(text, result, direction, false, false, new Date());
                 mDataManager.addWordToHistory(historyObject);
 
