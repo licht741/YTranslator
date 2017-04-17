@@ -11,6 +11,7 @@ import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.WordObject;
 import com.licht.ytranslator.data.model.DictionaryObject;
+import com.licht.ytranslator.utils.Utils;
 
 import javax.inject.Inject;
 
@@ -57,8 +58,14 @@ public class DictionaryActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         // Для каждого возможного толкования слова заводим отдельную вкладку
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+
+        final int dictCount = mDictionaryObject.getDictionaries().size();
         for (WordObject wordObject : mDictionaryObject.getDictionaries()) {
-            final String title = wordObject.getType();
+            final String wordType = wordObject.getType();
+
+            // Если нам нужно сделать больше, чем 2 таба, то надо сократить их названия
+            // В противном случае будут некрасивые переносы
+            final String title = dictCount < 3 ? wordType : Utils.cutWord(wordType);
             adapter.addFragment(DictionaryFragment.newInstance(wordObject.getId()), title);
         }
         viewPager.setAdapter(adapter);

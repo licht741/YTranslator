@@ -60,6 +60,25 @@ public class Utils {
         return String.format("%s - %s", text, translate);
     }
 
+    /*
+     * Сокращает слово.
+     * По умолчанию оставляет 3 символа. Если 3-й символ - гласная, то добавляет букв до первой
+     * согласной включительно
+     */
+    public static String cutWord(String word) {
+        // Приложение поддерживает русскую и английскую локализацию, поэтому достаточно только их гласных
+        final String englishAndRussianVowels = "aeiouауоыиэяюёе";
+
+        int endIndex = 2;
+        char currentSymbol = word.charAt(endIndex);
+        while (englishAndRussianVowels.contains(String.valueOf(currentSymbol))) {
+            ++endIndex;
+            currentSymbol = word.charAt(endIndex);
+        }
+
+        return word.substring(0, endIndex + 1);
+    }
+
     public static Intent createIntentToSharing(String content) {
         final Intent intent = new Intent();
 
