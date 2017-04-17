@@ -102,15 +102,14 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         if (content == null)
             return;
 
+        // Сохраняем текст как последний введённый
+        translatePreferences.setInputText(content);
         if ("".equals(content)) {
             view.setTranslatedText(content, "");
             return;
         }
 
-        // Полученный для перевода текст валиден.
-        // Сохраняем его как последний введенный текст в настройках
-        translatePreferences.setInputText(content);
-
+        // Полученный для перевода текст не пустой, и можно запрашивать для него перевод
         if (view != null) {
             view.detailsAreAvailable(false);
             view.isTranslateActionsAvailable(false);
