@@ -107,20 +107,18 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         if (content == null)
             return;
 
+        if (view != null)
+            view.detailsAreAvailable(false);
+
         // Сохраняем текст как последний введённый
         translatePreferences.setInputText(content);
+
         if ("".equals(content)) {
             view.setTranslatedText(content, "");
             return;
         }
 
         // Полученный для перевода текст не пустой, и можно запрашивать для него перевод
-        if (view != null) {
-            view.detailsAreAvailable(false);
-            view.isTranslateActionsAvailable(false);
-        }
-
-        // Запрашиваем перевод
         translateText();
     }
 
@@ -266,7 +264,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         if (view == null)
             return;
         view.setTranslatedText(historyObject.getWord(), historyObject.getTranslate());
-        view.isTranslateActionsAvailable(true);
+//        view.isTranslateActionsAvailable(true);
         view.isStarredText(historyObject.isFavorites());
     }
 

@@ -132,20 +132,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
             actionBar.setTitle(R.string.translate_title);
     }
 
-
-    /**
-     * Устанавливает отображение действий над отображённым текстом
-     *
-     * @param isAvailable True, если действия доступны и должны отображаться, иначе False
-     */
-    @Override
-    public void isTranslateActionsAvailable(boolean isAvailable) {
-        final int visibility = isAvailable ? View.VISIBLE : View.INVISIBLE;
-        ivIsStarred.setVisibility(visibility);
-        ivShare.setVisibility(visibility);
-        ivCopy.setVisibility(visibility);
-    }
-
     /**
      * @param ctrl Элемент управления
      * @param text Текстовое содержимое
@@ -273,8 +259,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     private void onTextInput(String text) {
         // Если текста нет, то блокируем выполнение действий на переводов
-        if (text == null || "".equals(text))
-            isTranslateActionsAvailable(false);
+//        if (text == null || "".equals(text))
+//            isTranslateActionsAvailable(false);
 
         // Сообщаем презентеру, что входной текст изменился
         presenter.onTextInput(text);
@@ -355,11 +341,15 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         toggle.syncState();
 
-        ivIsStarred.setOnClickListener(v -> presenter.onStarredClick());
+        ivIsStarred.setOnClickListener(v -> {
+            if (tvTranslatedText.getText().length() > 0)
+                presenter.onStarredClick();
+        });
 
         ivMicrophone.setOnClickListener(v -> {
             showAnimationOnIconClick(v);
-            presenter.onStartAudio();
+            if (tvTranslatedText.getText().length() > 0)
+                presenter.onStartAudio();
         });
 
         ivClear.setOnClickListener(v -> {
@@ -368,7 +358,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
                 return;
 
             // Очищаем поля, открываем клавиатуру для ввода
-            isTranslateActionsAvailable(false);
             detailsAreAvailable(false);
             setInputText("");
 
@@ -377,14 +366,18 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
         ivShare.setOnClickListener(v ->  {
             showAnimationOnIconClick(v);
-            presenter.onShareText();
+
+            if (tvTranslatedText.getText().length() > 0)
+                presenter.onShareText();
         });
 
         ivCopy.setOnClickListener(v -> {
             showAnimationOnIconClick(v);
             ClipboardManager clipboard = (ClipboardManager)
                     getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setText(tvTranslatedText.getText());
+
+            if (tvTranslatedText.getText().length() > 0)
+                clipboard.setText(tvTranslatedText.getText());
         });
 
 

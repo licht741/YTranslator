@@ -47,13 +47,6 @@ public interface ITranslateView {
     void isStarredText(boolean isStarred);
 
     /**
-     * Устанавливает отображение действий над отображённым текстом
-     *
-     * @param isAvailable True, если действия доступны и должны отображаться, иначе False
-     */
-    void isTranslateActionsAvailable(boolean isAvailable);
-
-    /**
      * Вызывается когда один из языков был изменён, и необходимо обновить перевод
      */
     void onLanguageChanges();
