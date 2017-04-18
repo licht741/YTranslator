@@ -258,10 +258,6 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
      */
 
     private void onTextInput(String text) {
-        // Если текста нет, то блокируем выполнение действий на переводов
-//        if (text == null || "".equals(text))
-//            isTranslateActionsAvailable(false);
-
         // Сообщаем презентеру, что входной текст изменился
         presenter.onTextInput(text);
     }
