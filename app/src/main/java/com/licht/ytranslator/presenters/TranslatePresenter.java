@@ -12,6 +12,7 @@ import com.licht.ytranslator.ui.TranslateView.ITranslateView;
 import com.licht.ytranslator.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TranslatePresenter implements IPresenter<ITranslateView>, OnTranslateResultListener {
     private final DataManager dataManager;
@@ -61,6 +62,10 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         if (translateDirection == null || "".equals(translateDirection)) {
             translateDirection = "en-ru";
             translatePreferences.setDirectionText(translateDirection);
+
+            // Сразу же добавляем эти языки в список недавно использованных
+            translatePreferences.updateRecentlyUsedLanguage(dataManager.getLanguageByCode("en"));
+            translatePreferences.updateRecentlyUsedLanguage(dataManager.getLanguageByCode("ru"));
         }
 
         initializeData(input, translateDirection);
@@ -147,6 +152,10 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
      * @param newSourceLanguage Название нового исходного языка, написанное в используемой локализации
      */
     public void onUpdateSourceLanguage(String newSourceLanguage) {
+
+        //Обновляем список недавно использованных языков
+        translatePreferences.updateRecentlyUsedLanguage(newSourceLanguage);
+
         // Переводим название языка в его кодовое обозначение
         final String langSymbol = dataManager.getLanguageSymbolByName(newSourceLanguage);
 
@@ -160,12 +169,19 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
             view.onLanguageChanges();
     }
 
+    public ArrayList<String> getRecentlyUsedLanguages() {
+        return translatePreferences.getRecentlyUsedLanguages();
+    }
+
     /**
      * Вызывается при изменении пользователем языка, на который осуществляется перевод
      *
      * @param newDestinationLanguage Название языка, написанное в используемой локализации
      */
     public void onUpdateDestinationLanguage(String newDestinationLanguage) {
+        //Обновляем список недавно использованных языков
+        translatePreferences.updateRecentlyUsedLanguage(newDestinationLanguage);
+
         // Переводим название языка в его кодовое обозначение
         final String langSymbol = dataManager.getLanguageSymbolByName(newDestinationLanguage);
 
@@ -190,7 +206,13 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         if (view == null)
             return;
 
-        view.setLanguagePair(dataManager.getLanguageByCode(tokens[1]), dataManager.getLanguageByCode(tokens[0]));
+        final String newSourceLanguage = dataManager.getLanguageByCode(tokens[1]);
+        final String newDestLanguage = dataManager.getLanguageByCode(tokens[0]);
+
+        translatePreferences.updateRecentlyUsedLanguage(newSourceLanguage);
+        translatePreferences.updateRecentlyUsedLanguage(newDestLanguage);
+
+        view.setLanguagePair(newSourceLanguage, newDestLanguage);
         view.onLanguagesSwapped();
     }
 

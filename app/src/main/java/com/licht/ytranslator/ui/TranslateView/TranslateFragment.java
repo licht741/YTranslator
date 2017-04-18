@@ -301,7 +301,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @OnClick(R.id.tv_selected_source_lang)
     public void onSelectedSourceClick() {
-        startActivityToSelectLanguage(REQ_CODE_SOURCE_LANGUAGE, presenter.getSourceLanguage());
+        startActivityToSelectLanguage(REQ_CODE_SOURCE_LANGUAGE,
+                                        presenter.getSourceLanguage());
 
     }
 
@@ -486,6 +487,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         Bundle b = new Bundle();
         b.putString(SelectLanguageActivity.SELECTED_LANGUAGE, selectedLanguage);
         b.putStringArrayList(SelectLanguageActivity.AVAILABLE_LANGUAGE_LIST, languages);
+        b.putStringArrayList(SelectLanguageActivity.RECENTLY_LANGUAGE_LIST, presenter.getRecentlyUsedLanguages());
         intent.putExtras(b);
 
         startActivityForResult(intent, requestCode);

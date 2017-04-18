@@ -15,52 +15,87 @@ import com.licht.ytranslator.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.LanguageViewHolder>
-        implements Filterable{
+class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+        implements Filterable {
 
     private final ISelectLanguageView view;
 
-    private final List<String> mLanguages = new ArrayList<>();
-    private final List<String> mFilteredItems = new ArrayList<>();
+    private final List<ILanguageAdapterItem> mLanguages = new ArrayList<>();
+    private final List<ILanguageAdapterItem> mFilteredItems = new ArrayList<>();
 
     private final String currentSelectedLanguage;
     private Context context;
 
     private Filter filter;
 
-    LanguageListAdapter(ISelectLanguageView view, List<String> languages, String currentSelectedLanguage) {
+    private final int recentlyUsedLanguagesCount;
+
+    LanguageListAdapter(ISelectLanguageView view,
+                        List<String> allLanguages,
+                        List<String> recentlyUsedLanguages,
+                        String currentSelectedLanguage) {
         this.view = view;
-        mLanguages.addAll(languages);
-        mFilteredItems.addAll(languages);
+
+        recentlyUsedLanguagesCount = recentlyUsedLanguages.size();
+
+        final List<ILanguageAdapterItem> items =
+                getFormattedItems(allLanguages, recentlyUsedLanguages);
+
+        mLanguages.addAll(items);
+        mFilteredItems.addAll(items);
 
         this.currentSelectedLanguage = currentSelectedLanguage;
     }
 
     @Override
-    public LanguageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
 
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_language_for_select, parent, false);
+        if (viewType == ILanguageAdapterItem.LANGUAGE_ITEM_TYPE) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_language_for_select, parent, false);
+            return new LanguageViewHolder(v);
+        }
 
-        return new LanguageViewHolder(v);
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_select_languages_title, parent, false);
+        return new TitleViewHolder(v);
+
     }
 
     @Override
-    public void onBindViewHolder(LanguageViewHolder holder, int position) {
-        final String lang = mFilteredItems.get(position);
+    public int getItemViewType(int position) {
+        return mFilteredItems.get(position).getItemType();
+    }
 
-        holder.mLanguage.setText(lang);
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (getItemViewType(position) == ILanguageAdapterItem.TITLE_ITEM_TYPE) {
+            final TitleViewHolder titleViewHolder = (TitleViewHolder)holder;
+            titleViewHolder.mTitle
+                    .setText(((TitleItem)mFilteredItems.get(position)).getContent());
+            return;
+        }
+
+        final String lang = ((LanguageItem)mFilteredItems.get(position)).getContent();
+        final LanguageViewHolder languageViewHolder = (LanguageViewHolder) holder;
+        languageViewHolder.mLanguage.setText(lang);
 
         // Отдельно помечаем текущий язык
-        if (lang.equals(currentSelectedLanguage)) {
-            holder.mIsSelected.setVisibility(View.VISIBLE);
-            holder.mIsSelected.setImageResource(R.drawable.ic_selected);
-            holder.itemView.setBackground(ContextCompat.getDrawable(context, R.color.colorPrimaryLight));
+        // Не нужно отдельно отмечать язык, находящийся в недавно использованных
+        // Поэтому по индексу проверяем, где находится данный элемент
+        // Если он относится к "недавно использованным", то не помечаем
+        if (lang.equals(currentSelectedLanguage) && (position > recentlyUsedLanguagesCount + 1)) {
+            languageViewHolder.mIsSelected.setVisibility(View.VISIBLE);
+            languageViewHolder.mIsSelected.setImageResource(R.drawable.ic_selected);
+            languageViewHolder.itemView.setBackground(ContextCompat.getDrawable(context, R.color.colorPrimaryLight));
         } else {
-            holder.mIsSelected.setVisibility(View.GONE);
-            holder.itemView.setBackground(ContextCompat.getDrawable(context, android.R.color.background_light));
+            languageViewHolder.mIsSelected.setVisibility(View.GONE);
+            languageViewHolder.itemView
+                    .setBackground(ContextCompat.getDrawable(context, android.R.color.background_light));
         }
 
         holder.itemView.setOnClickListener(v -> view.sendResult(lang));
@@ -71,7 +106,6 @@ class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.Langu
         return mFilteredItems.size();
     }
 
-
     static class LanguageViewHolder extends RecyclerView.ViewHolder {
         final TextView mLanguage;
         final ImageView mIsSelected;
@@ -80,6 +114,15 @@ class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.Langu
             super(itemView);
             mLanguage = (TextView) itemView.findViewById(R.id.tv_language);
             mIsSelected = (ImageView) itemView.findViewById(R.id.iv_is_selected);
+        }
+    }
+
+    static class TitleViewHolder extends RecyclerView.ViewHolder {
+        final TextView mTitle;
+
+        TitleViewHolder(View itemView) {
+            super(itemView);
+            mTitle = (TextView) itemView.findViewById(R.id.tv_title);
         }
     }
 
@@ -93,11 +136,11 @@ class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.Langu
 
     private static class LanguageFilter extends Filter {
         private final LanguageListAdapter adapter;
-        private final List<String> originalList;
-        private final List<String> filteredList;
+        private final List<ILanguageAdapterItem> originalList;
+        private final List<ILanguageAdapterItem> filteredList;
 
         LanguageFilter(LanguageListAdapter adapter,
-                              List<String> originalList) {
+                       List<ILanguageAdapterItem> originalList) {
             this.adapter = adapter;
             this.originalList = originalList;
             this.filteredList = new ArrayList<>();
@@ -109,12 +152,24 @@ class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.Langu
             filteredList.clear();
             final FilterResults results = new FilterResults();
 
+            // Может возникнуть ситуация, что мы уже добавили язык, который находится в "Недавнем"
+            // а теперь встречаем его во второй раз, и пытаемся добавить. Отдельно проверяем этот случай
+            final SortedSet<String> addedLanguages = new TreeSet<>();
+
             if (constraint.length() > 0) {
                 final String pattern = constraint.toString().toLowerCase().trim();
-                for (final String language : originalList)
-                    if (language.toLowerCase().contains(pattern))
-                        filteredList.add(language);
+                for (final ILanguageAdapterItem language : originalList) {
+                    if (language.getItemType() == ILanguageAdapterItem.TITLE_ITEM_TYPE)
+                        continue;
+                    LanguageItem item = (LanguageItem) language;
 
+                    if (item.getContent().toLowerCase().contains(pattern)
+                            && !addedLanguages.contains(item.getContent())) {
+                        addedLanguages.add(item.getContent());
+                        filteredList.add(language);
+                    }
+
+                }
             } else
                 filteredList.addAll(originalList);
 
@@ -126,8 +181,27 @@ class LanguageListAdapter extends RecyclerView.Adapter<LanguageListAdapter.Langu
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             adapter.mFilteredItems.clear();
-            adapter.mFilteredItems.addAll((List<String>) results.values);
+            adapter.mFilteredItems.addAll((List<ILanguageAdapterItem>) results.values);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private List<ILanguageAdapterItem> getFormattedItems(List<String> allLanguages,
+                                                         List<String> recentlyLanguages) {
+        List<ILanguageAdapterItem> items = new ArrayList<>();
+
+        if (recentlyLanguages.size() > 0)
+            items.add(new TitleItem("Недавно использованные"));
+
+        for (String language : recentlyLanguages)
+            items.add(new LanguageItem(language));
+
+        if (recentlyLanguages.size() > 0)
+            items.add(new TitleItem("Все языки"));
+
+        for (String language : allLanguages)
+            items.add(new LanguageItem(language));
+
+        return items;
     }
 }

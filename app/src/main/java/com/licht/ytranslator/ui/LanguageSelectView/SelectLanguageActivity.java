@@ -16,6 +16,7 @@ import android.widget.EditText;
 import com.licht.ytranslator.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +26,7 @@ public class SelectLanguageActivity extends AppCompatActivity
         implements ISelectLanguageView, SearchView.OnQueryTextListener {
     public static final String AVAILABLE_LANGUAGE_LIST = "LANGUAGE_LIST";
     public static final String SELECTED_LANGUAGE = "SELECTED_LANGUAGE";
+    public static final String RECENTLY_LANGUAGE_LIST = "RECENTLY_LANGUAGE_LIST";
     public static final String RESULT_LANGUAGE = "RESULT_LANGUAGE";
 
     @BindView(R.id.rv_languages_list) RecyclerView mRecyclerView;
@@ -44,6 +46,8 @@ public class SelectLanguageActivity extends AppCompatActivity
         ArrayList<String> languagesList = b.getStringArrayList(AVAILABLE_LANGUAGE_LIST);
         String currentLanguage = b.getString(SELECTED_LANGUAGE);
 
+        ArrayList<String> recentlyUsedLanguages = b.getStringArrayList(RECENTLY_LANGUAGE_LIST);
+
         initUI();
 
         mRecyclerView.setHasFixedSize(true);
@@ -51,7 +55,7 @@ public class SelectLanguageActivity extends AppCompatActivity
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new LanguageListAdapter(this, languagesList, currentLanguage);
+        mAdapter = new LanguageListAdapter(this, languagesList, recentlyUsedLanguages, currentLanguage);
         mRecyclerView.setAdapter(mAdapter);
     }
 
