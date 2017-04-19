@@ -10,7 +10,7 @@
     <string name="no">Нет</string>
 
     <string name="translate_input_hint">Введите текст для перевода</string>
-    <string name="tap_for_detalization">Нажмите, чтобы посмотреть детали</string>
+    <string name="tap_for_detalization">Нажмите, чтоб посмотреть значение в словаре</string>
     <string name="audio_prompt">Произнесите фразу</string>
     <string name="history_list_is_empty">История переводов пуста</string>
     <string name="starred_list_is_empty">Избранных переводов нет</string>
@@ -21,5 +21,6 @@
     <string name="internet_error">Возникли проблемы с интернетом</string>
 
     <string name="select_language">Выбор языка</string>
+    <string name="text_is_copied">Скопировано в буфер обмена</string>
 
 </resources>

@@ -256,6 +256,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
      */
 
     private void onTextInput(String text) {
+        isStarredText(false);
+
         // Сообщаем презентеру, что входной текст изменился
         presenter.onTextInput(text);
     }
@@ -370,8 +372,11 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
             ClipboardManager clipboard = (ClipboardManager)
                     getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 
-            if (tvTranslatedText.getText().length() > 0)
+            if (tvTranslatedText.getText().length() > 0) {
                 clipboard.setText(tvTranslatedText.getText());
+                Utils.showToast(getContext(), getString(R.string.text_is_copied));
+            }
+
         });
 
 
