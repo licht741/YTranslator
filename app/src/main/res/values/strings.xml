@@ -26,8 +26,6 @@
     <string name="error_translate_getting">Error getting translation</string>
     <string name="error_voice_error">Voice input is unavailable</string>
 
-    <string name="failed_input_recognize">Failed to recognize voice input</string>
-
     <string name="yandex_translate_url">https://translate.yandex.ru</string>
     <string name="yandex_dictionary_url">https://tech.yandex.ru/dictionary/</string>
 

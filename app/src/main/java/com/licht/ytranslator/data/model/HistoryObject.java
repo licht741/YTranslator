@@ -31,14 +31,12 @@ public class HistoryObject extends RealmObject {
     public HistoryObject(String word,
                          String translate,
                          String direction,
-                         boolean inHistory,
-                         boolean isFavorites,
                          Date firstUsingDate) {
         this.word = word;
         this.translate = translate;
         this.direction = direction;
-        this.isFavorites = isFavorites;
-        this.inHistory = inHistory;
+        this.isFavorites = false;
+        this.inHistory = false;
         this.firstUsingDate = firstUsingDate;
     }
 

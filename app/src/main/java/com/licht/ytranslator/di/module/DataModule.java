@@ -25,8 +25,8 @@ public class DataModule {
 
     @Provides
     @Singleton
-    CacheData provideCacheData(UtilsPreferences utilsPreferences) {
-        return new CacheData(utilsPreferences);
+    CacheData provideCacheData() {
+        return new CacheData();
     }
 
     @Provides

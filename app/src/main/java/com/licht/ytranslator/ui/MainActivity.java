@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.licht.ytranslator.R;
@@ -29,16 +28,16 @@ public class MainActivity extends AppCompatActivity
         // Если никакой фрагмент не восстанавливается системой, то запускаем новый
         Fragment fmt = getSupportFragmentManager().findFragmentByTag(TAG);
         if (fmt == null)
-            setFragment(false, new TranslateFragment());
+            setFragment(new TranslateFragment());
     }
 
     private final String TAG = "Fragment";
-    public void setFragment(boolean addToBackStack, Fragment fragment) {
+    public void setFragment(Fragment fragment) {
         // Если мы хотим перейти на экран, который уже открыт, ничего не делаем
         if (getCurrentFragmentClass() != null && getCurrentFragmentClass() == fragment.getClass())
             return;
 
-        if (addToBackStack)
+        if (false)
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, fragment, TAG)
@@ -68,11 +67,11 @@ public class MainActivity extends AppCompatActivity
         // Обрабатываем выбор экрана в боковом меню
         int id = item.getItemId();
         if (id == R.id.nav_translate)
-            setFragment(false, new TranslateFragment());
+            setFragment(new TranslateFragment());
         else if (id == R.id.nav_history)
-            setFragment(false, new HistoryListFragment());
+            setFragment(new HistoryListFragment());
         else if (id == R.id.nav_starred)
-            setFragment(false, new StarredListFragment());
+            setFragment(new StarredListFragment());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -1,11 +1,9 @@
 package com.licht.ytranslator.presenters;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.model.Localization;
-import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.presenters.base.IPresenter;
 import com.licht.ytranslator.ui.LoadingScreen.ILoadingView;
 import com.licht.ytranslator.utils.LocalizationUtils;
@@ -102,12 +100,11 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
      * @param localizationConst текущая локализация
      */
     private void cacheData(JsonObject object, String localizationConst) {
-        JsonArray dirs = object.getAsJsonArray("dirs");
 
-        final List<SupportedTranslation> types = new ArrayList<>();
-        for (int i = 0; i < dirs.size(); ++i)
-            types.add(new SupportedTranslation(dirs.get(i).getAsString()));
-
+        // В ответе от сервера есть список языков (локализованный)
+        // и список допустимых направлений перевода.
+        // В текущей версии API список допустимых направлений перевода не используется,
+        // поэтому его можно пропустить
         final List<Localization> localizationList = new ArrayList<>();
 
         JsonObject langs = object.getAsJsonObject("langs");
@@ -116,6 +113,6 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
             localizationList.add(localization);
         }
 
-        dataManager.cacheLanguageData(types, localizationList);
+        dataManager.cacheLanguageData(localizationList);
     }
 }

@@ -170,6 +170,7 @@
                         android:layout_height="35dp"
                         android:layout_gravity="start|center_vertical"
                         android:layout_margin="2dp"
+                        app:srcCompat="@drawable/ic_bookmark"
                         android:visibility="visible" />
 
                     <ImageView

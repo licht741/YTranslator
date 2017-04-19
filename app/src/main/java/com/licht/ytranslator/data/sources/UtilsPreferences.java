@@ -21,18 +21,18 @@ public class UtilsPreferences {
     }
 
     public synchronized long generateDictionaryNumber() {
-        final long crntNumber = getNumber(PREF_DICTIONARY_NUMBER);
+        final long crntNumber = getNumber();
         final long newValue = crntNumber + 1;
-        setNumber(PREF_DICTIONARY_NUMBER, newValue);
+        setNumber(newValue);
 
         return newValue;
     }
 
-    private long getNumber(String key) {
-        return mSharedPreferences.getLong(key, 0);
+    private long getNumber() {
+        return mSharedPreferences.getLong(UtilsPreferences.PREF_DICTIONARY_NUMBER, 0);
     }
 
-    private void setNumber(String key, long newValue) {
-        mSharedPreferences.edit().putLong(key, newValue).apply();
+    private void setNumber(long newValue) {
+        mSharedPreferences.edit().putLong(UtilsPreferences.PREF_DICTIONARY_NUMBER, newValue).apply();
     }
 }

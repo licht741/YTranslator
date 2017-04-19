@@ -3,7 +3,6 @@ package com.licht.ytranslator.data.sources;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.licht.ytranslator.YTransApp;
 
@@ -48,6 +47,9 @@ public class TranslatePreferences {
         mSharedPreferences.edit().putString(PREF_TRANSLATE_DIRECTION, text).apply();
     }
 
+    /**
+     * @return Список недавно использованных языков
+     */
     public ArrayList<String> getRecentlyUsedLanguages() {
         String languages = mSharedPreferences.getString(PREF_RECENTLY_USED_LANGUAGES, null);
         if (languages == null) {
@@ -58,7 +60,12 @@ public class TranslatePreferences {
         return new ArrayList<>(Arrays.asList(languages.split(";")));
     }
 
-    public void setRecentlyUsedLanguages(List<String> languages) {
+    /**
+     * Обновляет список недавно использованных языков
+     *
+     * @param languages Недавно использованные языки
+     */
+    private void setRecentlyUsedLanguages(List<String> languages) {
         final StringBuilder buffer = new StringBuilder();
 
         for (String lang : languages)
@@ -71,6 +78,14 @@ public class TranslatePreferences {
 
     private final int MAX_LANGUAGES_IN_HISTORY = 5;
 
+    /**
+     * Обновляет список недавно использованных языков в истории
+     * Вызывается, когда у нас был выбран новый язык
+     *
+     * Обновление и хранение языков ведётся по принципу очереди (FIFO)
+     *
+     * @param language Выбранный язык
+     */
     public void updateRecentlyUsedLanguage(String language) {
         final List<String> recentlyUsedLanguages = getRecentlyUsedLanguages();
 
@@ -82,13 +97,23 @@ public class TranslatePreferences {
             return;
         }
 
+        // Обрабатываем ситуацию, когда выбран язык, который уже есть в списке недавно добавленных
+        // Просто перемещаем его в начало списка
+        final int index = recentlyUsedLanguages.indexOf(language);
+        if (index != -1) {
 
-        if (recentlyUsedLanguages.contains(language))
+            for (int i = index; i > 0; --i)
+                recentlyUsedLanguages.set(i, recentlyUsedLanguages.get(i - 1));
+            recentlyUsedLanguages.set(0, language);
+            
+            setRecentlyUsedLanguages(recentlyUsedLanguages);
             return;
+        }
 
-
+        // Если мы ещё не заполнили максимальное количество недавно использованных языков,
+        // то просто добавляем его в начало
         if (recentlyUsedLanguages.size() < MAX_LANGUAGES_IN_HISTORY) {
-            recentlyUsedLanguages.add(language);
+            recentlyUsedLanguages.add(0, language);
             setRecentlyUsedLanguages(recentlyUsedLanguages);
             return;
         }
@@ -100,5 +125,4 @@ public class TranslatePreferences {
         recentlyUsedLanguages.set(0, language);
         setRecentlyUsedLanguages(recentlyUsedLanguages);
     }
-
 }

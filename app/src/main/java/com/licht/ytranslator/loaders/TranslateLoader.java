@@ -65,7 +65,7 @@ public class TranslateLoader {
                 // Кэшируем его, вызываем callback функция листенера
                 final String result = response.body().text.get(0);
                 HistoryObject historyObject =
-                        new HistoryObject(text, result, direction, false, false, new Date());
+                        new HistoryObject(text, result, direction, new Date());
                 mDataManager.addWordToHistory(historyObject);
 
                 if (mListener != null)

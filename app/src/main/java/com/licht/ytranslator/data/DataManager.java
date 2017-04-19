@@ -8,7 +8,6 @@ import com.licht.ytranslator.data.endpoint.YandexTranslateAPI;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
 import com.licht.ytranslator.data.model.Result;
-import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.model.WordObject;
 import com.licht.ytranslator.data.sources.CacheData;
@@ -117,7 +116,7 @@ public class DataManager {
      * @param localization Локализация UI, для которой данные были закэшированны
      */
     public void setDataForLocalizationIsCached(String localization) {
-        cachedPreferences.putDataCached(localization, true);
+        cachedPreferences.putDataCached(localization);
     }
 
     /**
@@ -198,14 +197,10 @@ public class DataManager {
     /**
      * Кэширует переданные данные приложения
      *
-     * @param supportedTranslations Список доступных направлений перевода
      * @param localizations         Список обёрток над локализациями
      */
-    public void cacheLanguageData(List<SupportedTranslation> supportedTranslations,
-                                  List<Localization> localizations) {
-        cacheData.saveTranslateType(supportedTranslations);
+    public void cacheLanguageData(List<Localization> localizations) {
         cacheData.saveLocalization(localizations);
-
         mLocalizations = null;
     }
 
@@ -228,8 +223,8 @@ public class DataManager {
         cacheData.cacheDictionary(dictionaryObject);
     }
 
-    public void updateHistoryWord(String word, String direction, boolean isHistoryWord) {
-        cacheData.updateHistoryWord(word, direction, isHistoryWord);
+    public void updateHistoryWord(String word, String direction) {
+        cacheData.updateHistoryWord(word, direction, true);
     }
 
 

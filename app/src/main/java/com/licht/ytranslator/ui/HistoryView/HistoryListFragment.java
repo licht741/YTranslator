@@ -164,7 +164,7 @@ public class HistoryListFragment extends Fragment implements IHistoryView, Searc
 
     @Override
     public void onItemSelected(String word, String direction) {
-        ((MainActivity) getActivity()).setFragment(false, TranslateFragment.newInstance(word, direction));
+        ((MainActivity) getActivity()).setFragment(TranslateFragment.newInstance(word, direction));
     }
 
     @Override

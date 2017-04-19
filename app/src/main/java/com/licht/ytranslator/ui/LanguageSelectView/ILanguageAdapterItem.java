@@ -1,10 +1,10 @@
 package com.licht.ytranslator.ui.LanguageSelectView;
 
 interface ILanguageAdapterItem {
-    public static int LANGUAGE_ITEM_TYPE = 1;
-    public static int TITLE_ITEM_TYPE = 2;
+    int LANGUAGE_ITEM_TYPE = 1;
+    int TITLE_ITEM_TYPE = 2;
 
-    public int getItemType();
+    int getItemType();
 }
 
 class LanguageItem implements ILanguageAdapterItem {

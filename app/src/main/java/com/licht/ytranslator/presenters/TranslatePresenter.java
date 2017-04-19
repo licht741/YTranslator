@@ -12,7 +12,6 @@ import com.licht.ytranslator.ui.TranslateView.ITranslateView;
 import com.licht.ytranslator.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TranslatePresenter implements IPresenter<ITranslateView>, OnTranslateResultListener {
     private final DataManager dataManager;
@@ -297,7 +296,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     private void addExistingTranslatingToHistory() {
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
-        dataManager.updateHistoryWord(text, direction, true);
+        dataManager.updateHistoryWord(text, direction);
     }
 
     private void updateStarredWord(boolean isStarredNow) {

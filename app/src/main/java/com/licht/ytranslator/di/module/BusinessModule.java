@@ -1,12 +1,7 @@
 package com.licht.ytranslator.di.module;
 
-import com.licht.ytranslator.data.endpoint.YandexDictionaryAPI;
-import com.licht.ytranslator.data.endpoint.YandexTranslateAPI;
-import com.licht.ytranslator.data.sources.CachedPreferences;
-import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.data.DataManager;
 import com.licht.ytranslator.data.sources.TranslatePreferences;
-import com.licht.ytranslator.data.sources.UtilsPreferences;
 import com.licht.ytranslator.loaders.TranslateLoader;
 import com.licht.ytranslator.presenters.HistoryPresenter;
 import com.licht.ytranslator.presenters.LoaderPresenter;

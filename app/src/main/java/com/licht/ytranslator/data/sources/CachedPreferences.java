@@ -25,9 +25,9 @@ public class CachedPreferences {
         return mSharedPreferences.getBoolean(prefName, false);
     }
 
-    public void putDataCached(String lang, Boolean value) {
+    public void putDataCached(String lang) {
         final String prefName = PREF_DATA_CACHED_PREFIX + lang;
-        mSharedPreferences.edit().putBoolean(prefName, value).apply();
+        mSharedPreferences.edit().putBoolean(prefName, true).apply();
     }
 
 }

@@ -6,7 +6,6 @@ import com.licht.ytranslator.data.model.DictionaryObject;
 import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.data.model.Localization;
-import com.licht.ytranslator.data.model.SupportedTranslation;
 import com.licht.ytranslator.data.model.WordMeaningObject;
 import com.licht.ytranslator.data.model.WordObject;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
@@ -16,22 +15,24 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
+/**
+ * Предоставляет обёртку над базой данных
+ * Используется ORM Realm.
+ * Производился выбор между Realm и GreenDAO, но всё таки был выбран Realm, потому что
+ * у меня не было опыта работы с ней, и было интересно попробовать
+ *
+ */
 public class CacheData {
-
-    private UtilsPreferences utilsPreferences;
-
-    public CacheData(UtilsPreferences utilsPreferences) {
+    public CacheData() {
         super();
         Realm.init(YTransApp.get());
 
-        this.utilsPreferences = utilsPreferences;
-
+        // Инициируем библиотеку, которая позволяет смотреть содержимое базы данных и SharedPreferences
+        // с помощью инструментов разработчика в Google Chrome
         Stetho.initialize(
                 Stetho.newInitializerBuilder(YTransApp.get())
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(YTransApp.get()))
@@ -39,13 +40,13 @@ public class CacheData {
                         .build());
     }
 
-    public void saveTranslateType(List<SupportedTranslation> types) {
-        final Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(SupportedTranslation.class);
-        realm.copyToRealm(types);
-        realm.commitTransaction();
-    }
+//    public void saveTranslateType(List<SupportedTranslation> types) {
+//        final Realm realm = Realm.getDefaultInstance();
+//        realm.beginTransaction();
+//        realm.delete(SupportedTranslation.class);
+//        realm.copyToRealm(types);
+//        realm.commitTransaction();
+//    }
 
     public Localization[] getLanguageList(String localSymbol) {
         final Realm realm = Realm.getDefaultInstance();

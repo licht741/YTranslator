@@ -16,7 +16,6 @@ import android.widget.EditText;
 import com.licht.ytranslator.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,8 +32,6 @@ public class SelectLanguageActivity extends AppCompatActivity
     private Unbinder unbinder;
 
     private LanguageListAdapter mAdapter = null;
-
-    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +73,7 @@ public class SelectLanguageActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_select_language, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(this);
 

@@ -1,14 +1,9 @@
 package com.licht.ytranslator.di.component;
 
-import com.licht.ytranslator.data.DataManager;
-import com.licht.ytranslator.data.sources.CacheData;
 import com.licht.ytranslator.di.module.ApplicationModule;
 import com.licht.ytranslator.di.module.BusinessModule;
 import com.licht.ytranslator.di.module.DataModule;
 import com.licht.ytranslator.di.module.NetworkModule;
-import com.licht.ytranslator.presenters.HistoryPresenter;
-import com.licht.ytranslator.presenters.LoaderPresenter;
-import com.licht.ytranslator.presenters.TranslatePresenter;
 import com.licht.ytranslator.ui.DictionaryView.DictionaryActivity;
 import com.licht.ytranslator.ui.DictionaryView.DictionaryFragment;
 import com.licht.ytranslator.ui.HistoryView.HistoryListFragment;
