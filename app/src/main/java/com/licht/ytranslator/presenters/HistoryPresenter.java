@@ -44,10 +44,9 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
      *
      * @param text            Переводимый текст
      * @param direction       Направление перевода
-     * @param newStarredState True, если слово добавляется в избранное, иначе False
      */
-    public void setWordStarredState(String text, String direction, boolean newStarredState) {
-        dataManager.setWordStarred(text, direction, newStarredState);
+    public boolean setWordStarredState(String text, String direction) {
+        return dataManager.reverseWordStarred(text, direction);
     }
 
 

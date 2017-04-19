@@ -169,7 +169,7 @@ public class HistoryListFragment extends Fragment implements IHistoryView, Searc
 
     @Override
     public void onStarredChanged(String word, String direction, boolean newStarredCurrent) {
-        presenter.setWordStarredState(word, direction, newStarredCurrent);
+        presenter.setWordStarredState(word, direction);
     }
 
     @Override

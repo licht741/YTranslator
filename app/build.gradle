@@ -45,9 +45,6 @@ dependencies {
     compile 'com.uphyca:stetho_realm:2.0.0'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.8'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-
-    testCompile 'org.robolectric:robolectric:3.0'
-    testCompile "org.mockito:mockito-core:2.0.57-beta"
 }
 
 repositories {

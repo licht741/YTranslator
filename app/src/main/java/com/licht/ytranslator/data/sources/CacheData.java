@@ -1,5 +1,8 @@
 package com.licht.ytranslator.data.sources;
 
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.model.DictionaryObject;
@@ -24,7 +27,6 @@ import io.realm.RealmResults;
  * Используется ORM Realm.
  * Производился выбор между Realm и GreenDAO, но всё таки был выбран Realm, потому что
  * у меня не было опыта работы с ней, и было интересно попробовать
- *
  */
 public class CacheData {
     public CacheData() {
@@ -110,21 +112,39 @@ public class CacheData {
 
     public void addWordToHistory(HistoryObject item) {
         final Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(r -> {
-            RealmResults<HistoryObject> it = r.where(HistoryObject.class)
-                    .equalTo("word", item.getWord())
-                    .equalTo("direction", item.getDirection())
-                    .findAll();
 
-            if (it.size() > 0) {
-                HistoryObject historyObject = it.first();
-                historyObject.setFavorites(item.isFavorites());
-            } else
-                r.copyToRealm(item);
-        });
+        RealmResults<HistoryObject> it =
+                realm.where(HistoryObject.class)
+                .equalTo("word", item.getWord())
+                .equalTo("direction", item.getDirection())
+                .findAll();
+
+        realm.beginTransaction();
+        if (it.size() > 0) {
+            HistoryObject historyObject = it.first();
+            historyObject.setFavorites(item.isFavorites());
+        } else
+            realm.copyToRealm(item);
+
+        realm.commitTransaction();
     }
 
+    @Nullable
     public HistoryObject getWordFromHistory(String word, String direction) {
+        final Realm realm = Realm.getDefaultInstance();
+        HistoryObject historyObject = realm.where(HistoryObject.class)
+                .equalTo("word", word)
+                .equalTo("direction", direction)
+                .equalTo("inHistory", true)
+                .findFirst();
+
+        if (historyObject != null)
+            historyObject = realm.copyFromRealm(historyObject);
+        return historyObject;
+    }
+
+    @Nullable
+    public HistoryObject getWordFromCache(String word, String direction) {
         final Realm realm = Realm.getDefaultInstance();
         HistoryObject historyObject = realm.where(HistoryObject.class)
                 .equalTo("word", word)
@@ -151,19 +171,25 @@ public class CacheData {
     }
 
 
-    public void updateHistoryWord(String word, String direction, boolean isHistoryWord) {
-        Realm.getDefaultInstance().executeTransactionAsync(realm -> {
-            final HistoryObject w = realm.where(HistoryObject.class)
-                    .equalTo("word", word)
-                    .equalTo("direction", direction).findFirst();
+    public HistoryObject updateHistoryWord(String word, String direction, boolean isHistoryWord) {
+        final Realm realm = Realm.getDefaultInstance();
 
-            // Если слово не было найдено, то произошла какая-то ошибка,
-            // и мы просто игнорируем добавление в историю
-            if (w == null)
-                return;
 
-            w.setInHistory(isHistoryWord);
-        });
+        final HistoryObject w = realm.where(HistoryObject.class)
+                .equalTo("word", word)
+                .equalTo("direction", direction).findFirst();
+
+        if (w == null) {
+            Log.e("CacheData", "updateHistoryWord() returns null");
+            return null;
+        }
+
+
+        realm.beginTransaction();
+        w.setInHistory(isHistoryWord);
+        realm.commitTransaction();
+
+        return realm.copyFromRealm(w);
     }
 
     public void clearHistory() {
@@ -206,18 +232,29 @@ public class CacheData {
         return favorites;
     }
 
-    public void setWordStarred(String word, String direction, boolean iStarred) {
-        Realm.getDefaultInstance().executeTransactionAsync(r -> {
-            final HistoryObject w = r.where(HistoryObject.class)
-                    .equalTo("word", word).equalTo("direction", direction)
-                    .findFirst();
+    /**
+     * Меняет избранность перевод: делает избранным, если оно не было, и наоборот
+     *
+     * @param word Переводимый текст
+     * @param direction Направление перевода
+     * @return True, если после вызова функции, перевод стал избранным. Иначе False.
+     */
+    public boolean reverseWordStarred(String word, String direction) {
 
-            if (w != null) {
-                w.setInHistory(true);
-                w.setFavorites(iStarred);
-            }
+        final Realm realm = Realm.getDefaultInstance();
+        final HistoryObject w = realm.where(HistoryObject.class)
+                .equalTo("word", word).equalTo("direction", direction)
+                .findFirst();
+        if (w == null)
+            return false;
 
-        });
+        boolean isStarred = w.isFavorites();
+        realm.beginTransaction();
+        w.setInHistory(true);
+        w.setFavorites(!isStarred);
+        realm.commitTransaction();
+
+        return !isStarred;
     }
 
     /**
@@ -246,7 +283,7 @@ public class CacheData {
         // (не попали в историю, с вышедшим временем жизни)
         final RealmQuery query =
                 realm.where(HistoryObject.class).equalTo("inHistory", false)
-                .lessThanOrEqualTo("firstUsingDate", dateNDaysAgo);
+                        .lessThanOrEqualTo("firstUsingDate", dateNDaysAgo);
 
         realm.beginTransaction();
 
@@ -288,7 +325,7 @@ public class CacheData {
     private Date getDateNDayAgo(int n) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_YEAR,-n);
+        cal.add(Calendar.DAY_OF_YEAR, -n);
         return cal.getTime();
     }
 }

@@ -220,19 +220,17 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     }
 
     public void onStarredClick() {
-        HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(),
-                                                       translatePreferences.getTranslateDirection());
+//        HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(),
+//                                                       translatePreferences.getTranslateDirection());
         // Если из-за какой-то ошибки мы можем добавить в избранное слово, которое не было закэшировано,
         // то не делаем ничего
-        if (obj == null)
-            return;
+//        if (obj == null)
+//            return;
 
-        // Меняем значение избранности слова на обратное
-        final boolean isFavorites = obj.isFavorites();
-        updateStarredWord(!isFavorites);
+        final boolean isStarredNow =  updateStarredWord();
 
         if (view != null)
-            view.isStarredText(!isFavorites);
+            view.isStarredText(isStarredNow);
     }
 
     public void onStartAudio() {
@@ -296,14 +294,14 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     private void addExistingTranslatingToHistory() {
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
-        dataManager.updateHistoryWord(text, direction);
+        dataManager.addWordToHistory(text, direction);
     }
 
-    private void updateStarredWord(boolean isStarredNow) {
+    private boolean updateStarredWord() {
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();
 
-        dataManager.setWordStarred(text, direction, isStarredNow);
+        return dataManager.reverseWordStarred(text, direction);
     }
 
     private void updateLanguagePairInView(String direction) {

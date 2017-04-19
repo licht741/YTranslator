@@ -32,6 +32,7 @@ public class DataManager {
     private final CachedPreferences cachedPreferences;
 
     private Localization[] mLocalizations = null;
+    private List<HistoryObject> historyObjects;
 
     /**
      * Используемая локализация UI
@@ -52,6 +53,9 @@ public class DataManager {
         mLocalSymbol = LocalizationUtils.getCurrentLocalizationSymbol();
 
         checkCachedLocalizations();
+
+        historyObjects = cacheData.getHistoryWords();
+
     }
 
     /*
@@ -134,14 +138,26 @@ public class DataManager {
      */
 
     /**
-     * Добавляет или удаляет перевод из списка избранного
+     * Изменяет избранность данного перевода
      *
      * @param word Переводимый текст
      * @param direction Направление перевода
-     * @param iStarred Добавлен ли перевод в избранное сейчас
+     * @return True, если перевод попал в избранное. False, если он был удалён
      */
-    public void setWordStarred(String word, String direction, boolean iStarred) {
-        cacheData.setWordStarred(word, direction, iStarred);
+    public boolean reverseWordStarred(String word, String direction) {
+        HistoryObject historyObject = cacheData.getWordFromHistory(word, direction);
+        if (historyObject == null) {
+            addWordToHistory(word, direction);
+        }
+
+        final boolean isStarredNow = cacheData.reverseWordStarred(word, direction);
+        for (HistoryObject object : historyObjects)
+            if (object.getWord().equals(word) && object.getDirection().equals(direction)) {
+                object.setFavorites(isStarredNow);
+                break;
+            }
+
+        return isStarredNow;
     }
 
     /**
@@ -159,7 +175,8 @@ public class DataManager {
      * @return Список переводов из истории
      */
     public List<HistoryObject> getHistoryWords() {
-        return cacheData.getHistoryWords();
+        return historyObjects;
+//        return cacheData.getHistoryWords();
     }
 
     /**
@@ -170,7 +187,7 @@ public class DataManager {
      * @return Объект перевода
      */
     public HistoryObject getHistoryWord(String word, String direction) {
-        return cacheData.getWordFromHistory(word, direction);
+        return cacheData.getWordFromCache(word, direction);
     }
 
     /**
@@ -179,7 +196,12 @@ public class DataManager {
      * @return Список избранных переводов
      */
     public List<HistoryObject> getStarredWords() {
-        return cacheData.getFavoritesWords();
+//        return cacheData.getFavoritesWords();
+        List<HistoryObject> starredWords = new ArrayList<>();
+        for (HistoryObject object: getHistoryWords())
+            if (object.isFavorites())
+                starredWords.add(object);
+        return starredWords;
     }
 
     /**
@@ -189,9 +211,17 @@ public class DataManager {
      */
     public void clearHistory(boolean starredOnly) {
         if (starredOnly)
+        {
             cacheData.clearStarredList();
-        else
+
+            for (HistoryObject object : historyObjects)
+                object.setFavorites(false);
+        }
+        else {
             cacheData.clearHistory();
+            historyObjects = new ArrayList<>();
+        }
+
     }
 
     /**
@@ -223,8 +253,22 @@ public class DataManager {
         cacheData.cacheDictionary(dictionaryObject);
     }
 
-    public void updateHistoryWord(String word, String direction) {
-        cacheData.updateHistoryWord(word, direction, true);
+    public void addWordToHistory(String word, String direction) {
+        final HistoryObject object = cacheData.updateHistoryWord(word, direction, true);
+        if (object == null)
+            return;
+
+        boolean existsInHistory = false;
+        for (HistoryObject obj: historyObjects) {
+            if (obj.getWord().equals(word)
+                    && obj.getDirection().equals(object.getDirection())) {
+                existsInHistory = true;
+                break;
+            }
+        }
+
+        if (!existsInHistory)
+            historyObjects.add(object);
     }
 
 
