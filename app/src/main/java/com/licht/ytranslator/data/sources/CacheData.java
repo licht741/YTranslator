@@ -138,7 +138,8 @@ public class CacheData {
     public List<HistoryObject> getHistoryWords() {
         final Realm realm = Realm.getDefaultInstance();
         List<HistoryObject> res = realm.where(HistoryObject.class)
-                .equalTo("inHistory", true).findAll().sort("word");
+                .equalTo("inHistory", true).findAll()
+                .sort("firstUsingDate");
 
         // Открепляем объекты от realm, для того, чтоб модифицировать их вне транзакций
         List<HistoryObject> historyObjects = new ArrayList<>();
