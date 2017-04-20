@@ -15,10 +15,15 @@ import com.licht.ytranslator.utils.Utils;
 
 import javax.inject.Inject;
 
+/**
+ * Экран, на котором отображаются данные о слове, которые были получены через API Яндекс Словаря
+ * В приложении яндекс переводчика эти данные отображаются на основном экране перевода,
+ * но мне кажется более удобным, отображать их на отдельном экране, разбивая на смысловые вкладки
+ */
 public class DictionaryActivity extends AppCompatActivity {
 
     // На этом экране достаточно простая логика,
-    // поэтому используем источник данных напрямую, без презентера
+    // поэтому нарушается принцип MVP, и обращение к данным идёт напрямую, без презентера
     @Inject
     DataManager dataManager;
 
@@ -31,21 +36,13 @@ public class DictionaryActivity extends AppCompatActivity {
 
         YTransApp.getAppComponent().inject(this);
 
+        // При открытии этой активити, должны быть переданы данные о том, какой перевод
+        // используется
         String word = getIntent().getStringExtra("WORD");
         String dirs = getIntent().getStringExtra("DIRECTION");
-
         mDictionaryObject = dataManager.getCachedWord(word, dirs);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(mDictionaryObject.getWord().toUpperCase());
-
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        initUI();
     }
 
     @Override
@@ -54,9 +51,23 @@ public class DictionaryActivity extends AppCompatActivity {
         return true;
     }
 
+    private void initUI() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(getString(R.string.dictionary));
+
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
 
     private void setupViewPager(ViewPager viewPager) {
         // Для каждого возможного толкования слова заводим отдельную вкладку
+        // Для названия вкладки используем часть речи, к которой относится это толкование
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         final int dictCount = mDictionaryObject.getDictionaries().size();

@@ -23,7 +23,8 @@ import retrofit2.Response;
 public class TranslateLoader {
     private final DataManager mDataManager;
 
-    private OnTranslateResultListener mListener;
+    // Подписчик, которому будет возвращаться результат
+    private OnTranslateResultListener mListener = null;
 
     public TranslateLoader(DataManager dataManager) {
         mDataManager = dataManager;
@@ -94,14 +95,18 @@ public class TranslateLoader {
 
         // Если нашли закешированный результат, возвращаем его
         final DictionaryObject dictionaryObject = mDataManager.getCachedWord(text, direction);
-        if (dictionaryObject != null && mListener != null)
+        if (dictionaryObject != null && mListener != null) {
             mListener.onDictionaryResult(dictionaryObject);
+            return;
+        }
 
+        // Не нашли переводв в кэше, поэтому обращаемся к API
         mDataManager.getDataFromDictionary(key, text, direction,
                 LocalizationUtils.getCurrentLocalizationSymbol()).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
 
+                // Парсим результат, кэшируем и возвращаем его
                 RealmList<WordObject> dicts = DictionaryAnswerParser.parse(response.body());
                 DictionaryObject w = new DictionaryObject(text, direction, dicts);
                 mDataManager.cacheDictionaryWord(w);

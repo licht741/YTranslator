@@ -1,5 +1,6 @@
 package com.licht.ytranslator.ui.DictionaryView;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +59,7 @@ class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
                 view.shareWord(wordObject.getWordMeaningObjects().get(position)));
     }
 
+    @NonNull
     private String getMeanings(int position) {
         WordMeaningObject wordMeaningObject = wordObject.getWordMeaningObjects().get(position);
 
@@ -70,6 +72,7 @@ class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
         return result.toString();
     }
 
+    @NonNull
     private String getSynonimes(int position) {
         WordMeaningObject wordMeaningObject = wordObject.getWordMeaningObjects().get(position);
 
@@ -84,6 +87,7 @@ class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
         return result.toString();
     }
 
+    @NonNull
     private String getExamples(int position) {
         final WordMeaningObject wordMeaningObject = wordObject.getWordMeaningObjects().get(position);
 

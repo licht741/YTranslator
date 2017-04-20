@@ -22,5 +22,7 @@
 
     <string name="select_language">Выбор языка</string>
     <string name="text_is_copied">Скопировано в буфер обмена</string>
-
+    <string name="dictionary">Словарь</string>
+    <string name="recently_used_languages">Недавно использованные языки</string>
+    <string name="all_languages">Все языки</string>
 </resources>

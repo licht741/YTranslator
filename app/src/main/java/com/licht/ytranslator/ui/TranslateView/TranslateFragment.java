@@ -64,14 +64,15 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     @BindView(R.id.iv_microphone) ImageView ivMicrophone;
     @BindView(R.id.iv_clear_input) ImageView ivClear;
 
-    private String mCurrentWord;
-
     private static final int REQ_CODE_SOURCE_LANGUAGE = 100;
     private static final int REQ_CODE_DESTINATION_LANGUAGE = 200;
     private static final int REQ_CODE_SPEECH_INPUT = 300;
 
     private static final String ARG_WORD = "arg_word";
     private static final String ARG_DIRECTION = "arg_direction";
+
+    // Слово, которое сейчас находится в поле ввода
+    private String mCurrentWord;
 
     public static TranslateFragment newInstance(String word, String direction) {
         TranslateFragment fragment = new TranslateFragment();
@@ -229,7 +230,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
                 if (results.size() > 0) {
                     final String input = results.get(0);
                     setInputText(input);
-                } else // не удалось распознать текст, или возникла какая-то другая ошибка
+                } else // не удалось распознать текст, голосовой ввода недоступен, или возникла
+                    // какая-то другая ошибка
                     Utils.showToast(getContext(), getString(R.string.error_voice_error));
                 break;
 

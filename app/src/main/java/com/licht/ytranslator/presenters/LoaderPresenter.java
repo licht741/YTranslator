@@ -38,7 +38,7 @@ public class LoaderPresenter implements IPresenter<ILoadingView> {
     public void requestData() {
         // Получаем используемую в приложении локализацию.
         // Всего возможно 2 локализации: русская, английская. Это связано с тем, что приложение
-        // локализованно только на эти языки
+        // локализовано только на эти языки
         final String localConst = LocalizationUtils.getCurrentLocalizationSymbol();
 
         // Если мы уже загрузили данные для выбранной локализации, то больше ничего делать не надо

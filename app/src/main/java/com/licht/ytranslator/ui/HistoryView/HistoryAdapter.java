@@ -15,6 +15,9 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Адаптер для истории переводов (и списка избранных переводов) с поддержкой поиска по списку
+ */
 class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.WordViewHolder>
         implements Filterable {
 

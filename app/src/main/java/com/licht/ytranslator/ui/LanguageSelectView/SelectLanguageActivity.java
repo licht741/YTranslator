@@ -21,6 +21,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/**
+ * Экран выбор языка (языка перевода или языка, на который осуществляется перевод)
+ */
 public class SelectLanguageActivity extends AppCompatActivity
         implements ISelectLanguageView, SearchView.OnQueryTextListener {
     public static final String AVAILABLE_LANGUAGE_LIST = "LANGUAGE_LIST";

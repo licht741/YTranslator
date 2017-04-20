@@ -106,7 +106,7 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return mFilteredItems.size();
     }
 
-    static class LanguageViewHolder extends RecyclerView.ViewHolder {
+    private static class LanguageViewHolder extends RecyclerView.ViewHolder {
         final TextView mLanguage;
         final ImageView mIsSelected;
 
@@ -117,7 +117,7 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    static class TitleViewHolder extends RecyclerView.ViewHolder {
+    private static class TitleViewHolder extends RecyclerView.ViewHolder {
         final TextView mTitle;
 
         TitleViewHolder(View itemView) {
@@ -154,6 +154,7 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             // Может возникнуть ситуация, что мы уже добавили язык, который находится в "Недавнем"
             // а теперь встречаем его во второй раз, и пытаемся добавить. Отдельно проверяем этот случай
+            // Используется именно упорядоченное множество, чтоб проводить проверку быстрее
             final SortedSet<String> addedLanguages = new TreeSet<>();
 
             if (constraint.length() > 0) {
@@ -163,6 +164,8 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         continue;
                     LanguageItem item = (LanguageItem) language;
 
+                    // Если элемент удовлетворяет введенному условию, и ещё не был добавлен,
+                    // то добавляем
                     if (item.getContent().toLowerCase().contains(pattern)
                             && !addedLanguages.contains(item.getContent())) {
                         addedLanguages.add(item.getContent());
@@ -191,13 +194,13 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         List<ILanguageAdapterItem> items = new ArrayList<>();
 
         if (recentlyLanguages.size() > 0)
-            items.add(new TitleItem("Недавно использованные"));
+            items.add(new TitleItem(context.getString(R.string.recently_used_languages)));
 
         for (String language : recentlyLanguages)
             items.add(new LanguageItem(language));
 
         if (recentlyLanguages.size() > 0)
-            items.add(new TitleItem("Все языки"));
+            items.add(new TitleItem(context.getString(R.string.all_languages)));
 
         for (String language : allLanguages)
             items.add(new LanguageItem(language));

@@ -4,6 +4,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 
+/**
+ * Собственный EditText, который позволяет отслеживать скрывание пользователем клавиатуры,
+ * и сообщает об этом подписчику
+ */
 public class ExtendedEditText extends android.support.v7.widget.AppCompatEditText {
 
     private ExtendedEditTextListener mOnImeBack;

@@ -11,6 +11,10 @@ import com.licht.ytranslator.data.sources.UtilsPreferences;
 
 import io.realm.RealmList;
 
+/**
+ * Парсер JSON ответа от Яндекс словаря.
+ *
+ */
 public class DictionaryAnswerParser {
 
     private static final UtilsPreferences utilsPreferences = new UtilsPreferences();

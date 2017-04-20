@@ -59,6 +59,7 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
 
     @Override
     public void shareWord(WordMeaningObject wordMeaning) {
+        // Получаем отформатированный текст для расшаривания, и запускаем интент
         String formattedText = Utils.getFormattedTextToShare(wordMeaning);
         final Intent sendIntent = Utils.createIntentToSharing(formattedText);
 

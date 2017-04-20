@@ -1,19 +1,26 @@
 package com.licht.ytranslator.ui.LanguageSelectView;
 
+/**
+ * Интерфейс элементов, которые могут быть в адаптере списка доступных языков
+ */
 interface ILanguageAdapterItem {
     int LANGUAGE_ITEM_TYPE = 1;
     int TITLE_ITEM_TYPE = 2;
 
+    /**
+     * Возвращает список введённого элемента
+     * Конструкция instanceof работает медленно, поэтому определили функцию, которая позволяет
+     * узнать тип
+     */
     int getItemType();
 }
 
 class LanguageItem implements ILanguageAdapterItem {
     private String content;
 
-    public LanguageItem(String content) {
+    LanguageItem(String content) {
         this.content = content;
     }
-
 
     public String getContent() {
         return content;
@@ -32,7 +39,7 @@ class LanguageItem implements ILanguageAdapterItem {
 class TitleItem implements ILanguageAdapterItem {
     private String content;
 
-    public TitleItem(String content) {
+    TitleItem(String content) {
         this.content = content;
     }
 

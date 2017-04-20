@@ -35,4 +35,7 @@
     <string name="internet_error">Problems with internet occurred</string>
     <string name="select_language">Select language</string>
     <string name="text_is_copied">Copied to clipboard</string>
+    <string name="dictionary">Dictionary</string>
+    <string name="recently_used_languages">Recently used languages</string>
+    <string name="all_languages">All languages</string>
 </resources>

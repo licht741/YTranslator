@@ -40,7 +40,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class HistoryListFragment extends Fragment implements IHistoryView, SearchView.OnQueryTextListener {
+/**
+ * Экран для истории переводов
+ *
+ * Экран истории переводов по своей логике похож на экран избранных переводов, и их можно было бы
+ * объединить в один экран. Но всё таки логика на этих экранах несколько различается, поэтому
+ * чтобы не использовать большое количество условных операторов на одном экране, они были разнесены
+ * на разные
+ *
+ */
+public class HistoryListFragment extends Fragment
+        implements IHistoryView, SearchView.OnQueryTextListener {
 
     private Unbinder unbinder;
 
@@ -76,6 +86,7 @@ public class HistoryListFragment extends Fragment implements IHistoryView, Searc
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        // Сохраняем введенный поиск, чтобы не потерять его при смене ориентации экрана
         outState.putString("search", searchView.getQuery().toString());
     }
 
@@ -83,6 +94,7 @@ public class HistoryListFragment extends Fragment implements IHistoryView, Searc
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // Восстанавливаем введенный поиск (если он был)
         if (savedInstanceState == null || !savedInstanceState.containsKey("search"))
             return;
 

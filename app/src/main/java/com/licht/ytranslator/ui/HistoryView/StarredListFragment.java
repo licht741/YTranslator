@@ -40,6 +40,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/**
+ * Экран для избранных переводов
+ * Для истории переводов и избранных переводов используются разные экраны.
+ * Причины описаны перед HistoryListFragment
+ *
+ */
 public class StarredListFragment extends Fragment implements IHistoryView, SearchView.OnQueryTextListener {
 
     private Unbinder unbinder;
@@ -78,14 +84,14 @@ public class StarredListFragment extends Fragment implements IHistoryView, Searc
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
+        // Сохраняем введенный поиск, чтобы не потерять его при смене ориентации экрана
         outState.putString("search", searchView.getQuery().toString());
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        // Восстанавливаем введенный поиск (если он был)
         if (savedInstanceState == null || !savedInstanceState.containsKey("search"))
             return;
 

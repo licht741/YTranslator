@@ -1,4 +1,6 @@
 package com.licht.ytranslator.utils.ExtendedEditText;
+
+
 public interface ExtendedEditTextListener {
     /**
      * Вызывается при закрытии клавиатуры
