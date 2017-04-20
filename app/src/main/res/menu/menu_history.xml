@@ -11,6 +11,6 @@
         android:id="@+id/action_history_clear"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        android:icon="@drawable/ic_close"
+        android:icon="@drawable/ic_close_white"
         app:showAsAction="ifRoom" />
 </menu>

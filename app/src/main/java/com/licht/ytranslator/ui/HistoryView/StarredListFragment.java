@@ -30,6 +30,7 @@ import com.licht.ytranslator.data.model.HistoryObject;
 import com.licht.ytranslator.presenters.HistoryPresenter;
 import com.licht.ytranslator.ui.MainActivity;
 import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
+import com.licht.ytranslator.utils.Utils;
 
 import java.util.List;
 
@@ -107,6 +108,7 @@ public class StarredListFragment extends Fragment implements IHistoryView, Searc
 
     @Override
     public void onItemSelected(String word, String direction) {
+        Utils.hideKeyboard(getActivity());
         ((MainActivity) getActivity()).setFragment(TranslateFragment.newInstance(word, direction));
     }
 
