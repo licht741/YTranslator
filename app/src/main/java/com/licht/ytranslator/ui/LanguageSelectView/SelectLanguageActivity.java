@@ -35,6 +35,7 @@ public class SelectLanguageActivity extends AppCompatActivity
     private Unbinder unbinder;
 
     private LanguageListAdapter mAdapter = null;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +77,21 @@ public class SelectLanguageActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_select_language, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(this);
 
         EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         searchEditText.setHintTextColor(ContextCompat.getColor(this, android.R.color.white));
+
+        if (previousSearchRequest != null) {
+            searchView.post(() -> {
+                searchView.onActionViewExpanded();
+                searchView.setQuery(previousSearchRequest, false);
+                previousSearchRequest = null;
+            });
+        }
 
         return true;
     }
@@ -119,6 +128,25 @@ public class SelectLanguageActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.white));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("search", searchView.getQuery().toString());
+    }
+
+    private String previousSearchRequest = null;
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Восстанавливаем введенный поиск (если он был)
+        if (savedInstanceState == null || !savedInstanceState.containsKey("search"))
+            return;
+
+        previousSearchRequest = savedInstanceState.getString("search");
+
     }
 
     @Override
