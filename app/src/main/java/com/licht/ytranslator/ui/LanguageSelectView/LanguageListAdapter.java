@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.licht.ytranslator.R;
+import com.licht.ytranslator.YTransApp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,8 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         List<String> recentlyUsedLanguages,
                         String currentSelectedLanguage) {
         this.view = view;
+
+        context = YTransApp.get();
 
         recentlyUsedLanguagesCount = recentlyUsedLanguages.size();
 
