@@ -137,8 +137,8 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
      */
     @Override
     public void onImeBack(ExtendedEditText ctrl, String text) {
-        // Если пользователь спрятал клавиатуру, вероятно, он хочет посмотреть перевод введённого текста
-        // Предупреждаем об этом презентер, помечаем перевод в истории
+        // Отслеживаем состояние клавиатуры для того, чтоб добавлять слова в историю.
+        // Более понятно мотивация расписана в методе TranslatePresenter.onKeyboardHide
         presenter.onKeyboardHide();
     }
 
@@ -285,8 +285,7 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
 
     @OnClick(R.id.tv_selected_source_lang)
     public void onSelectedSourceClick() {
-        startActivityToSelectLanguage(REQ_CODE_SOURCE_LANGUAGE,
-                                        presenter.getSourceLanguage());
+        startActivityToSelectLanguage(REQ_CODE_SOURCE_LANGUAGE, presenter.getSourceLanguage());
 
     }
 
@@ -413,6 +412,9 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
         Utils.hideKeyboard(getActivity());
     }
 
+    /**
+     * Запускает анимацию при нажатии на иконки
+     */
     private void showAnimationOnIconClick(View v) {
         v.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.anim_icon_click));
     }

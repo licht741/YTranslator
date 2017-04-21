@@ -20,7 +20,7 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -29,10 +29,11 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading_screen);
 
         YTransApp.getAppComponent().inject(this);
-
+        setTitle("");
         presenter.bindView(this);
         presenter.requestData();
         presenter.checkCache();

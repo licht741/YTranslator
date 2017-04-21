@@ -15,7 +15,14 @@ import java.util.ArrayList;
 
 public class TranslatePresenter implements IPresenter<ITranslateView>, OnTranslateResultListener {
     private final DataManager dataManager;
+
+    // SharedPreferences, в которых сохраняется информация о переводах пользователя
+    // (последний переведённый текст, направление перевода, недавно использованные языки)
+    // Используются для того, чтоб сохранять состояние перевода при переоткрытии приложения
     private final TranslatePreferences translatePreferences;
+
+    // Получение перевода из сети/кэша имеет достаточно сложную логику,
+    // поэтому выделена в отдельный файл
     private final TranslateLoader translateLoader;
 
     private ITranslateView view;
@@ -135,10 +142,12 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     }
 
     public void onKeyboardHide() {
-        // Если пользователь закрыл клавиатуру, то он просматривает перевод слова
-        // В этой ситуации мы сохраняем слово в историю
 
-        // Помечаем, что слово, которое мы ранее закэшировали, теперь входит в историю
+        // Нам нужно как-то понимать, что пользователь просматривает перевод слова,
+        // чтобы не сохранять в истории всякий мусор.
+        // Поэтому, мы считаем, что если пользователь убрал клавиатуру, то он смотрит на перевод,
+        // и мы добавляем его в историю
+
         addExistingTranslatingToHistory();
 
     }
@@ -156,6 +165,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         // Переводим название языка в его кодовое обозначение
         final String langSymbol = dataManager.getLanguageSymbolByName(newSourceLanguage);
 
+        // Обновляем используемый язык в хранилище и на экране
         final String currentDirection = translatePreferences.getTranslateDirection();
         final String[] tokens = currentDirection.split("-");
         final String newDirection = String.format("%s-%s", langSymbol, tokens[1]);
@@ -220,12 +230,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     }
 
     public void onStarredClick() {
-//        HistoryObject obj = dataManager.getHistoryWord(translatePreferences.getInputText(),
-//                                                       translatePreferences.getTranslateDirection());
         // Если из-за какой-то ошибки мы можем добавить в избранное слово, которое не было закэшировано,
         // то не делаем ничего
-//        if (obj == null)
-//            return;
 
         final boolean isStarredNow =  updateStarredWord();
 
@@ -235,7 +241,8 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
 
     public void onStartAudio() {
         // Передаём исходный язык (язык, с которого осуществляется перевод) как параметр для
-        // голосового ввода
+        // голосового ввода.
+        // Используется стандартный гугловский голосовой ввод
         final String inputLanguageSymbol = translatePreferences.getTranslateDirection().split("-")[0];
         if (view != null)
             view.startAudioWithInputLanguage(inputLanguageSymbol);
@@ -261,16 +268,15 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         if (view == null)
             return;
         view.setTranslatedText(historyObject.getWord(), historyObject.getTranslate());
-//        view.isTranslateActionsAvailable(true);
         view.isStarredText(historyObject.isFavorites());
     }
 
     @Override
     public void onDictionaryResult(DictionaryObject w) {
         // Получили результат от асинхронного запроса к Яндекс Словарю, обрабатываем его
-        final boolean detailsAreAvailable = w.getDictionaries().size() > 0;
+        final boolean dictionaryIsAvailable = w.getDictionaries().size() > 0;
         if (view != null)
-            view.detailsAreAvailable(detailsAreAvailable);
+            view.detailsAreAvailable(dictionaryIsAvailable);
     }
 
     public void onShareText() {

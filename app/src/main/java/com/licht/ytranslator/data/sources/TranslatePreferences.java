@@ -12,7 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Хранит информацию о последнем переводе (переводимый текст, направление перевода)
+ * Хранит информацию о последнем переводе
+ * (переводимый текст, направление перевода, список недавно использованных языков)
  */
 public class TranslatePreferences {
     private static final String PREF_NAME = "user_preferences";

@@ -26,13 +26,24 @@ import retrofit2.Call;
  * Реализует паттерн "Фасад", инкапсулирая работу со всеми возможными источниками данных
  */
 public class DataManager {
+    // API Яндекс переводчика
     private final YandexTranslateAPI yandexTranslateAPI;
+
+    // API Яндекс словаря
     private final YandexDictionaryAPI yandexDictionaryAPI;
+
+    // Данные, хранящиеся в базе данных
     private final CacheData cacheData;
+
+    // Информация, о кэшировании различных локализаций приложения
     private final CachedPreferences cachedPreferences;
 
     private Localization[] mLocalizations = null;
-    private List<HistoryObject> historyObjects;
+
+    // Переводы, которые были добавлены в историю переводов
+    // Хранятся в оперативной памяти для того, чтоб быстро, без подгрузок, открывать экраны истории
+    // переводов и списка избранных переводов.
+    private List<HistoryObject> historyObjectsCache;
 
     /**
      * Используемая локализация UI
@@ -54,7 +65,7 @@ public class DataManager {
 
         checkCachedLocalizations();
 
-        historyObjects = cacheData.getHistoryWords();
+        historyObjectsCache = cacheData.getHistoryWords();
 
     }
 
@@ -123,16 +134,6 @@ public class DataManager {
         cachedPreferences.putDataCached(localization);
     }
 
-    /**
-     * Возвращает название языка по символьному коду, используемое в текущей локализации UI
-     *
-     * @param languageSymbol Символьный код языка
-     * @return Название языка, используемые в текущей локализации UI
-     */
-    private String getLanguageName(String languageSymbol) {
-        return cacheData.getTransMeaning(mLocalSymbol, languageSymbol);
-    }
-
     /*
      * Обращения к данным БД
      */
@@ -151,7 +152,7 @@ public class DataManager {
         }
 
         final boolean isStarredNow = cacheData.reverseWordStarred(word, direction);
-        for (HistoryObject object : historyObjects)
+        for (HistoryObject object : historyObjectsCache)
             if (object.getWord().equals(word) && object.getDirection().equals(direction)) {
                 object.setFavorites(isStarredNow);
                 break;
@@ -175,8 +176,7 @@ public class DataManager {
      * @return Список переводов из истории
      */
     public List<HistoryObject> getHistoryWords() {
-        return historyObjects;
-//        return cacheData.getHistoryWords();
+        return historyObjectsCache;
     }
 
     /**
@@ -196,7 +196,6 @@ public class DataManager {
      * @return Список избранных переводов
      */
     public List<HistoryObject> getStarredWords() {
-//        return cacheData.getFavoritesWords();
         List<HistoryObject> starredWords = new ArrayList<>();
         for (HistoryObject object: getHistoryWords())
             if (object.isFavorites())
@@ -214,12 +213,12 @@ public class DataManager {
         {
             cacheData.clearStarredList();
 
-            for (HistoryObject object : historyObjects)
+            for (HistoryObject object : historyObjectsCache)
                 object.setFavorites(false);
         }
         else {
             cacheData.clearHistory();
-            historyObjects = new ArrayList<>();
+            historyObjectsCache = new ArrayList<>();
         }
 
     }
@@ -259,7 +258,7 @@ public class DataManager {
             return;
 
         boolean existsInHistory = false;
-        for (HistoryObject obj: historyObjects) {
+        for (HistoryObject obj: historyObjectsCache) {
             if (obj.getWord().equals(word)
                     && obj.getDirection().equals(object.getDirection())) {
                 existsInHistory = true;
@@ -268,7 +267,7 @@ public class DataManager {
         }
 
         if (!existsInHistory)
-            historyObjects.add(object);
+            historyObjectsCache.add(object);
     }
 
 
