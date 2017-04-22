@@ -230,9 +230,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     }
 
     public void onStarredClick() {
-        // Если из-за какой-то ошибки мы можем добавить в избранное слово, которое не было закэшировано,
-        // то не делаем ничего
-
+        // Обновили статус избранности перевода
         final boolean isStarredNow =  updateStarredWord();
 
         if (view != null)
@@ -303,6 +301,11 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         dataManager.addWordToHistory(text, direction);
     }
 
+    /**
+     * Изменяет избранность текущего перевода
+     *
+     * @return True, если перевод был добавлен в список избранных, False - если был удалён
+     */
     private boolean updateStarredWord() {
         final String text = translatePreferences.getInputText();
         final String direction = translatePreferences.getTranslateDirection();

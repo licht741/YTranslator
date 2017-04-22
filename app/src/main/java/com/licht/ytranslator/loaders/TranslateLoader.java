@@ -46,6 +46,7 @@ public class TranslateLoader {
 
         // Сначала проверяем, был ли этот запрос закеширован
         final HistoryObject historyObject = mDataManager.getHistoryWord(text, direction);
+        // Если нашли перевод в кэше, то возвращаем его
         if (historyObject != null && mListener != null) {
             mListener.onTranslateResult(historyObject);
             return;
@@ -76,7 +77,7 @@ public class TranslateLoader {
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-                // Ответ не был получен (проблемы с интернетом, таймаут, и т.д.)
+                // Ответ не был получен (проблемы с интернетом, с сервером, и т.д.)
                 // Предупреждаем пользователя, что не получилось получить результат
                 onTranslateFailure();
             }

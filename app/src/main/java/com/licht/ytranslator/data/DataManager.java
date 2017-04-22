@@ -146,12 +146,15 @@ public class DataManager {
      * @return True, если перевод попал в избранное. False, если он был удалён
      */
     public boolean reverseWordStarred(String word, String direction) {
-        HistoryObject historyObject = cacheData.getWordFromHistory(word, direction);
-        if (historyObject == null) {
+        // Возможно, мы пытаемся добавить перевод в список избранных, если он ещё не добавлен в историю
+        // В таком случае добавляем его в историю
+        final HistoryObject historyObject = cacheData.getWordFromHistory(word, direction);
+        if (historyObject == null)
             addWordToHistory(word, direction);
-        }
 
+        // Изменяем избранность переданного перевода
         final boolean isStarredNow = cacheData.reverseWordStarred(word, direction);
+        // Обновляем избранность в кэше
         for (HistoryObject object : historyObjectsCache)
             if (object.getWord().equals(word) && object.getDirection().equals(direction)) {
                 object.setFavorites(isStarredNow);
@@ -211,12 +214,13 @@ public class DataManager {
     public void clearHistory(boolean starredOnly) {
         if (starredOnly)
         {
+            // Удаляем избранность переводов в базе данных и в кэше
             cacheData.clearStarredList();
-
             for (HistoryObject object : historyObjectsCache)
                 object.setFavorites(false);
         }
         else {
+            // очищаем историю переводов в базе и в кэше
             cacheData.clearHistory();
             historyObjectsCache = new ArrayList<>();
         }
@@ -226,7 +230,7 @@ public class DataManager {
     /**
      * Кэширует переданные данные приложения
      *
-     * @param localizations         Список обёрток над локализациями
+     * @param localizations Список обёрток над локализациями
      */
     public void cacheLanguageData(List<Localization> localizations) {
         cacheData.saveLocalization(localizations);
@@ -308,16 +312,22 @@ public class DataManager {
         if (mCachedLanguagesList != null)
             return mCachedLanguagesList;
 
+        // Если список языков не хранится в оперативной памяти
+        // (или был удалён оттуда по причине смены языка), то получаем его из базы данных
         checkCachedLocalizations();
         mCachedLanguagesList = new ArrayList<>();
         for (Localization localization : mLocalizations)
             mCachedLanguagesList.add(localization.getLanguageTitle());
 
+        // Сортировка в лексикографическом порядке
         Collections.sort(mCachedLanguagesList, String::compareTo);
 
         return mCachedLanguagesList;
     }
 
+    /**
+     * Получаем список языков из БД в выбранной локализации
+     */
     private void checkCachedLocalizations() {
         if (mLocalizations == null)
             mLocalizations = cacheData.getLanguageList(mLocalSymbol);
@@ -334,7 +344,7 @@ public class DataManager {
 
 
     /*
-     * Вспомогательные функции
+     * Вспомогательные функции для составления запросов
      */
 
     // Функции составляют объект для POST-запросов
@@ -348,6 +358,8 @@ public class DataManager {
 
     private Map<String, String> buildMapToRequest(String key, String lang, String text, String ui) {
         Map<String, String> mapJSON = buildMapToRequest(key, lang, text);
+        // Дополнительный параметр, с которым передаётся локализация
+        // (в выбранной локализации будут возвращены части речи)
         mapJSON.put("ui", ui);
         return mapJSON;
     }

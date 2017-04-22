@@ -77,6 +77,8 @@ public class TranslatePreferences {
         mSharedPreferences.edit().putString(PREF_RECENTLY_USED_LANGUAGES, buffer.toString()).apply();
     }
 
+    // Максимальное количество языков в списке недавно использованных
+    // Обновление списка недавно использованных языков проходит по принципу FIFO
     private final int MAX_LANGUAGES_IN_HISTORY = 5;
 
     /**

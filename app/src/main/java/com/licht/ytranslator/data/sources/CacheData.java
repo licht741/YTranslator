@@ -25,8 +25,8 @@ import io.realm.RealmResults;
 /**
  * Предоставляет обёртку над базой данных
  * Используется ORM Realm.
- * Производился выбор между Realm и GreenDAO, но всё таки был выбран Realm, потому что
- * у меня не было опыта работы с ней, и было интересно попробовать
+ * При выборе ORM, я выбирал между Realm и GreenDAO, но всё таки выбрал Realm, потому что не работал
+ * с ней, и было интересно попробовать в проекте
  */
 public class CacheData {
     public CacheData() {
@@ -42,14 +42,11 @@ public class CacheData {
                         .build());
     }
 
-//    public void saveTranslateType(List<SupportedTranslation> types) {
-//        final Realm realm = Realm.getDefaultInstance();
-//        realm.beginTransaction();
-//        realm.delete(SupportedTranslation.class);
-//        realm.copyToRealm(types);
-//        realm.commitTransaction();
-//    }
-
+    /**
+     * Возвращает список языков в указанной локализации
+     * @param localSymbol символ языка
+     * @return Список языков в указанной локализации
+     */
     public Localization[] getLanguageList(String localSymbol) {
         final Realm realm = Realm.getDefaultInstance();
         RealmResults<Localization> localizations = realm.where(Localization.class)
@@ -71,15 +68,6 @@ public class CacheData {
         realm.commitTransaction();
     }
 
-    public String getTransMeaning(String localSymbol, String transSymbol) {
-        final Realm realm = Realm.getDefaultInstance();
-        Localization l = realm.where(Localization.class)
-                .equalTo("locale", localSymbol)
-                .equalTo("languageSymbol", transSymbol)
-                .findFirst();
-
-        return l.getLanguageTitle();
-    }
 
     public DictionaryObject getCachedWord(String word, String dir) {
         final Realm realm = Realm.getDefaultInstance();
@@ -179,11 +167,8 @@ public class CacheData {
                 .equalTo("word", word)
                 .equalTo("direction", direction).findFirst();
 
-        if (w == null) {
-            Log.e("CacheData", "updateHistoryWord() returns null");
+        if (w == null)
             return null;
-        }
-
 
         realm.beginTransaction();
         w.setInHistory(isHistoryWord);
@@ -193,6 +178,10 @@ public class CacheData {
     }
 
     public void clearHistory() {
+        // Очищаем историю переводов.
+        // Для этого проходимся по всем объектам и указываем, что они больше не принадлежат истории
+        // и списку избранных. Однако, перевод остаётся в кэше, и будет удалён,
+        // когда истечет время жизни
         final Realm realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(r -> {
             final RealmQuery query = r.where(HistoryObject.class).equalTo("inHistory", true);
@@ -206,6 +195,8 @@ public class CacheData {
     }
 
     public void clearStarredList() {
+        // Очищаем список избранных
+        // Переводы удаляются из избранных, но по-прежнему остаются в истории переводов
         final Realm realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(r -> {
             final RealmQuery query = r.where(HistoryObject.class).equalTo("isFavorites", true);
@@ -215,21 +206,6 @@ public class CacheData {
                 historyObject.setFavorites(false);
             }
         });
-    }
-
-    public List<HistoryObject> getFavoritesWords() {
-        List<HistoryObject> favorites = new ArrayList<>();
-
-        final Realm realm = Realm.getDefaultInstance();
-        RealmResults<HistoryObject> searchRes = realm.where(HistoryObject.class)
-                .equalTo("isFavorites", true)
-                .findAll()
-                .sort("firstUsingDate");
-
-        for (HistoryObject obj : searchRes)
-            favorites.add(realm.copyFromRealm(obj));
-
-        return favorites;
     }
 
     /**
@@ -258,19 +234,11 @@ public class CacheData {
     }
 
     /**
-     * @return Возвращает общее количество закэшированных переводов
-     */
-    public int getCacheSize() {
-        final Realm realm = Realm.getDefaultInstance();
-        return realm.where(HistoryObject.class).findAll().size();
-    }
-
-    /**
      * Осуществляет очистку базы данных от кэшированных переводов
      * Удаляются переводы, не попавшие в историю.
      */
     public void clearCache() {
-        // Количество дней, которое может храниться кэшированный перевод
+        // Время жизни кэшированного перевода (в днях)
         final int nDays = 3;
         final Date dateNDaysAgo = getDateNDayAgo(nDays);
 
