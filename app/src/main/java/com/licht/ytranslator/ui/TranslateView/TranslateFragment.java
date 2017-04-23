@@ -132,11 +132,10 @@ public class TranslateFragment extends Fragment implements ITranslateView, Exten
     }
 
     /**
-     * @param ctrl Элемент управления
      * @param text Текстовое содержимое
      */
     @Override
-    public void onImeBack(ExtendedEditText ctrl, String text) {
+    public void onImeBack(String text) {
         // Отслеживаем состояние клавиатуры для того, чтоб добавлять слова в историю.
         // Более понятно мотивация расписана в методе TranslatePresenter.onKeyboardHide
         presenter.onKeyboardHide();

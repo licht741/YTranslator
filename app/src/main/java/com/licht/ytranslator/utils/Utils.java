@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.licht.ytranslator.R;
+import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.data.model.ExampleObject;
 import com.licht.ytranslator.data.model.StringWrapper;
 import com.licht.ytranslator.data.model.WordMeaningObject;
@@ -25,7 +27,7 @@ public class Utils {
         stringBuilder.append(object.getText()).append(" (").append(object.getPos()).append(")\n");
 
         if (object.getMeanings().size() > 0) {
-            stringBuilder.append("Значения: ");
+            stringBuilder.append(YTransApp.get().getString(R.string.meanings)).append(": ");
             for (StringWrapper s : object.getMeanings())
                 stringBuilder.append(s.getContent()).append(", ");
             stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
@@ -33,7 +35,7 @@ public class Utils {
         }
 
         if (object.getSynonimes().size() > 0) {
-            stringBuilder.append("Синонимы: ");
+            stringBuilder.append(YTransApp.get().getString(R.string.synonyms)).append(": ");
             for (StringWrapper s : object.getSynonimes())
                 stringBuilder.append(s.getContent()).append(", ");
             stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
@@ -41,7 +43,7 @@ public class Utils {
         }
 
         if (object.getExampleObjects().size() > 0) {
-            stringBuilder.append("Примеры использования:\n");
+            stringBuilder.append(YTransApp.get().getString(R.string.usage_examples)).append("\n");
             for (ExampleObject example : object.getExampleObjects()) {
                 stringBuilder.append(example.getPhrase().getContent());
                 if (example.getTranslates().size() > 0) {

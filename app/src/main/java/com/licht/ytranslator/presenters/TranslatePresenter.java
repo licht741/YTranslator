@@ -13,6 +13,9 @@ import com.licht.ytranslator.utils.Utils;
 
 import java.util.ArrayList;
 
+/**
+ * Содержит выделенную логику экрана перевода текста
+ */
 public class TranslatePresenter implements IPresenter<ITranslateView>, OnTranslateResultListener {
     private final DataManager dataManager;
 
@@ -22,7 +25,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
     private final TranslatePreferences translatePreferences;
 
     // Получение перевода из сети/кэша имеет достаточно сложную логику,
-    // поэтому выделена в отдельный файл
+    // поэтому выделена в отдельный объект
     private final TranslateLoader translateLoader;
 
     private ITranslateView view;
@@ -149,7 +152,6 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         // и мы добавляем его в историю
 
         addExistingTranslatingToHistory();
-
     }
 
     /**
@@ -265,6 +267,7 @@ public class TranslatePresenter implements IPresenter<ITranslateView>, OnTransla
         // Получили результат от асинхронного запроса к Яндекс Переводчику, обрабатываем его
         if (view == null)
             return;
+
         view.setTranslatedText(historyObject.getWord(), historyObject.getTranslate());
         view.isStarredText(historyObject.isFavorites());
     }

@@ -12,8 +12,7 @@ import com.licht.ytranslator.data.sources.UtilsPreferences;
 import io.realm.RealmList;
 
 /**
- * Парсер JSON ответа от Яндекс словаря.
- *
+ * Парсер JSON ответа от Яндекс словаря
  */
 public class DictionaryAnswerParser {
 
@@ -30,12 +29,14 @@ public class DictionaryAnswerParser {
             JsonObject el = def.get(i).getAsJsonObject();
 
             final String text = el.get("text").getAsString();
-            final String transcription = el.get("ts") == null ? "" : el.get("ts").getAsString(); //todo null
+            final String transcription = el.get("ts") == null ? "" : el.get("ts").getAsString();
             final String pos = el.get("pos").getAsString();
+
             //extract translates
             JsonArray tr = el.getAsJsonArray("tr");
             RealmList<WordMeaningObject> wordMeaningObjects = extractTranslating(tr);
 
+            // Realm не поддерживает автоинкрементальные идентификаторы, поэтому генерируем их вручную
             WordObject d = new WordObject(utilsPreferences.generateDictionaryNumber(), text, transcription, pos, wordMeaningObjects);
             dictionaries.add(d);
         }

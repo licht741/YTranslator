@@ -20,11 +20,20 @@ public class CachedPreferences {
         mSharedPreferences = (YTransApp.get()).getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
+    /**
+     * Проверяет наличие загруженной локализации для указанного языка
+     * @param lang Символ языка
+     * @return True, если локализация была загружена, иначе False
+     */
     public Boolean getDataCached(String lang) {
         final String prefName = PREF_DATA_CACHED_PREFIX + lang;
         return mSharedPreferences.getBoolean(prefName, false);
     }
 
+    /**
+     * Помечает, что локализация для указанного языка была загружена
+     * @param lang Символ языка
+     */
     public void putDataCached(String lang) {
         final String prefName = PREF_DATA_CACHED_PREFIX + lang;
         mSharedPreferences.edit().putBoolean(prefName, true).apply();

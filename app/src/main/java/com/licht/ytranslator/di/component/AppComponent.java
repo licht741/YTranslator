@@ -17,8 +17,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, BusinessModule.class,
-                        NetworkModule.class, DataModule.class})
+@Component(modules = {ApplicationModule.class, BusinessModule.class, NetworkModule.class, DataModule.class})
 public interface AppComponent {
     void inject(TranslateFragment fragment);
     void inject(LoadingScreenActivity activity);

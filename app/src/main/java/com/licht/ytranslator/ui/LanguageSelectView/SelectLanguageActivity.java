@@ -43,21 +43,7 @@ public class SelectLanguageActivity extends AppCompatActivity
         setContentView(R.layout.activity_select_language);
         unbinder = ButterKnife.bind(this);
 
-        Bundle b = this.getIntent().getExtras();
-        ArrayList<String> languagesList = b.getStringArrayList(AVAILABLE_LANGUAGE_LIST);
-        String currentLanguage = b.getString(SELECTED_LANGUAGE);
-
-        ArrayList<String> recentlyUsedLanguages = b.getStringArrayList(RECENTLY_LANGUAGE_LIST);
-
         initUI();
-
-        mRecyclerView.setHasFixedSize(true);
-
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mAdapter = new LanguageListAdapter(this, languagesList, recentlyUsedLanguages, currentLanguage);
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -128,6 +114,18 @@ public class SelectLanguageActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.white));
+
+        Bundle b = this.getIntent().getExtras();
+        ArrayList<String> languagesList = b.getStringArrayList(AVAILABLE_LANGUAGE_LIST);
+        String currentLanguage = b.getString(SELECTED_LANGUAGE);
+
+        ArrayList<String> recentlyUsedLanguages = b.getStringArrayList(RECENTLY_LANGUAGE_LIST);
+
+        mRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new LanguageListAdapter(this, languagesList, recentlyUsedLanguages, currentLanguage);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override

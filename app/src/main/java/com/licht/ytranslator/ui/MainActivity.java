@@ -17,6 +17,8 @@ import com.licht.ytranslator.ui.TranslateView.TranslateFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String TAG = "Fragment";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,23 +33,15 @@ public class MainActivity extends AppCompatActivity
             setFragment(new TranslateFragment());
     }
 
-    private final String TAG = "Fragment";
     public void setFragment(Fragment fragment) {
         // Если мы хотим перейти на экран, который уже открыт, ничего не делаем
         if (getCurrentFragmentClass() != null && getCurrentFragmentClass() == fragment.getClass())
             return;
 
-        if (false)
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.container, fragment, TAG)
-                    .addToBackStack(null)
-                    .commit();
-            else
-                getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.container, fragment, TAG)
-                    .commit();
+        getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.container, fragment, TAG)
+            .commit();
     }
 
     @Override
@@ -65,6 +59,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
 
         // Обрабатываем выбор экрана в боковом меню
+        // C точки зрения логики приложения, все экраны, на которые можно перейти из бокового меню "равноценные"
+        // То есть нажатие на кнопку "Назад" на каждом из этих экранов приводит к закрытию приложения
         int id = item.getItemId();
         if (id == R.id.nav_translate)
             setFragment(new TranslateFragment());
@@ -77,7 +73,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
 
     @Nullable

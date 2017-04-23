@@ -26,10 +26,12 @@ public class ExtendedEditText extends android.support.v7.widget.AppCompatEditTex
 
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        // Проверяем событие закрытия пользователем клавиатуры, и если это оно,
+        // то сообщаем об этом листенеру
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK &&
                 event.getAction() == KeyEvent.ACTION_UP) {
             if (mOnImeBack != null)
-                mOnImeBack.onImeBack(this, this.getText().toString());
+                mOnImeBack.onImeBack(this.getText().toString());
         }
         return super.dispatchKeyEvent(event);
     }

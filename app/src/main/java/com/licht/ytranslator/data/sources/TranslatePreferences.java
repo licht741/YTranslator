@@ -24,6 +24,9 @@ public class TranslatePreferences {
     private static final String PREF_TRANSLATE_DIRECTION = "TRANSLATE_DIRECTION";
     private static final String PREF_RECENTLY_USED_LANGUAGES = "RECENTLY_USED_LANGUAGES";
 
+    // Максимальное количество языков в списке недавно использованных
+    // Обновление списка недавно использованных языков проходит по принципу FIFO
+    private final int MAX_LANGUAGES_IN_HISTORY = 5;
 
     public TranslatePreferences() {
         super();
@@ -69,6 +72,7 @@ public class TranslatePreferences {
     private void setRecentlyUsedLanguages(List<String> languages) {
         final StringBuilder buffer = new StringBuilder();
 
+        // Приводим к строчному формату для сохранения в виду строки
         for (String lang : languages)
             buffer.append(lang).append(";");
         if (languages.size() > 0)
@@ -76,10 +80,6 @@ public class TranslatePreferences {
 
         mSharedPreferences.edit().putString(PREF_RECENTLY_USED_LANGUAGES, buffer.toString()).apply();
     }
-
-    // Максимальное количество языков в списке недавно использованных
-    // Обновление списка недавно использованных языков проходит по принципу FIFO
-    private final int MAX_LANGUAGES_IN_HISTORY = 5;
 
     /**
      * Обновляет список недавно использованных языков в истории

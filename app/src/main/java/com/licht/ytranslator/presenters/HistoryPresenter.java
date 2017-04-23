@@ -6,6 +6,9 @@ import com.licht.ytranslator.ui.HistoryView.IHistoryView;
 
 import java.util.ArrayList;
 
+/**
+ * Содержит логику раздела истории перевода (и списка избранных переводов)
+ */
 public class HistoryPresenter implements IPresenter<IHistoryView> {
 
     private final DataManager dataManager;
@@ -41,14 +44,12 @@ public class HistoryPresenter implements IPresenter<IHistoryView> {
 
     /**
      * Добавление или удаление слова из списка избранного
-     *
-     * @param text            Переводимый текст
+     *  @param text            Переводимый текст
      * @param direction       Направление перевода
      */
-    public boolean setWordStarredState(String text, String direction) {
-        return dataManager.reverseWordStarred(text, direction);
+    public void setWordStarredState(String text, String direction) {
+        dataManager.reverseWordStarred(text, direction);
     }
-
 
     /**
      * Очистка истории от переводов

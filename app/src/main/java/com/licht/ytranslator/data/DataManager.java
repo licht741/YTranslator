@@ -26,21 +26,44 @@ import retrofit2.Call;
  * Реализует паттерн "Фасад", инкапсулирая работу со всеми возможными источниками данных
  */
 public class DataManager {
+
+    /*
+     * Для работы с сетью используется библиотека Retrofit. Она была выбрана из-за того
+     *   1. Позволяет не писать вручную HTTP-запросы
+     *   2. Позволяет не создавать (явно) и не следить за состоянием дополнительных потоков
+     *   3. Предоставляет удобный интерфейс для получения данных и обработки ошибок
+     */
+
     // API Яндекс переводчика
     private final YandexTranslateAPI yandexTranslateAPI;
 
     // API Яндекс словаря
     private final YandexDictionaryAPI yandexDictionaryAPI;
 
-    // Данные, хранящиеся в базе данных
+    /*
+     * Данные, хранящиеся в базе данных
+     *
+     * Используется ORM Realm.
+     * При реализации не хотелось работать с БД напрямую, поэтому я принял решение использовать ORM
+     *
+     * При выборе ORM, я выбирал между GreenDAO(использовал ранее) и Realm (не использовал, но слышал
+     * рекомендации). Я выбрал Realm, потому что было интересно попробовать новую ORM в реальном проекте
+     */
     private final CacheData cacheData;
+
+    /**
+     * Здесь (и в других местах) в качестве постоянной памяти используются Shared Preferences потому,
+     * что в этих случаях получать значения по ключу (из key-value баз данных) удобнее, чем писать SQL запросы
+     */
 
     // Информация, о кэшировании различных локализаций приложения
     private final CachedPreferences cachedPreferences;
 
+    // Список доступных для перевода языков.
+    // Хранится в оперативной памяти, чтоб каждый раз не ходить в базу данных для их получения
     private Localization[] mLocalizations = null;
 
-    // Переводы, которые были добавлены в историю переводов
+    // Переводы, которые были добавлены в историю
     // Хранятся в оперативной памяти для того, чтоб быстро, без подгрузок, открывать экраны истории
     // переводов и списка избранных переводов.
     private List<HistoryObject> historyObjectsCache;
@@ -62,11 +85,8 @@ public class DataManager {
         this.cachedPreferences = cachedPreferences;
 
         mLocalSymbol = LocalizationUtils.getCurrentLocalizationSymbol();
-
         checkCachedLocalizations();
-
         historyObjectsCache = cacheData.getHistoryWords();
-
     }
 
     /*
@@ -199,10 +219,11 @@ public class DataManager {
      * @return Список избранных переводов
      */
     public List<HistoryObject> getStarredWords() {
-        List<HistoryObject> starredWords = new ArrayList<>();
+        final List<HistoryObject> starredWords = new ArrayList<>();
         for (HistoryObject object: getHistoryWords())
             if (object.isFavorites())
                 starredWords.add(object);
+
         return starredWords;
     }
 
@@ -257,30 +278,27 @@ public class DataManager {
     }
 
     public void addWordToHistory(String word, String direction) {
-        final HistoryObject object = cacheData.updateHistoryWord(word, direction, true);
+        final HistoryObject object = cacheData.updateHistoryWord(word, direction);
         if (object == null)
             return;
 
         boolean existsInHistory = false;
-        for (HistoryObject obj: historyObjectsCache) {
-            if (obj.getWord().equals(word)
-                    && obj.getDirection().equals(object.getDirection())) {
+        for (HistoryObject obj: historyObjectsCache)
+            if (obj.getWord().equals(word) && obj.getDirection().equals(object.getDirection())) {
                 existsInHistory = true;
                 break;
             }
-        }
 
         if (!existsInHistory)
             historyObjectsCache.add(object);
     }
-
 
     /**
      * Кэш перевода живёт какое-то ограниченное количество дней
      * При каждом запуске приложения проводится очистка кэша. Если какой-то перевод хранится больше,
      * чем заданное количество дней, то он удаляется.
      *
-     * Если перевод попал в историю, то он не удаляется никогда
+     * Если перевод попал в историю, то он не удаляется никогда (пока перевод находится в истории)
      */
     public void clearCacheIfNecessary() {
             cacheData.clearCache();

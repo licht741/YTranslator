@@ -1,7 +1,6 @@
 package com.licht.ytranslator.data.sources;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.licht.ytranslator.YTransApp;
@@ -24,11 +23,9 @@ import io.realm.RealmResults;
 
 /**
  * Предоставляет обёртку над базой данных
- * Используется ORM Realm.
- * При выборе ORM, я выбирал между Realm и GreenDAO, но всё таки выбрал Realm, потому что не работал
- * с ней, и было интересно попробовать в проекте
  */
 public class CacheData {
+
     public CacheData() {
         super();
         Realm.init(YTransApp.get());
@@ -159,7 +156,7 @@ public class CacheData {
     }
 
 
-    public HistoryObject updateHistoryWord(String word, String direction, boolean isHistoryWord) {
+    public HistoryObject updateHistoryWord(String word, String direction) {
         final Realm realm = Realm.getDefaultInstance();
 
 
@@ -171,7 +168,7 @@ public class CacheData {
             return null;
 
         realm.beginTransaction();
-        w.setInHistory(isHistoryWord);
+        w.setInHistory(true);
         realm.commitTransaction();
 
         return realm.copyFromRealm(w);

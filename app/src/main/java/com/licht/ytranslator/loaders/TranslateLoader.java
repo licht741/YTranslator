@@ -19,6 +19,7 @@ import retrofit2.Response;
 
 /**
  * Получает переводы для введённых текстов и возвращает их с помощью вызовов callback функций
+ * Перед началом загрузки, проверяется наличие кэшированного перевода в базе данных.
  */
 public class TranslateLoader {
     private final DataManager mDataManager;
@@ -38,8 +39,8 @@ public class TranslateLoader {
      * Обращается к API Яндекс переводчика, для получения перевода.
      * При получении результата, передаёт его листенеру.
      *
-     * @param key       ключ API
-     * @param text      переводимый текст
+     * @param key ключ API
+     * @param text переводимый текст
      * @param direction направление перевода
      */
     public void translate(String key, String text, String direction) {

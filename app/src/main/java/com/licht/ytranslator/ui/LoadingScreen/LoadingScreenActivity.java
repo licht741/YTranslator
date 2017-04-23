@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.licht.ytranslator.ui.MainActivity;
 import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 import com.licht.ytranslator.presenters.LoaderPresenter;
+import com.licht.ytranslator.utils.Utils;
 
 import javax.inject.Inject;
 
@@ -54,7 +54,7 @@ public class LoadingScreenActivity extends AppCompatActivity implements ILoading
 
     @Override
     public void onLoadingFailure() {
-        Toast.makeText(this, getString(R.string.internet_error), Toast.LENGTH_SHORT).show();
+        Utils.showToast(this, getString(R.string.internet_error));
         System.exit(0);
     }
 }

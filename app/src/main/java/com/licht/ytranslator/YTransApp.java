@@ -23,8 +23,10 @@ public class YTransApp extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
+        // Для построения приложения используется Dependency Injection и библиотека Dagger.
         appComponent = DaggerAppComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .businessModule(new BusinessModule())

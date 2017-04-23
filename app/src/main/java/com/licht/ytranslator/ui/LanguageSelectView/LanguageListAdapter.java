@@ -15,23 +15,25 @@ import com.licht.ytranslator.R;
 import com.licht.ytranslator.YTransApp;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements Filterable {
+class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
     private final ISelectLanguageView view;
 
     private final List<ILanguageAdapterItem> mLanguages = new ArrayList<>();
     private final List<ILanguageAdapterItem> mFilteredItems = new ArrayList<>();
 
-    private final String currentSelectedLanguage;
     private Context context;
-
     private Filter filter;
 
+    // Язык, который используется сейчас (который был активным при открытии этого экрана)
+    private final String currentSelectedLanguage;
+
+    // Количество языков в списке недавно использованных
     private final int recentlyUsedLanguagesCount;
 
     LanguageListAdapter(ISelectLanguageView view,
@@ -44,9 +46,7 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         recentlyUsedLanguagesCount = recentlyUsedLanguages.size();
 
-        final List<ILanguageAdapterItem> items =
-                getFormattedItems(allLanguages, recentlyUsedLanguages);
-
+        final List<ILanguageAdapterItem> items = getFormattedItems(allLanguages, recentlyUsedLanguages);
         mLanguages.addAll(items);
         mFilteredItems.addAll(items);
 
@@ -74,6 +74,7 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return mFilteredItems.get(position).getItemType();
     }
 
+    @SuppressWarnings("CastToConcreteClass")
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == ILanguageAdapterItem.TITLE_ITEM_TYPE) {
@@ -88,7 +89,8 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         languageViewHolder.mLanguage.setText(lang);
 
         // Отдельно помечаем текущий язык
-        // Не нужно отдельно отмечать язык, находящийся в недавно использованных
+        // Если текущий язык находится в "Недавно использованных", то получается, что в списке он будет
+        // встречаться 2 раза, но отмечать отдельно язык, находящийся в недавно использованных, мы не хотим
         // Поэтому по индексу проверяем, где находится данный элемент
         // Если он относится к "недавно использованным", то не помечаем
         if (lang.equals(currentSelectedLanguage) && (position > recentlyUsedLanguagesCount + 1)) {
@@ -165,6 +167,10 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 for (final ILanguageAdapterItem language : originalList) {
                     if (language.getItemType() == ILanguageAdapterItem.TITLE_ITEM_TYPE)
                         continue;
+                    // Если это был заголовок, то мы пропустили итерацию, и теперь точно знаем,
+                    // что приведение будет правильным
+
+                    //noinspection CastToConcreteClass
                     LanguageItem item = (LanguageItem) language;
 
                     // Если элемент удовлетворяет введенному условию, и ещё не был добавлен,
@@ -187,21 +193,25 @@ class LanguageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             adapter.mFilteredItems.clear();
-            adapter.mFilteredItems.addAll((List<ILanguageAdapterItem>) results.values);
+            //noinspection unchecked
+            adapter.mFilteredItems.addAll((Collection<? extends ILanguageAdapterItem>) results.values);
             adapter.notifyDataSetChanged();
         }
     }
 
+    // Из списка языков, создаёт форматированный список для адаптера
     private List<ILanguageAdapterItem> getFormattedItems(List<String> allLanguages,
                                                          List<String> recentlyLanguages) {
         List<ILanguageAdapterItem> items = new ArrayList<>();
 
+        // Сначала добавляем список недавно использованных языков с заголовком
         if (recentlyLanguages.size() > 0)
             items.add(new TitleItem(context.getString(R.string.recently_used_languages)));
 
         for (String language : recentlyLanguages)
             items.add(new LanguageItem(language));
 
+        // Спсок всех доступных языков (с заголовком)
         if (recentlyLanguages.size() > 0)
             items.add(new TitleItem(context.getString(R.string.all_languages)));
 

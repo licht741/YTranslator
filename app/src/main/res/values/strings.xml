@@ -4,6 +4,12 @@
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
+    <string name="translate_base_url" translatable="false">https://translate.yandex.net</string>
+    <string name="dictionary_base_url" translatable="false">https://dictionary.yandex.net</string>
+
+    <string name="yandex_translate_url" translatable="false">https://translate.yandex.ru</string>
+    <string name="yandex_dictionary_url" translatable="false">https://tech.yandex.ru/dictionary/</string>
+
     <string name="key_translate" translatable="false">trnsl.1.1.20170318T151457Z.233174f560c42e3d.b08e19f199a26a1d9e019c96cb0629f00a0f6224</string>
     <string name="key_dictionary" translatable="false">dict.1.1.20170319T122541Z.cff081847419cf25.f6806ef378d456d28f2bd813aba2b47a761f8b7b</string>
 
@@ -26,9 +32,6 @@
     <string name="error_translate_getting">Error getting translation</string>
     <string name="error_voice_error">Voice input is unavailable</string>
 
-    <string name="yandex_translate_url">https://translate.yandex.ru</string>
-    <string name="yandex_dictionary_url">https://tech.yandex.ru/dictionary/</string>
-
     <string name="translated_by">Переведено сервисом «Яндекс.Переводчик»</string>
     <string name="realized_by">Реализовано с помощью сервиса «Яндекс.Словарь»</string>
 
@@ -38,4 +41,8 @@
     <string name="dictionary">Dictionary</string>
     <string name="recently_used_languages">Recently used languages</string>
     <string name="all_languages">All languages</string>
+
+    <string name="meanings">Meanings</string>
+    <string name="synonyms">Synonyms</string>
+    <string name="usage_examples">Usage examples</string>
 </resources>

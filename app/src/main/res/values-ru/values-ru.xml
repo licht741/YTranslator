@@ -10,7 +10,7 @@
     <string name="no">Нет</string>
 
     <string name="translate_input_hint">Введите текст для перевода</string>
-    <string name="tap_for_detalization">Нажмите, чтоб посмотреть значение в словаре</string>
+    <string name="tap_for_detalization">Нажмите, чтобы посмотреть значение в словаре</string>
     <string name="audio_prompt">Произнесите фразу</string>
     <string name="history_list_is_empty">История переводов пуста</string>
     <string name="starred_list_is_empty">Избранных переводов нет</string>
@@ -25,4 +25,8 @@
     <string name="dictionary">Словарь</string>
     <string name="recently_used_languages">Недавно использованные языки</string>
     <string name="all_languages">Все языки</string>
+
+    <string name="meanings">Значения</string>
+    <string name="synonyms">Синонимы</string>
+    <string name="usage_examples">Примеры использования</string>
 </resources>

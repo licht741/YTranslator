@@ -70,11 +70,11 @@ public class DictionaryFragment extends Fragment implements IDictionaryView {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_dictionary, container, false);
+        final View root = inflater.inflate(R.layout.fragment_dictionary, container, false);
 
         unbinder = ButterKnife.bind(this, root);
 
-        WordObject mWordObject = dataManager.getCachedDictionary(mDictionaryID);
+        final WordObject mWordObject = dataManager.getCachedDictionary(mDictionaryID);
 
         dictionaryWord.setText(mWordObject.getText());
         if("".equals(mWordObject.getTrans()))
