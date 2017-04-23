@@ -32,8 +32,8 @@
     <string name="error_translate_getting">Error getting translation</string>
     <string name="error_voice_error">Voice input is unavailable</string>
 
-    <string name="translated_by">Переведено сервисом «Яндекс.Переводчик»</string>
-    <string name="realized_by">Реализовано с помощью сервиса «Яндекс.Словарь»</string>
+    <string name="translated_by">Powered by Yandex.Translate</string>
+    <string name="realized_by">Powered by Yandex.Dictionary</string>
 
     <string name="internet_error">Problems with internet occurred</string>
     <string name="select_language">Select language</string>

@@ -15,6 +15,9 @@
     <string name="history_list_is_empty">История переводов пуста</string>
     <string name="starred_list_is_empty">Избранных переводов нет</string>
 
+    <string name="translated_by">Переведено сервисом «Яндекс.Переводчик»</string>
+    <string name="realized_by">Реализовано с помощью сервиса «Яндекс.Словарь»</string>
+
     <string name="error_translate_getting">Ошибка при получении перевода</string>
     <string name="error_voice_error">Голосовой ввод недоступен</string>
 
